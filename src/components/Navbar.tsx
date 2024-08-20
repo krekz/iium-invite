@@ -9,9 +9,8 @@ export default () => {
   // Replace javascript:void(0) paths with your paths
   const navigation = [
     { title: "Events", path: "events" },
-    { title: "Test", path: "javascript:void(0)" },
-    { title: "Test", path: "javascript:void(0)" },
-    { title: "Test", path: "javascript:void(0)" },
+    // { title: "Test", path: "javascript:void(0)" },
+    // { title: "Test", path: "javascript:void(0)" },
   ];
 
   useEffect(() => {
@@ -95,7 +94,7 @@ export default () => {
           </ul>
           <div className="flex-1 gap-x-6 items-center justify-end mt-6 space-y-6 md:flex md:space-y-0 md:mt-0">
             <Link
-              href="javascript:void(0)"
+              href="/post"
               className="flex items-center justify-center gap-x-1 py-2 px-4 text-white font-medium bg-gray-800 hover:bg-gray-700 active:bg-gray-900 rounded-full md:inline-flex"
             >
               Post
@@ -113,7 +112,7 @@ export default () => {
               </svg>
             </Link>
             <Link
-              href="javascript:void(0)"
+              href="#"
               className="block text-gray-700 hover:text-gray-900"
             >
               Log in
