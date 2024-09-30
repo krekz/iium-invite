@@ -9,14 +9,23 @@ datasource db {
 }
 
 model Event {
-  id Int @id @default(autoincrement())
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @unique
+  title             String   @db.VarChar(255)
+  description       String
+  poster_url        String[]
+  date              DateTime
+  campus            String
+  location          String
+  organizer         String
+  fee               String?
+  registration_link String?
+  categories        String[]
+  has_starpoints    Boolean
+  published         Boolean  @default(false)
+  // author            User     @relation(fields: [authorId], references: [id])
+  // authorId          Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model Profile {
@@ -30,6 +39,6 @@ model User {
   id      Int      @id @default(autoincrement())
   email   String   @unique
   name    String?
-  posts   Event[]
+  // posts   Event[]
   profile Profile?
 }

@@ -1,15 +1,53 @@
-import * as z from "zod"
+import * as z from "zod";
 
-export const postSchema = z.object({
-    title: z.string().min(3).max(20),
-    description: z.string().min(3),
-    poster_url: z.string().url(),
-    // start date
-    // end date
-    location: z.string().min(3),
-    organizer: z.string().min(3), // eg. Perkim/PKPIM/KICT/ENGENIUS etc
-    fee: z.string().regex(/^\d+(\.\d{1,2})?$/),
-    registration_link: z.string().url(),
-    // categories: z.array(z.string()).nonempty(),
-    has_starpoints: z.string(),
-})
+export const descSchema = z.object({
+	description: z.string().min(3, "Description can't be empty"),
+});
+
+export const detailSchema = z.object({
+	title: z.string().min(3, "Title can't be empty").max(35, "Characters too long "),
+	location: z.string().min(3, "Location is required").max(15, "Characters too long"),
+	organizer: z.string().min(3, "Organizer required").max(20, "Characters too long"),
+	campus: z.string().refine(
+		(value) => ["Gombak", "Kuantan", "Gambang", "Pagoh"].includes(value),
+		{
+			message: "Please select a valid campus"
+		}
+	),
+	fee: z.string().regex(/^\d+(\.\d{1,2})?$/),
+	categories: z.array(z.string()).min(1, "At least one category is required"),
+});
+
+export const postSchema =
+	z.object({
+		poster_url: z
+			.array(z.instanceof(File))
+			.refine((files) => files.length > 0 && files.length <= 3, {
+				message: "Please upload 1-3 images",
+			})
+			.refine(
+				(files) =>
+					files.every(
+						(file) =>
+							file.size <= 1024 * 1024 * 5 &&
+							["image/png", "image/jpeg", "image/jpg", "video/mp4"].includes(
+								file.type,
+							),
+					),
+				{
+					message: "Invalid file format or size, 1MB is the maximum",
+				},
+			),
+		date: z.coerce.date().refine(
+			(date) => date > new Date(),
+			{
+				message: "Invalid date",
+			}
+		),
+		registration_link: z.union([z.string().url(), z.literal('')]).optional(),
+		has_starpoints: z.boolean(),
+	})
+		.and(detailSchema)
+		.and(descSchema);
+
+
