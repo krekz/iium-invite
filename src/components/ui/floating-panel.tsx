@@ -176,9 +176,15 @@ export function FloatingPanelContent({
   const { isOpen, closeFloatingPanel, uniqueId, triggerRect, title } =
     useFloatingPanel()
   const contentRef = useRef<HTMLDivElement>(null)
+  const [isInteractingWithDropdown, setIsInteractingWithDropdown] = useState(false)
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      if (isInteractingWithDropdown) {
+        return
+      }
+
       if (
         contentRef.current &&
         !contentRef.current.contains(event.target as Node)
@@ -186,9 +192,25 @@ export function FloatingPanelContent({
         closeFloatingPanel()
       }
     }
+
+    const handleDropdownInteraction = (event: Event) => {
+      if ((event.target as HTMLElement).closest('[data-radix-popper-content-wrapper]')) {
+        setIsInteractingWithDropdown(true)
+      } else {
+        setIsInteractingWithDropdown(false)
+      }
+    }
+
     document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [closeFloatingPanel])
+    document.addEventListener("mousedown", handleDropdownInteraction, true)
+    document.addEventListener("focusin", handleDropdownInteraction, true)
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("mousedown", handleDropdownInteraction, true)
+      document.removeEventListener("focusin", handleDropdownInteraction, true)
+    }
+  }, [closeFloatingPanel, isInteractingWithDropdown])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -209,8 +231,8 @@ export function FloatingPanelContent({
     visible: {
       opacity: 1,
       scale: 1,
-      y: 0,
-      x: triggerRect ? 0 : '-50%',
+      // y: 100,
+      // x: triggerRect ? 0 : '-50%',
     },
   }
 
@@ -228,13 +250,13 @@ export function FloatingPanelContent({
             ref={contentRef}
             layoutId={`floating-panel-${uniqueId}`}
             className={cn(
-              "fixed z-50 overflow-hidden border border-zinc-950/10 bg-white shadow-lg outline-none backdrop-blur-sm dark:border-zinc-50/10 dark:bg-zinc-800/90",
+              "absolute z-50 overflow-hidden border border-zinc-950/10 bg-white shadow-lg outline-none backdrop-blur-sm dark:border-zinc-50/10 dark:bg-zinc-800/90",
               className
             )}
             style={{
               borderRadius: 12,
-              left: triggerRect ? triggerRect.left : '50%',
-              top: triggerRect ? triggerRect.bottom + 8 : '50%',
+              // left: triggerRect ? triggerRect.left : '50%',
+              // top: triggerRect ? triggerRect.bottom + 8 : '50%',
               transformOrigin: 'top center',
             }}
             initial="hidden"
