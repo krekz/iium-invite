@@ -2,6 +2,9 @@
 
 A platform for handling university events, created with Next.js 14, Supabase, and Prisma.
 
+https://github.com/user-attachments/assets/a8dbf190-f0e9-4190-b834-66386f36120a
+
+
 > [!IMPORTANT]
 > Create your [Supabase](https://supabase.com/) account before proceed to Development
 
