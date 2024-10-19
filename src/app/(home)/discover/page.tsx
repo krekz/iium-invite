@@ -1,3 +1,4 @@
+import EventFilter from "@/components/EventFilter";
 import EventList from "@/components/homepage/EventList";
 import prisma from "@/lib/prisma";
 
@@ -15,9 +16,12 @@ async function Events() {
 		}
 	})
 	return (
-		<div className="bg-amber-950">
+		<div className="flex flex-row-reverse">
 			{/* <div className="flex justify-center text-3xl font-bold p-3">Events</div> */}
 			<EventList events={events} />
+			{/* <aside>
+				<EventFilter />
+			</aside> */}
 		</div>
 	);
 }
