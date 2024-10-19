@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import ReactQueryProvider from "@/lib/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster"
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider"
 
 
 const poppins = Poppins({
@@ -14,8 +15,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-	title: "Eventure - Your one-stop event platform",
-	description: "Eventure is a platform for students to discover and participate in events happening around their campus.",
+	title: "EVENTURE - Your one-stop event platform",
+	description: "EVENTURE is a platform for students to discover and participate in events happening around their campus.",
 };
 
 export default function RootLayout({
@@ -25,14 +26,22 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`bg-amber-950 text-white ${poppins.className}`}>
-				<ReactQueryProvider>
-					<Navbar />
-					<TooltipProvider>
-						{children}
-					</TooltipProvider>
+			<body className={`${poppins.className}`}>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="dark"
+					enableSystem
+					disableTransitionOnChange
+				>
 					<Toaster />
-				</ReactQueryProvider>
+					<ReactQueryProvider>
+						<Navbar />
+						<TooltipProvider>
+							{children}
+						</TooltipProvider>
+					</ReactQueryProvider>
+				</ThemeProvider>
+
 			</body>
 		</html>
 	);

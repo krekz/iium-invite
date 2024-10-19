@@ -1,7 +1,7 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ModeToggle } from "./theme-switch";
 
 export default () => {
 	const [state, setState] = useState(false);
@@ -19,23 +19,24 @@ export default () => {
 	}, []);
 
 	return (
-		<nav className="bg-amber-50 shadow-md">
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<nav className="bg-background brightness-125">
+			<div className="max-w-screen-xl mx-auto px-4">
 				<div className="flex justify-between items-center h-24">
 					<div className="flex items-center">
 						<Link href="/" className="flex items-center mr-6">
-							<span className="text-3xl font-bold text-amber-800">Eventure</span>
+							<span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 animate-shimmer">EVENTURE</span>
 						</Link>
 						<div className="hidden sm:flex sm:items-center space-x-4">
 							{navigation.map((item, idx) => (
 								<Link
 									key={idx}
 									href={item.path}
-									className="px-3 py-2 rounded-md text-sm font-medium text-amber-700 hover:text-amber-900 hover:bg-amber-100 transition duration-150 ease-in-out"
+									className="px-3 py-2 rounded-md text-sm font-light hover:opacity-70 transition duration-150 ease-in-out"
 								>
 									{item.title}
 								</Link>
 							))}
+							<ModeToggle />
 						</div>
 					</div>
 					<div className="hidden sm:flex sm:items-center space-x-4">
@@ -45,12 +46,12 @@ export default () => {
 						>
 							Post
 						</Link>
-						<Link
-							href="/signup"
-							className="px-4 py-2 rounded-md text-sm font-medium text-amber-800 hover:text-amber-900 hover:bg-amber-100 transition duration-150 ease-in-out"
+						<button
+							disabled
+							className="px-4 py-2 rounded-md text-sm font-medium opacity-50 cursor-not-allowed transition duration-150 ease-in-out"
 						>
 							Log in
-						</Link>
+						</button>
 					</div>
 					<div className="flex items-center sm:hidden">
 						<button
@@ -93,6 +94,9 @@ export default () => {
 					>
 						Sign up
 					</Link>
+					<div className="px-3 py-2">
+						<ModeToggle />
+					</div>
 				</div>
 			</div>
 		</nav>
