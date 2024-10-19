@@ -50,22 +50,22 @@ function EventList({ events }: EventsProps) {
 								<p className="text-xs font-extrabold whitespace-nowrap">Open for Recruitment</p>
 							</div>
 						)}
-						<div className="text-white/60">
-							<h1 className="text-sm md:text-lg font-semibold text-amber-300">
+						<div className="dark:text-primary-foreground">
+							<h1 className="text-sm md:text-lg font-semibold text-primary">
 								{event.title}
 							</h1>
 
-							<p className="text-xs md:text-sm mt-2">{event.location}</p>
+							<p className="text-xs md:text-sm mt-2">📍 {event.location}</p>
 
 							<div className="flex justify-between">
-								<p className="text-xs md:text-sm">{event.organizer}</p>
-								<p className="text-[11px] md:text-sm italic">{format(new Date(event.date).toLocaleDateString(), "dd/M/yy")}</p>
+								<p className="text-xs md:text-sm">🫂 {event.organizer}</p>
+								<p className="text-[11px] md:text-sm italic">🗓️ {format(new Date(event.date).toLocaleDateString(), "dd/M/yy")}</p>
 							</div>
 							<div className="flex flex-wrap gap-1 mt-2">
 								{event.categories.map((tag, t_index) => (
 									<span
 										key={t_index}
-										className="bg-amber-100 text-amber-800 rounded-full px-2 py-0.5 text-[10px] font-medium md:text-xs"
+										className="bg-amber-100 text-amber-800 rounded-full px-2 py-0.5 text-[8px] font-medium md:text-xs"
 									>
 										{tag}
 									</span>
