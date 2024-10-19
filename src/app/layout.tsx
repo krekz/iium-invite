@@ -6,6 +6,7 @@ import ReactQueryProvider from "@/lib/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster"
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider"
+import PasswordProtection from "@/components/temporary-auth/PasswordProtection";
 
 
 const poppins = Poppins({
@@ -34,12 +35,14 @@ export default function RootLayout({
 					disableTransitionOnChange
 				>
 					<Toaster />
-					<ReactQueryProvider>
-						<Navbar />
-						<TooltipProvider>
-							{children}
-						</TooltipProvider>
-					</ReactQueryProvider>
+					<PasswordProtection>
+						<ReactQueryProvider>
+							<Navbar />
+							<TooltipProvider>
+								{children}
+							</TooltipProvider>
+						</ReactQueryProvider>
+					</PasswordProtection>
 				</ThemeProvider>
 
 			</body>
