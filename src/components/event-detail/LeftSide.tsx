@@ -2,6 +2,7 @@
 import Markdown from "@/components/Markdown";
 import Image from "next/image";
 import DescriptionForm from "./DescriptionForm";
+import ImageCarousel from "./ImageCarousel";
 
 
 type LeftSideProps = {
@@ -14,23 +15,12 @@ type LeftSideProps = {
 function LeftSide({ event }: LeftSideProps) {
     return (
         <div className="flex flex-col w-full lg:w-[60%] break-words">
-            <div className='overflow-hidden aspect-[9/9] relative '>
-                {event.poster_url.map((url, index) => (
-                    <Image
-                        key={index}
-                        className='rounded-md object-cover'
-                        alt={event.title}
-                        src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${event.poster_url[0]}`}
-                        fill
-                    />
-                ))}
-            </div>
+            <ImageCarousel posters={event.poster_url} />
             <DescriptionForm event={event} />
-            <div className="py-5 md:py-10">
-                <Markdown>
-                    {event?.description || ""}
-                </Markdown>
-            </div>
+            <Markdown>
+                {event?.description || ""}
+            </Markdown>
+            <hr className="md:hidden my-8 border-t-1 border-gray-300" />
         </div>
     )
 }
