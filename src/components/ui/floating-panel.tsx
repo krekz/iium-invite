@@ -139,7 +139,7 @@ export function FloatingPanelTrigger({
       ref={triggerRef}
       layoutId={`floating-panel-trigger-${uniqueId}`}
       className={cn(
-        "flex h-9 items-center border border-zinc-950/10 bg-white px-3 text-zinc-950 dark:border-zinc-50/10 dark:bg-zinc-700 dark:text-zinc-50",
+        "flex h-9 items-center border bg-accent  px-2",
         className
       )}
       style={{ borderRadius: 8 }}
@@ -149,17 +149,17 @@ export function FloatingPanelTrigger({
       aria-haspopup="dialog"
       aria-expanded={false}
     >
-      <motion.div
+      {/* <motion.div
         layoutId={`floating-panel-label-container-${uniqueId}`}
-        className="flex items-center"
-      >
-        <motion.span
+        className="flex items-center w-full"
+      > */}
+      {/* <motion.span
           layoutId={`floating-panel-label-${uniqueId}`}
-          className="text-sm font-semibold"
-        >
-          {children}
-        </motion.span>
-      </motion.div>
+          className="text-sm font-semibold w-full"
+        > */}
+      {children}
+      {/* </motion.span> */}
+      {/* </motion.div> */}
     </motion.button>
   )
 }
