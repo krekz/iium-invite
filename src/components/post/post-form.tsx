@@ -14,10 +14,9 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
 import { fixedCategories } from "@/lib/constant";
 import Image from "next/image";
-import { X, Upload, Link, CalendarIcon, Loader2 } from "lucide-react";
+import { X, Upload, CalendarIcon, Loader2, Asterisk } from "lucide-react";
 import {
 	Select,
 	SelectContent,
@@ -34,8 +33,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CreatePost } from "@/actions/event";
-import { draftToMarkdown } from "markdown-draft-js";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { EventsProps } from "@/lib/types";
 import { useFiles } from "@/lib/hooks/useFiles";
 import { useCategories } from "@/lib/hooks/useCategories";
@@ -49,36 +47,21 @@ type EventFormProps = {
 function PostForm({ editablePost }: EventFormProps) {
 	const { toast } = useToast();
 	const router = useRouter()
-	const searchParams = useSearchParams();
-
-	if (searchParams.has('type', "create")) {
-		console.log("page for create post")
-	}
 
 	const form = useForm<z.infer<typeof postSchema>>({
 		resolver: zodResolver(postSchema),
-		defaultValues: editablePost ? {
-			title: editablePost.title,
-			description: editablePost.description,
-			location: editablePost.location,
-			organizer: editablePost.organizer,
-			fee: editablePost.fee || "0",
-			registration_link: editablePost.registration_link || "",
-			categories: editablePost.categories,
-			has_starpoints: editablePost.has_starpoints,
-			campus: editablePost.campus,
-			date: editablePost.date,
-		} : {
-			title: "",
-			description: "",
-			location: "",
-			organizer: "",
-			fee: "0",
-			registration_link: "",
-			categories: [],
-			has_starpoints: false,
-			campus: "",
-			date: new Date(),
+		defaultValues: {
+			title: editablePost?.title ?? "",
+			description: editablePost?.description ?? "",
+			location: editablePost?.location ?? "",
+			organizer: editablePost?.organizer ?? "",
+			fee: editablePost?.fee ?? "0",
+			registration_link: editablePost?.registration_link ?? "",
+			categories: editablePost?.categories ?? [],
+			has_starpoints: editablePost?.has_starpoints ?? false,
+			campus: editablePost?.campus ?? "",
+			date: editablePost?.date ?? new Date(new Date().setDate(new Date().getDate() + 1)), // set default date to tomorrow
+			contacts: editablePost?.contacts ?? [],
 		},
 	});
 
@@ -86,67 +69,65 @@ function PostForm({ editablePost }: EventFormProps) {
 	const { selectedCategories, addCategory, removeCategory } = useCategories(form.setValue);
 
 	const onSubmit = async (values: z.infer<typeof postSchema>) => {
-		// if (form.formState.isSubmitting) return;
 		const formData = new FormData();
 
-		Object.entries(values).forEach(([key, value]) => {
+		// Helper function to append form data
+		const appendFormData = (key: string, value: any) => {
 			if (Array.isArray(value)) {
-				value.forEach((item) => formData.append(key, item));
+				if (key === 'contacts') {
+					formData.append(key, JSON.stringify(value));
+				} else {
+					value.forEach((item) => formData.append(key, item as string));
+				}
 			} else if (value instanceof Date) {
 				formData.append(key, value.toISOString());
-			} else if (typeof value === 'boolean') {
-				formData.append(key, value.toString()); // Convert boolean to string
-			} else if (value !== null && value !== undefined) {
+			} else if (value != null) {
 				formData.append(key, String(value));
 			}
-		});
+		};
 
-		// Handle file uploads
-		selectedFiles.forEach((file, index) => {
-			formData.append(`poster_url[${index}]`, file);
-		});
+		// Append form values
+		Object.entries(values).forEach(([key, value]) => appendFormData(key, value));
+		// Append selected files
+		selectedFiles.forEach((file, index) => formData.append(`poster_url[${index}]`, file));
 
 		try {
 			const newPost = await CreatePost({ formData, userId: 123 });
-			if (!newPost) throw new Error("Failed to create post");
+			if (!newPost) {
+				throw new Error("Failed to create post");
+			}
+
 			toast({
 				title: "Event Created",
 				description: "Your event has been created successfully",
 				variant: "success"
-			})
+			});
+
 			router.push(`/events/${newPost.id}`);
 		} catch (error) {
 			console.error("Error in CreatePost:", error);
+
 			toast({
 				title: "Error",
 				description: "Failed to create event",
 				variant: "destructive"
-			})
+			});
 		}
 	};
-
-	useEffect(() => {
-		const subscription = form.watch((value, { name }) => {
-			if (name === 'description') {
-				console.log("Description changed:", value.description);
-			}
-		});
-		return () => subscription.unsubscribe();
-	}, [form.watch]);
 
 	return (
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="max-w-3xl mx-auto space-y-8 p-6 bg-white shadow-lg rounded-lg text-gray-800"
+				className="max-w-3xl mx-auto space-y-8 p-6 border rounded-lg "
 			>
 				<FormField
 					control={form.control}
 					name="title"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel className="text-lg font-semibold">
-								Event Title
+							<FormLabel className="text-lg font-semibold flex items-center">
+								Event Title <Asterisk className="h-4 w-4 text-red-500 ml-1" />
 							</FormLabel>
 							<FormControl>
 								<Input
@@ -164,8 +145,8 @@ function PostForm({ editablePost }: EventFormProps) {
 					name="description"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel className="text-lg font-semibold">
-								Description
+							<FormLabel className="text-lg font-semibold flex items-center">
+								Description <Asterisk className="h-4 w-4 text-red-500 ml-1" />
 							</FormLabel>
 							<FormControl>
 								<MinimalTiptapEditor
@@ -176,6 +157,7 @@ function PostForm({ editablePost }: EventFormProps) {
 									})}
 									editorContentClassName="some-class"
 									output="html"
+									immediatelyRender={false}
 									placeholder="Type your description here..."
 									autofocus={true}
 									editorClassName="focus:outline-none p-5"
@@ -192,25 +174,25 @@ function PostForm({ editablePost }: EventFormProps) {
 					name="poster_url"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel className="text-lg font-semibold">
-								Event Poster
+							<FormLabel className="text-lg font-semibold flex items-center">
+								Event Poster <Asterisk className="h-4 w-4 text-red-500 ml-1" />
 							</FormLabel>
 							<FormControl>
 								<div className="flex items-center justify-center w-full">
 									<label
 										htmlFor="dropzone-file"
-										className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-white"
+										className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-accent"
 									>
 										<div className="flex flex-col items-center justify-center pt-5 pb-6">
-											<Upload className="w-10 h-10 mb-3 text-gray-400" />
-											<p className="mb-2 text-sm text-gray-500">
+											<Upload className="w-10 h-10 mb-3" />
+											<p className="mb-2 text-sm">
 												<span className="font-semibold">Click to upload</span>{" "}
 												or drag and drop
 											</p>
-											<p className="text-xs text-gray-500">
+											<p className="text-xs">
 												(MAX. 3 files)
 											</p>
-											<p className="text-xs font-semibold text-yellow-800">Recommended 1080x1080 pixels or Instagram square size </p>
+											<p className="text-xs font-semibold text-yellow-600">Recommended 1080x1080 pixels or Instagram square size </p>
 										</div>
 										<Input
 											id="dropzone-file"
@@ -258,8 +240,8 @@ function PostForm({ editablePost }: EventFormProps) {
 						name="campus"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel className="text-lg font-semibold">
-									Campus
+								<FormLabel className="text-lg font-semibold flex items-center">
+									Campus <Asterisk className="h-4 w-4 text-red-500 ml-1" />
 								</FormLabel>
 								<Select
 									onValueChange={field.onChange}
@@ -286,9 +268,10 @@ function PostForm({ editablePost }: EventFormProps) {
 						name="date"
 						render={({ field }) => (
 							<FormItem className="flex flex-col">
-								<FormLabel className="text-lg font-semibold">
-									Date
-								</FormLabel>								<Popover>
+								<FormLabel className="text-lg font-semibold flex items-center">
+									Date <Asterisk className="h-4 w-4 text-red-500 ml-1" />
+								</FormLabel>
+								<Popover>
 									<PopoverTrigger asChild>
 										<FormControl>
 											<Button
@@ -313,8 +296,9 @@ function PostForm({ editablePost }: EventFormProps) {
 											selected={field.value}
 											onSelect={field.onChange}
 											disabled={(date) =>
-												date < new Date()
+												date <= new Date()
 											}
+											// defaultMonth={new Date(new Date().setDate(new Date().getDate() + 1))}
 											initialFocus
 										/>
 									</PopoverContent>
@@ -331,8 +315,8 @@ function PostForm({ editablePost }: EventFormProps) {
 						name="location"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel className="text-lg font-semibold">
-									Location
+								<FormLabel className="text-lg font-semibold flex items-center">
+									Location <Asterisk className="h-4 w-4 text-red-500 ml-1" />
 								</FormLabel>
 								<FormControl>
 									<Input
@@ -351,8 +335,8 @@ function PostForm({ editablePost }: EventFormProps) {
 						name="organizer"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel className="text-lg font-semibold">
-									Organizer
+								<FormLabel className="text-lg font-semibold flex items-center">
+									Organizer <Asterisk className="h-4 w-4 text-red-500 ml-1" />
 								</FormLabel>
 								<FormControl>
 									<Input
@@ -384,7 +368,7 @@ function PostForm({ editablePost }: EventFormProps) {
 										{...field}
 									/>
 								</FormControl>
-								<FormDescription className="text-sm text-gray-500">
+								<FormDescription>
 									Leave it as 0 if it's free.
 								</FormDescription>
 								<FormMessage />
@@ -411,10 +395,82 @@ function PostForm({ editablePost }: EventFormProps) {
 							</FormItem>
 						)}
 					/>
+					<FormField
+						control={form.control}
+						name="contacts"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel className="text-lg font-semibold flex items-center">
+									Contacts (Max 2) <Asterisk className="h-4 w-4 text-red-500 ml-1" />
+								</FormLabel>
+								<FormControl>
+									<div>
+										{field.value.map((contact, index) => (
+											<div key={index} className="flex space-x-2 mb-2 w-full">
+												<Input
+													placeholder="Name"
+													value={contact.name}
+													onChange={(e) => {
+														const newContacts = [...field.value];
+														newContacts[index].name = e.target.value;
+														field.onChange(newContacts);
+													}}
+													className="border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
+												/>
+												<Input
+													placeholder="Phone"
+													value={contact.phone}
+													onChange={(e) => {
+														const newContacts = [...field.value];
+														newContacts[index].phone = e.target.value;
+														field.onChange(newContacts);
+													}}
+													className="border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
+												/>
+												<Button
+													type="button"
+													onClick={() => {
+														const newContacts = field.value.filter((_, i) => i !== index);
+														field.onChange(newContacts);
+													}}
+													variant="destructive"
+												>
+													Remove
+												</Button>
+											</div>
+										))}
+										{field.value.length < 2 && (
+											<Button
+												type="button"
+												onClick={() => {
+													if (field.value.length < 2) {
+														field.onChange([...field.value, { name: '', phone: '' }]);
+													} else {
+														toast({
+															title: "Error",
+															description: "You can only add up to 2 contacts",
+															variant: "destructive"
+														});
+													}
+												}}
+												variant="outline"
+												className="mt-2 w-full bg-accent"
+											>
+												Add Contact
+											</Button>
+										)}
+									</div>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 				</div>
 
 				<div>
-					<h4 className="text-lg font-semibold mb-2">Categories</h4>
+					<h4 className="text-lg font-semibold mb-2 flex items-center">
+						Categories <Asterisk className="h-4 w-4 text-red-500 ml-1" />
+					</h4>
 					{selectedCategories.length === 0 && (
 						<div className="p-2 bg-blue-100 text-blue-800 rounded-lg mb-2">
 							No categories selected
@@ -429,20 +485,20 @@ function PostForm({ editablePost }: EventFormProps) {
 						{selectedCategories.map((cate, index) => (
 							<div
 								key={index}
-								className="rounded-full bg-indigo-100 text-indigo-800 px-3 py-1 text-sm cursor-pointer hover:bg-indigo-200 transition-colors"
+								className="rounded-full bg-secondary px-3 py-1 text-sm cursor-pointer transition-colors"
 								onClick={() => removeCategory(cate)}
 							>
 								{cate} <X size={14} className="inline ml-1" />
 							</div>
 						))}
 					</div>
-					<div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg">
+					<div className="flex flex-wrap gap-2 p-3 border border-foreground/40 rounded-lg">
 						{fixedCategories.map(
 							(cate, index) =>
 								!selectedCategories.includes(cate) && (
 									<div
 										key={index}
-										className="rounded-full bg-gray-200 text-gray-800 px-3 py-1 text-sm cursor-pointer hover:bg-gray-300 transition-colors"
+										className="rounded-full bg-accent px-3 py-1 text-sm cursor-pointer dark:hover:bg-black hover:bg-white transition-colors"
 										onClick={() => addCategory(cate)}
 									>
 										{cate}
@@ -458,7 +514,7 @@ function PostForm({ editablePost }: EventFormProps) {
 					render={({ field }) => (
 						<FormItem className="flex flex-col space-y-2">
 							<div className="flex items-center space-x-2">
-								<FormLabel className="text-sm font-medium text-gray-700">
+								<FormLabel className="text-sm font-medium">
 									Starpoints
 								</FormLabel>
 								<FormControl>
@@ -483,7 +539,7 @@ function PostForm({ editablePost }: EventFormProps) {
 
 
 				<Button
-					className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors"
+					className="w-full bg-primary text-white font-bold py-2 px-4 rounded transition-colors"
 					type="submit"
 					disabled={form.formState.isSubmitting}
 				>
