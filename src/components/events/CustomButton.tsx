@@ -11,7 +11,7 @@ const CustomButton = ({
     href
 }: {
     children: React.ReactNode;
-    variant?: "default" | "whatsapp";
+    variant: "default" | "whatsapp";
     icon?: React.ElementType;
     href: string;
 }) => {
