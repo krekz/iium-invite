@@ -1,10 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { descSchema, postSchema } from "@/lib/validations/post";
-import { toZonedTime } from 'date-fns-tz'
+import { descSchema, detailSchema, postSchema } from "@/lib/validations/post";
 import prisma from "@/lib/prisma";
-
 import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
 
@@ -21,27 +19,29 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 	if (!userId) throw new Error("You must be logged in to do that");
 
 	const values: FormDataValues = Object.fromEntries(formData.entries());
-	["poster_url", "categories"].forEach((key) => {
-		if (formData.getAll(key).length >= 1) {
-			values[key] = formData.getAll(key);
+	// Handle poster_url and categories separately as they're arrays
+	values.poster_url = formData.getAll("poster_url");
+	values.categories = formData.getAll("categories");
+
+	// Handle contacts separately as it's an array of objects
+	const contactsString = formData.get("contacts");
+	if (typeof contactsString === "string") {
+		try {
+			values.contacts = JSON.parse(contactsString);
+		} catch (error) {
+			console.error("Error parsing contacts:", error);
+			values.contacts = [];
 		}
-	})
+	} else {
+		values.contacts = [];
+	}
 
 	values.has_starpoints = values.has_starpoints === 'true'; // convert string to boolean
 
-
-	// Or you can use this instead of the above forEach
-	// values.poster_url = formData.getAll("poster_url");
-	// values.categories = formData.getAll("categories");
-
 	try {
 		const supabase = createClient();
-		const { title, campus, categories, date, description, fee, has_starpoints, location, organizer, poster_url, registration_link } = postSchema.parse(values)
-		const uploadedDate = new Date();
-		const malaysiaTime = toZonedTime(uploadedDate, 'Asia/Kuala_Lumpur');
-		// const formattedDate = format(malaysiaTime, 'dd-MMM_hh:mma', { timeZone: 'Asia/Kuala_Lumpur' });
+		const { title, campus, categories, date, description, fee, has_starpoints, location, organizer, poster_url, registration_link, contacts } = postSchema.parse(values)
 		const assignPostId = `post-${uuidv4()}`;
-
 
 		const uploadedFiles = await Promise.all(poster_url.map(async (file) => {
 			const filePath = `${assignPostId}/${uuidv4()}-${file.name}`;
@@ -69,6 +69,12 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 				organizer,
 				poster_url: posterUrls,
 				registration_link,
+				contacts: {
+					create: contacts.map((contact) => ({
+						name: contact.name,
+						phone: contact.phone,
+					})),
+				},
 				// TODO:  authorId: userId,
 			}
 		});
@@ -130,11 +136,23 @@ type TUpdateDetails = {
 export const updateDetailsPost = async ({ formData, userId, eventId }: TUpdateDetails): Promise<{ success: boolean, message: string }> => {
 
 	const values: FormDataValues = Object.fromEntries(formData.entries());
-	["categories"].forEach((key) => {
-		if (formData.getAll(key).length >= 1) {
-			values[key] = formData.getAll(key);
+	values.categories = formData.getAll("categories");
+	values.has_starpoints = values.has_starpoints === 'true'; // convert string to boolean
+
+	const contactsString = formData.get("contacts");
+	if (typeof contactsString === "string") {
+		try {
+			values.contacts = JSON.parse(contactsString);
+		} catch (error) {
+			console.error("Error parsing contacts:", error);
+			values.contacts = [];
 		}
-	})
+	} else {
+		values.contacts = [];
+	}
+
+	// Remove contacts from values as we'll handle it separately
+	const { contacts, ...rest } = detailSchema.parse(values)
 
 	try {
 		const updateEvent = await prisma.event.update({
@@ -142,9 +160,16 @@ export const updateDetailsPost = async ({ formData, userId, eventId }: TUpdateDe
 				id: eventId,
 			},
 			data: {
-				...values,
-			}
-		})
+				contacts: {
+					deleteMany: {},
+					create: contacts.map((contact) => ({
+						name: contact.name,
+						phone: contact.phone,
+					})),
+				},
+				...rest,
+			},
+		});
 
 		if (!updateEvent) throw new Error("Failed to update post");
 		revalidatePath("/discover");
@@ -191,4 +216,15 @@ export const updateDescription = async ({ formData, userId, eventId }: TUpdateDe
 			message: "Error updating description"
 		}
 	}
+}
+
+export const getEvents = async () => {
+	const events = await prisma.event.findMany({
+		take: 7,
+		select: {
+			id: true,
+			poster_url: true
+		}
+	})
+	return events;
 }

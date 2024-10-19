@@ -19,6 +19,7 @@ type RightSideProps = {
         fee: string | null;
         has_starpoints: boolean;
         categories: string[];
+        contacts: { name: string, phone: string }[];
     };
     params: {
         slug: string;
@@ -65,25 +66,22 @@ function RightSide({ event, params }: RightSideProps) {
 
                 <div className="space-y-1 mt-4">
                     {event.registration_link && <CustomButton
+                        variant="default"
                         href={event.registration_link}
                         icon={ExternalLink}
                     >
                         Register Now
                     </CustomButton>}
-                    <CustomButton
-                        href="https://wa.me/1234567890" // Replace with Ali's WhatsApp number
-                        variant="whatsapp"
-                        icon={MessageCircle}
-                    >
-                        WhatsApp Ali
-                    </CustomButton>
-                    <CustomButton
-                        href="https://wa.me/0987654321" // Replace with Izza's WhatsApp number
-                        variant="whatsapp"
-                        icon={MessageCircle}
-                    >
-                        WhatsApp Izza
-                    </CustomButton>
+                    {event.contacts.map((contact, index) => (
+                        <CustomButton
+                            href={`https://wa.me/+60${contact.phone}`}
+                            key={index}
+                            icon={MessageCircle}
+                            variant="whatsapp"
+                        >
+                            WhatsApp {contact.name}
+                        </CustomButton>
+                    ))}
                 </div>
 
                 {/* Editable content for author of this post */}

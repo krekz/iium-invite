@@ -14,4 +14,8 @@ export type EventsProps = {
     published: boolean;
     createdAt: Date;
     updatedAt: Date;
+    contacts: {
+        name: string;
+        phone: string;
+    }[];
 }

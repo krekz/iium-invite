@@ -9,8 +9,8 @@ datasource db {
 }
 
 model Event {
-  id                String   @id @unique
-  title             String   @db.VarChar(255)
+  id                String    @id @unique
+  title             String    @db.VarChar(255)
   description       String
   poster_url        String[]
   date              DateTime
@@ -21,11 +21,12 @@ model Event {
   registration_link String?
   categories        String[]
   has_starpoints    Boolean
-  published         Boolean  @default(false)
+  contacts          Contact[]
+  published         Boolean   @default(false)
   // author            User     @relation(fields: [authorId], references: [id])
   // authorId          Int
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model Profile {
@@ -41,4 +42,12 @@ model User {
   name    String?
   // posts   Event[]
   profile Profile?
+}
+
+model Contact {
+  id      Int    @id @default(autoincrement())
+  name    String
+  phone   String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
 }

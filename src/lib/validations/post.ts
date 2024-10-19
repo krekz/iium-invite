@@ -16,6 +16,19 @@ export const detailSchema = z.object({
 	),
 	fee: z.string().regex(/^\d+(\.\d{1,2})?$/),
 	categories: z.array(z.string()).min(1, "At least one category is required"),
+	contacts: z.array(
+		z.object({
+			name: z.string().min(1, "Name is required"),
+			phone: z.string().refine(
+				(phone) => /^\d+$/.test(phone),
+				{ message: "Phone must contain only numbers" }
+			)
+		})
+	)
+		.min(1, "At least one contact is required")
+		.max(2, "Maximum of two contacts allowed"),
+	registration_link: z.union([z.string().url(), z.literal('')]).optional(),
+	has_starpoints: z.boolean(),
 });
 
 export const postSchema =
@@ -44,8 +57,7 @@ export const postSchema =
 				message: "Invalid date",
 			}
 		),
-		registration_link: z.union([z.string().url(), z.literal('')]).optional(),
-		has_starpoints: z.boolean(),
+
 	})
 		.and(detailSchema)
 		.and(descSchema);
