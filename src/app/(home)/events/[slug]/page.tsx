@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import RightSide from "@/components/event-detail/RightSide";
 import LeftSide from "@/components/event-detail/LeftSide";
+import EventSuggestion from "@/components/EventSuggestion";
 
 async function EventDetails({ params }: { params: { slug: string } }) {
 	// TODO: Auth check for editable content for the author
@@ -26,6 +27,7 @@ async function EventDetails({ params }: { params: { slug: string } }) {
 			fee: true,
 			has_starpoints: true,
 			categories: true,
+			contacts: true,
 		},
 
 	})
@@ -35,15 +37,14 @@ async function EventDetails({ params }: { params: { slug: string } }) {
 	}
 
 	return (
-		<div className="max-w-screen-xl mx-auto px-4 py-8 text-white">
+		<div className="max-w-screen-xl mx-auto px-4 py-8">
 			<h1 className="text-3xl md:text-3xl lg:text-4xl font-bold">{event.title}</h1>
 			<p className="text-xs md:text-sm">Organized by: <span className="italic">{event.organizer}</span></p>
 			<div className="flex flex-col lg:flex-row gap-5 py-5">
-				{/* LEFT SIDE */}
 				<LeftSide event={event} />
-				{/* RIGHT SIDE */}
 				<RightSide event={event} params={params} />
 			</div>
+			<EventSuggestion />
 		</div>
 	);
 }
