@@ -13,7 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { descSchema } from "@/lib/validations/post";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PencilRuler } from "lucide-react"
+import { SquarePen } from "lucide-react"
 import { useParams } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -70,14 +70,17 @@ function DescriptionForm({ event }: { event: { description: string } }) {
 
 
     return (
-        <div>
+        <div className="py-2">
             <FloatingPanelRoot>
-                <FloatingPanelTrigger title="Edit Event Detail"><PencilRuler /></FloatingPanelTrigger>
-                <FloatingPanelContent className='w-full lg:w-[28rem] max-w-[90vw]'>
+                <FloatingPanelTrigger title="Edit Description" className="flex flex-row items-center justify-center gap-2">
+                    <span>Edit Description</span>
+                    <SquarePen size={16} />
+                </FloatingPanelTrigger>
+                <FloatingPanelContent className='w-full lg:w-[50rem] max-w-[90vw]'>
                     <FloatingPanelForm onSubmit={handleSubmit(onSubmit)}>
-                        <div className="space-y-3 px-2 text-black">
+                        <div className="space-y-3 px-2">
                             <div className="relative">
-                                <FloatingPanelLabel htmlFor="description" className="absolute -top-2 left-2 px-1 text-xs text-gray-600">
+                                <FloatingPanelLabel htmlFor="description">
                                     Description
                                 </FloatingPanelLabel>
                                 <Controller
@@ -95,8 +98,9 @@ function DescriptionForm({ event }: { event: { description: string } }) {
                                                 output="html"
                                                 placeholder="Type your description here..."
                                                 autofocus={true}
-                                                editorClassName="focus:outline-none p-5"
+                                                editorClassName="focus:outline-none p-5 text-sm lg:text-normal"
                                                 value={field.value}
+                                                immediatelyRender={false}
                                             />
                                             {errors.description && (
                                                 <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>
