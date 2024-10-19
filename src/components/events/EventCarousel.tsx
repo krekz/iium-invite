@@ -35,7 +35,7 @@ function EventCarousel({ events }: EventsProps) {
 					<CarouselItem
 						onClick={() => router.push(`/events/${event.id}`)}
 						key={index}
-						className="cursor-pointer hover:opacity-80 transition-all delay-100 md:basis-1/2 lg:basis-[23%]"
+						className="cursor-pointer hover:opacity-80 transition-all delay-100 basis-1/2 lg:basis-[23%]"
 					>
 						{/* <div className="">
                             <Card>
@@ -44,7 +44,7 @@ function EventCarousel({ events }: EventsProps) {
                                 </CardContent>
                             </Card>
                         </div> */}
-						<div className="w-full aspect-square border-2">
+						<div className="w-full aspect-square">
 							<Image
 								alt="ceramah"
 								width={500}
@@ -56,8 +56,10 @@ function EventCarousel({ events }: EventsProps) {
 					</CarouselItem>
 				))}
 			</CarouselContent>
-			<CarouselPrevious />
-			<CarouselNext />
+			<div className="flex justify-center mt-10 gap-0">
+					<CarouselPrevious className="relative mr-2" />
+					<CarouselNext className="relative ml-2" />
+				</div>
 		</Carousel>
 	);
 }
