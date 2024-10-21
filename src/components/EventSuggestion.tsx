@@ -47,14 +47,16 @@ function EventSuggestion() {
 
             <div className="grid grid-cols-2 gap-2 md:hidden py-3">
                 {Events?.slice(0, 6).map((event, index) => (
-                    <>
+                    <Link
+                        href={`/events/${event.id}`}
+                        key={index}>
                         <Image
                             alt={event.id}
                             width={500}
                             height={500}
                             className="rounded-md size-full"
                             src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${event.poster_url[0]}`} />
-                    </>
+                    </Link>
                 ))}
             </div>
         </>
