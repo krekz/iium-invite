@@ -78,7 +78,8 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 				// TODO:  authorId: userId,
 			}
 		});
-
+		revalidatePath("/discover");
+		revalidatePath("/")
 		return {
 			success: true,
 			message: "Post created successfully",
@@ -173,6 +174,7 @@ export const updateDetailsPost = async ({ formData, userId, eventId }: TUpdateDe
 
 		if (!updateEvent) throw new Error("Failed to update post");
 		revalidatePath("/discover");
+		revalidatePath("/")
 		revalidatePath(`/events/${eventId}`);
 		return {
 			success: true,
@@ -205,6 +207,9 @@ export const updateDescription = async ({ formData, userId, eventId }: TUpdateDe
 			}
 		})
 		revalidatePath(`/events/${eventId}`);
+		revalidatePath("/discover")
+		revalidatePath("/")
+
 		return {
 			success: true,
 			message: "Description updated!"
