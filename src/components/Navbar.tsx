@@ -19,7 +19,7 @@ export default () => {
 	}, []);
 
 	return (
-		<nav className="bg-background brightness-125">
+		<nav className="bg-background">
 			<div className="max-w-screen-xl mx-auto px-4">
 				<div className="flex justify-between items-center h-24">
 					<div className="flex items-center">
