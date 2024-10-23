@@ -33,22 +33,21 @@ const ImageCarousel = ({ posters }: { posters: string[] }) => {
                                 src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${poster_url}`}
                                 alt="poster"
                                 fill
-                                className="object-cover"
+                                className="rounded-md"
                             />
                         </div>
                     </SliderMainItem>
                 ))}
             </CarouselMainContainer>
-            <CarouselThumbsContainer className="mt-4 h-20">
+            <CarouselThumbsContainer className="h-full">
                 {posters.map((poster_url, index) => (
-                    <SliderThumbItem key={index} index={index} className="cursor-pointer hover:opacity-50 transition-all duration-500 bg-transparent w-full h-full">
-                        <div className="relative w-full h-full">
+                    <SliderThumbItem key={index} index={index} className="cursor-pointer hover:opacity-50 transition-all duration-500 bg-transparent ">
+                        <div className="relative aspect-square">
                             <Image
                                 src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${poster_url}`}
                                 alt="poster"
                                 fill
-                                className="object-cover overflow-visible"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="rounded-md"
                             />
                         </div>
                     </SliderThumbItem>

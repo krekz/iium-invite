@@ -16,6 +16,7 @@ export type EventsProps = {
 		title: string;
 		date: Date;
 		poster_url: string[];
+		location: string;
 	}[];
 }
 
@@ -28,38 +29,36 @@ function EventCarousel({ events }: EventsProps) {
 			opts={{
 				align: "start",
 			}}
-			className="w-full py-3"
+			className="w-full pt-2"
 		>
 			<CarouselContent>
 				{shuffledEvents.map((event, index) => (
 					<CarouselItem
 						onClick={() => router.push(`/events/${event.id}`)}
 						key={index}
-						className="cursor-pointer hover:opacity-80 transition-all delay-100 basis-1/2 lg:basis-[23%]"
+						className="cursor-pointer hover:opacity-80 transition-all delay-100 basis-10/12 lg:basis-[23%]"
 					>
-						{/* <div className="">
-                            <Card>
-                                <CardContent className="flex aspect-square items-center justify-center p-6">
-                                    <span className="text-3xl font-semibold">{index + 1}</span>
-                                </CardContent>
-                            </Card>
-                        </div> */}
 						<div className="w-full aspect-square">
 							<Image
 								alt="ceramah"
-								width={500}
-								height={500}
-								className="object-cover rounded-lg w-full h-full"
+								width={200}
+								height={200}
+								className="rounded-lg w-full h-full"
 								src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${event.poster_url[0]}`}
 							/>
+						</div>
+						<h3 className="text-lg font-bold">{event.title}</h3>
+						<div className="flex justify-between">
+							<p>📍 {event.location}</p>
+							<p className="text-xs text-gray-500">
+								{new Date(event.date).toLocaleDateString()}
+							</p>
 						</div>
 					</CarouselItem>
 				))}
 			</CarouselContent>
-			<div className="flex justify-center mt-10 gap-0">
-					<CarouselPrevious className="relative mr-2" />
-					<CarouselNext className="relative ml-2" />
-				</div>
+			<CarouselPrevious />
+			<CarouselNext />
 		</Carousel>
 	);
 }

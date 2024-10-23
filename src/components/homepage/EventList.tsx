@@ -30,7 +30,7 @@ function EventList({ events }: EventsProps) {
 					>
 						<div className="w-full relative rounded-md overflow-hidden aspect-square">
 							<Image
-								className="object-cover transition-transform duration-1000 hover:scale-105"
+								className="transition-transform duration-1000 hover:scale-105"
 								alt={`${event.title}`}
 								src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${event.poster_url[0]}`}
 								fill
@@ -61,7 +61,7 @@ function EventList({ events }: EventsProps) {
 								<p className="text-xs md:text-sm">🫂 {event.organizer}</p>
 								<p className="text-[11px] md:text-sm italic">🗓️ {format(new Date(event.date).toLocaleDateString(), "dd/M/yy")}</p>
 							</div>
-							<div className="flex flex-wrap gap-1 mt-2">
+							{/* <div className="flex flex-wrap gap-1 mt-2">
 								{event.categories.map((tag, t_index) => (
 									<span
 										key={t_index}
@@ -70,7 +70,7 @@ function EventList({ events }: EventsProps) {
 										{tag}
 									</span>
 								))}
-							</div>
+							</div> */}
 
 						</div>
 					</Link>
