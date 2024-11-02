@@ -2,20 +2,37 @@
 import Link from 'next/link';
 import { Carousel, CarouselMainContainer, CarouselThumbsContainer, SliderMainItem, SliderThumbItem } from './ui/carousel-v2'
 import Image from 'next/image'
+import { useEffect, useState } from 'react';
 
 function VerticalCarousel({ events }: { events: { id: string, title: string, poster_url: string[] }[] }) {
+    const [orientation, setOrientation] = useState<"vertical" | "horizontal">("vertical");
+
+    useEffect(() => {
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const handleResize = () => {
+        if (window.innerWidth < 768) {
+            setOrientation("horizontal");
+        } else {
+            setOrientation("vertical");
+        }
+    };
+
     return (
         <Carousel
-            orientation="vertical"
-            className="flex items-center gap-0">
-            <div className="relative basis-3/4">
+            orientation={orientation}
+            className={`flex ${orientation === "vertical" ? "items-center" : "flex-col"} gap-0`}>
+            <div className={`${orientation === "vertical" ? "basis-3/4" : "w-full"} relative`}>
                 <CarouselMainContainer className="h-72 lg:h-[50rem]">
                     {events.map((event, index) => (
                         <SliderMainItem
                             key={index}
                             className="flex items-center justify-center h-full w-full overflow-hidden"
                         >
-                            <Link href={`/events/${event.id}`} className="relative w-full h-full group ">
+                            <Link href={`/events/${event.id}`} className="relative w-full h-full group">
                                 <Image
                                     src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${event.poster_url[0]}`}
                                     alt={event.title}
@@ -26,12 +43,16 @@ function VerticalCarousel({ events }: { events: { id: string, title: string, pos
                                     <span className="text-white text-lg font-semibold">See More</span>
                                 </div>
                             </Link>
-                            {/* </Link> */}
                         </SliderMainItem>
                     ))}
                 </CarouselMainContainer>
             </div>
-            <CarouselThumbsContainer className="h-72 basis-1/4 lg:w-96 lg:h-[50rem]">
+            <CarouselThumbsContainer
+                className={`${orientation === "vertical"
+                    ? "h-72 basis-1/4 lg:w-96 lg:h-[50rem]"
+                    : "w-full h-24 md:h-32"
+                    }`}
+            >
                 {events.map((event, index) => (
                     <SliderThumbItem
                         key={index}
