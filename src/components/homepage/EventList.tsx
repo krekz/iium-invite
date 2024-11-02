@@ -19,7 +19,7 @@ type EventsProps = {
 
 function EventList({ events }: EventsProps) {
 	return (
-		<div className="lg:container">
+		<div className="w-full md:container">
 			<div className="p-3 max-w-7xl gap-y-2 gap-x-1 mx-auto md:py-8 md:pt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 text-amber-900">
 				{events.map((event, e_index) => (
 					<Link
