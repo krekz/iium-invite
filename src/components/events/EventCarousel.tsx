@@ -36,7 +36,7 @@ function EventCarousel({ events }: EventsProps) {
 					<CarouselItem
 						onClick={() => router.push(`/events/${event.id}`)}
 						key={index}
-						className="cursor-pointer hover:opacity-80 transition-all delay-100 basis-10/12 lg:basis-[23%]"
+						className="cursor-pointer hover:opacity-80 transition-all delay-100 basis-7/12 lg:basis-[23%]"
 					>
 						<div className="w-full aspect-square">
 							<Image
@@ -47,10 +47,10 @@ function EventCarousel({ events }: EventsProps) {
 								src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${event.poster_url[0]}`}
 							/>
 						</div>
-						<h3 className="text-lg font-bold">{event.title}</h3>
-						<div className="flex justify-between">
+						<h3 className="text-md font-bold">{event.title}</h3>
+						<div className="text-xs flex justify-between">
 							<p>📍 {event.location}</p>
-							<p className="text-xs text-gray-500">
+							<p className="text-gray-500">
 								{new Date(event.date).toLocaleDateString()}
 							</p>
 						</div>
