@@ -6,10 +6,11 @@ import RightSide from "@/components/event-detail/RightSide";
 import LeftSide from "@/components/event-detail/LeftSide";
 import EventSuggestion from "@/components/EventSuggestion";
 
-async function EventDetails({ params }: { params: { slug: string } }) {
-	// TODO: Auth check for editable content for the author
+async function EventDetails(props: { params: Promise<{ slug: string }> }) {
+    const params = await props.params;
+    // TODO: Auth check for editable content for the author
 
-	const event = await prisma.event.findUnique({
+    const event = await prisma.event.findUnique({
 		where: {
 			id: params.slug,
 
@@ -32,11 +33,11 @@ async function EventDetails({ params }: { params: { slug: string } }) {
 
 	})
 
-	if (!event) {
+    if (!event) {
 		return notFound();
 	}
 
-	return (
+    return (
 		<div className="max-w-screen-xl mx-auto px-4 py-8">
 			<h1 className="text-3xl md:text-3xl lg:text-4xl font-bold">{event.title}</h1>
 			<p className="text-xs md:text-sm">Organized by: <span className="italic">{event.organizer}</span></p>
