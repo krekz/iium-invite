@@ -1,21 +1,21 @@
 "use client"
 import Markdown from "@/components/Markdown";
-import Image from "next/image";
 import DescriptionForm from "./DescriptionForm";
 import ImageCarousel from "./ImageCarousel";
+import PostInfo from "./PostInfo";
+import { useParams } from "next/navigation";
+import { PostPageProps } from "@/lib/types";
 
 
 type LeftSideProps = {
-    event: {
-        title: string;
-        description: string;
-        poster_url: string[];
-    };
+    event: PostPageProps
 };
 function LeftSide({ event }: LeftSideProps) {
+    const { slug } = useParams();
     return (
         <div className="flex flex-col w-full lg:w-[60%] break-words">
             <ImageCarousel posters={event.poster_url} />
+            <PostInfo params={{ slug: slug as string }} device="mobile" event={event} />
             <DescriptionForm event={event} />
             <Markdown>
                 {event?.description || ""}

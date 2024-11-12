@@ -4,30 +4,19 @@ import EventDetailItem from "@/components/events/EventDetailItem";
 import { format } from "date-fns";
 import { ExternalLink, MessageCircle, } from "lucide-react";
 import EventDetailForm from "./EventDetailForm";
+import { cn } from "@/lib/utils";
+import { PostPageProps } from "@/lib/types";
 
 type RightSideProps = {
-    event: {
-        title: string;
-        description: string;
-        poster_url: string[];
-        campus: string;
-        organizer: string;
-        date: Date;
-        location: string;
-        createdAt: Date;
-        registration_link: string | null;
-        fee: string | null;
-        has_starpoints: boolean;
-        categories: string[];
-        contacts: { name: string, phone: string }[];
-    };
+    event: PostPageProps
     params: {
         slug: string;
     };
+    device: "mobile" | "desktop";
 }
 
 
-function RightSide({ event, params }: RightSideProps) {
+function PostInfo({ event, params, device }: RightSideProps) {
     const eventDetails = [
         { label: "Event Date", value: format(new Date(event.date).toLocaleDateString(), "dd/M/yy") },
         { label: "Location", value: event.location },
@@ -35,7 +24,9 @@ function RightSide({ event, params }: RightSideProps) {
         { label: "Campus", value: event.campus },
     ];
     return (
-        <div className="w-full lg:w-[35%] lg:sticky lg:top-10 lg:self-start">
+        <div className={cn("w-full lg:w-[35%] lg:sticky lg:top-10 lg:self-start py-3",
+            device === "mobile" ? "lg:hidden" : "hidden lg:block"
+        )}>
             <div className="flex flex-col gap-2 w-full">
 
                 {/* Edit form */}
@@ -93,4 +84,4 @@ function RightSide({ event, params }: RightSideProps) {
     )
 }
 
-export default RightSide
+export default PostInfo
