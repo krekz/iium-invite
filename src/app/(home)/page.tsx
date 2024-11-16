@@ -117,7 +117,7 @@ async function Home() {
 						href={`/events/${event.id}`}
 						key={event.id}
 						className="flex flex-col rounded-xl hover:opacity-50 duration-300 overflow-hidden cursor-pointer backdrop-blur-sm">
-						<div className="relative aspect-square">
+						<div className="relative aspect-square max-h-96">
 							<Image
 								key={event.id}
 								alt={event.title}
