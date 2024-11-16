@@ -5,6 +5,7 @@ import { ModeToggle } from "./theme-switch";
 import { Button } from "./ui/button";
 import { SignIn, SignOut } from "@/actions/login-signout";
 import { LogOut } from "lucide-react";
+import Image from "next/image";
 
 export default ({ session }: { session: { user: string | undefined | null } }) => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,14 +18,14 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 		const buttonClass = isMobile ? "w-full justify-center" : "";
 
 		return !session.user ? (
-			<Button 
-				onClick={async () => await SignIn()} 
+			<Button
+				onClick={async () => await SignIn()}
 				className={buttonClass}
 			>
 				Sign in
 			</Button>
 		) : (
-			<button 
+			<button
 				onClick={async () => await SignOut({ redirectTo: "/" })}
 				className={`rounded-full size-12 bg-transparent ${buttonClass}`}
 			>
@@ -62,9 +63,7 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 				<div className="flex justify-between items-center h-24">
 					<div className="flex items-center">
 						<Link href="/" className="flex items-center mr-6">
-							<span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 animate-shimmer">
-								EVENTURE
-							</span>
+							<Image alt="logo" src="/eventure-logo.png" width={100} height={100} />
 						</Link>
 						<div className="hidden sm:flex sm:items-center space-x-4">
 							<NavigationLinks />
