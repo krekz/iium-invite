@@ -15,7 +15,7 @@ export type EventsProps = {
 		id: string;
 		title: string;
 		date: Date;
-		poster_url: string[];
+		poster_url: string[] | string;
 		location: string;
 	}[];
 }
@@ -57,8 +57,8 @@ function EventCarousel({ events }: EventsProps) {
 					</CarouselItem>
 				))}
 			</CarouselContent>
-			<CarouselPrevious />
-			<CarouselNext />
+			<CarouselPrevious className="hidden lg:flex" />
+			<CarouselNext className="hidden lg:flex" />
 		</Carousel>
 	);
 }
