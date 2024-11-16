@@ -1,9 +1,10 @@
 import EventCarousel from "@/components/events/EventCarousel";
 import prisma from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import VerticalCarousel from "@/components/VerticalCarousel";
 import { ChevronRight } from "lucide-react";
+import Hero from "@/components/homepage/Hero";
+import FeaturedEvent from "@/components/homepage/FeaturedEvent";
 
 async function Home() {
 	const events = await prisma.event.findMany({
@@ -18,7 +19,9 @@ async function Home() {
 	})
 	return (
 		<main className="max-w-7xl mx-auto py-10 px-3">
-			<VerticalCarousel events={events} />
+			<Hero />
+			<FeaturedEvent />
+			{/* <VerticalCarousel events={events} /> */}
 			<div className="flex flex-col max-w-7xl mx-auto py-7 px-3">
 				<div className="flex justify-between">
 					<Link href={"/discover"} className="flex items-center gap-2">

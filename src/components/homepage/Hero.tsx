@@ -1,37 +1,59 @@
-"use client";
-import Link from "next/link";
 import { Input } from "../ui/input";
-
+import { Button } from "../ui/button";
+import { GraduationCap } from "lucide-react";
 export default () => {
 	return (
-		<section className="overflow-hidden h-72 flex flex-col items-center py-5 px-4 bg-background  md:px-8">
-			{/* <div className="w-full h-full rounded-full bg-gradient-to-r from-[#58AEF1] to-pink-500 absolute -top-12 -right-14 blur-2xl opacity-10"></div> */}
-			<div className="max-w-3xl mx-auto text-center">
-				<div className="py-4">
-					<h3 className="text-4xl font-extrabold md:text-7xl">
-						Unlock a World of Campus Events
-					</h3>
-					<p className="leading-relaxed text-lg font-extralight mt-3">
-						Join an inspiring workshop, or organize your next big event, we’ve
-						got you covered.
-					</p>
+		<>
+			<div className="flex flex-col items-center text-center mb-16">
+				<GraduationCap className="h-16 w-16 text-primary mb-6" />
+				<h1 className="text-4xl md:text-6xl font-bold mb-4">
+					Campus Events Hub
+				</h1>
+				<p className="text-sm lg:text-xl text-muted-foreground max-w-2xl mb-8">
+					Discover and participate in exciting university events. From academic symposiums to cultural festivals,
+					find everything happening on campus in one place.
+				</p>
+				<div className="w-full max-w-2xl space-y-4">
+					<div className="relative">
+						<Input
+							placeholder="Search events..."
+							className="pl-10 h-12 text-lg"
+						/>
+						<svg
+							className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+							/>
+						</svg>
+					</div>
+					<div className="flex flex-wrap justify-center gap-2">
+						<Button variant="outline" size="sm" className="rounded-full">
+							Theatre & Arts
+						</Button>
+						<Button variant="outline" size="sm" className="rounded-full">
+							Mental Health
+						</Button>
+						<Button variant="outline" size="sm" className="rounded-full">
+							Career Fair
+						</Button>
+						<Button variant="outline" size="sm" className="rounded-full">
+							Sports
+						</Button>
+						<Button variant="outline" size="sm" className="rounded-full">
+							Workshops
+						</Button>
+					</div>
 				</div>
-				{/* <div className="bg-amber-50 rounded-md p-3 absolute w-1/2 z-20 left-1/2 -translate-x-1/2"> */}
-				<Input
-					type="text"
-					className="p-2 w-1/2 mx-auto rounded-lg ring-1 ring-black "
-					placeholder="Type to search..."
-				/>
-				{/* </div> */}
-				{/* <div className="mt-5 items-center justify-center gap-3 sm:flex">
-          <Link
-            href="/events"
-            className="block w-full mt-2 py-2.5 px-8 text-gray-700 bg-white rounded-md duration-150 hover:bg-white sm:w-auto"
-          >
-            Browse Events
-          </Link>
-        </div> */}
 			</div>
-		</section>
+		</>
+
 	);
 };

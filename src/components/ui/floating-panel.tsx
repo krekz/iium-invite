@@ -144,8 +144,8 @@ export function FloatingPanelTrigger({
       )}
       style={{ borderRadius: 8 }}
       onClick={handleClick}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      // whileHover={{ scale: 1.05 }}
+      // whileTap={{ scale: 0.95 }}
       aria-haspopup="dialog"
       aria-expanded={false}
     >

@@ -16,7 +16,7 @@ async function Events() {
 		}
 	})
 	return (
-		<div className="flex flex-row-reverse">
+		<div className="flex flex-row-reverse min-h-dvh">
 			{/* <div className="flex justify-center text-3xl font-bold p-3">Events</div> */}
 			<EventList events={events} />
 			{/* <aside>
