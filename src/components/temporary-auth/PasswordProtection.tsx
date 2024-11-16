@@ -1,5 +1,5 @@
 "use client"
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/lib/hooks/use-toast';
 import React, { useState, useEffect } from 'react';
 
 const CORRECT_PASSWORD = process.env.NEXT_PUBLIC_CORRECT_PASSWORD!;

@@ -10,7 +10,7 @@ import {
     FloatingPanelSubmitButton,
     FloatingPanelTrigger,
 } from "@/components/ui/floating-panel"
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/lib/hooks/use-toast";
 import { descSchema } from "@/lib/validations/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SquarePen } from "lucide-react"
@@ -46,7 +46,6 @@ function DescriptionForm({ event }: { event: { description: string } }) {
         try {
             const result = await updateDescription({
                 formData,
-                userId: "123",
                 eventId: params.slug
             });
 
