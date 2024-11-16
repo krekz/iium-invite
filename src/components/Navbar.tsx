@@ -17,13 +17,19 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 		const buttonClass = isMobile ? "w-full justify-center" : "";
 
 		return !session.user ? (
-			<form action={async () => await SignIn()}>
-				<Button className={buttonClass}>Sign in</Button>
-			</form>
+			<Button 
+				onClick={async () => await SignIn()} 
+				className={buttonClass}
+			>
+				Sign in
+			</Button>
 		) : (
-			<form action={async () => await SignOut({ redirectTo: "/" })}>
-				<button className={`rounded-full size-12 bg-transparent ${buttonClass}`}><LogOut /></button>
-			</form>
+			<button 
+				onClick={async () => await SignOut({ redirectTo: "/" })}
+				className={`rounded-full size-12 bg-transparent ${buttonClass}`}
+			>
+				<LogOut />
+			</button>
 		);
 	};
 
