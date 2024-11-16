@@ -31,14 +31,16 @@ import {
 } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { add, format } from "date-fns";
 import { CreatePost } from "@/actions/event";
 import { useRouter } from "next/navigation";
 import { EventsProps } from "@/lib/types";
 import { useFiles } from "@/lib/hooks/useFiles";
 import { useCategories } from "@/lib/hooks/useCategories";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/lib/hooks/use-toast";
 import { MinimalTiptapEditor } from "../minimal-tiptap";
+import { useEffect } from "react";
+import CategoryComboBox from "./CategoryComboBox";
 
 type EventFormProps = {
 	editablePost?: EventsProps
@@ -68,6 +70,16 @@ function PostForm({ editablePost }: EventFormProps) {
 	const { selectedFiles, handleFileChange, removeFile } = useFiles(form.setValue);
 	const { selectedCategories, addCategory, removeCategory } = useCategories(form.setValue);
 
+	useEffect(() => {
+		if (form.formState.isSubmitted && Object.keys(form.formState.errors).length > 0) {
+			toast({
+				title: "Input Error",
+				description: "Please check all required fields",
+				variant: "destructive"
+			});
+		}
+	}, [form.formState.isSubmitted, form.formState.errors]);
+
 	const onSubmit = async (values: z.infer<typeof postSchema>) => {
 		const formData = new FormData();
 
@@ -92,7 +104,7 @@ function PostForm({ editablePost }: EventFormProps) {
 		selectedFiles.forEach((file, index) => formData.append(`poster_url[${index}]`, file));
 
 		try {
-			const newPost = await CreatePost({ formData, userId: 123 });
+			const newPost = await CreatePost({ formData });
 			if (!newPost) {
 				throw new Error("Failed to create post");
 			}
@@ -103,13 +115,13 @@ function PostForm({ editablePost }: EventFormProps) {
 				variant: "success"
 			});
 
-			router.push(`/events/${newPost.id}`);
+			router.push(`/events/${newPost.eventId}`);
 		} catch (error) {
 			console.error("Error in CreatePost:", error);
 
 			toast({
 				title: "Error",
-				description: "Failed to create event",
+				description: "File size cannot exceed 1MB in total",
 				variant: "destructive"
 			});
 		}
@@ -492,20 +504,11 @@ function PostForm({ editablePost }: EventFormProps) {
 							</div>
 						))}
 					</div>
-					<div className="flex flex-wrap gap-2 p-3 border border-foreground/40 rounded-lg">
-						{fixedCategories.map(
-							(cate, index) =>
-								!selectedCategories.includes(cate) && (
-									<div
-										key={index}
-										className="rounded-full bg-accent px-3 py-1 text-sm cursor-pointer dark:hover:bg-black hover:bg-white transition-colors"
-										onClick={() => addCategory(cate)}
-									>
-										{cate}
-									</div>
-								),
-						)}
-					</div>
+					<CategoryComboBox
+						categories={fixedCategories}
+						selectedCategories={selectedCategories}
+						addCategory={addCategory}
+						removeCategory={removeCategory} />
 				</div>
 
 				<FormField

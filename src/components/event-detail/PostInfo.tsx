@@ -1,3 +1,4 @@
+"use client"
 import DeletePostButton from "@/components/DeletePostButton";
 import CustomButton from "@/components/events/CustomButton";
 import EventDetailItem from "@/components/events/EventDetailItem";
@@ -5,18 +6,14 @@ import { format } from "date-fns";
 import { ExternalLink, MessageCircle, } from "lucide-react";
 import EventDetailForm from "./EventDetailForm";
 import { cn } from "@/lib/utils";
-import { PostPageProps } from "@/lib/types";
-
-type RightSideProps = {
-    event: PostPageProps
-    params: {
-        slug: string;
-    };
-    device: "mobile" | "desktop";
-}
+import { useEvent } from "@/lib/context/EventContextProvider";
+import { useParams } from "next/navigation";
 
 
-function PostInfo({ event, params, device }: RightSideProps) {
+function PostInfo({ device }: { device: "mobile" | "desktop" }) {
+    const params = useParams() as { slug: string };
+    if (!params) throw new Error("Slug is required");
+    const { event, isAuthor } = useEvent();
     const eventDetails = [
         { label: "Event Date", value: format(new Date(event.date).toLocaleDateString(), "dd/M/yy") },
         { label: "Location", value: event.location },
@@ -30,7 +27,11 @@ function PostInfo({ event, params, device }: RightSideProps) {
             <div className="flex flex-col gap-2 w-full">
 
                 {/* Edit form */}
-                <EventDetailForm params={params} event={event} />
+                {isAuthor &&
+                    <div className="flex justify-between w-full">
+                        <EventDetailForm />
+                        <DeletePostButton eventId={params.slug} />
+                    </div>}
 
                 {event.categories.some(cat => ["Recruitment", "Committee"].includes(cat)) && <p className="text-xs bg-indigo-500 text-white font-extrabold rounded-full p-1 text-center">Open for Recruitment</p>}
                 {event.has_starpoints && <p className="italic font-bold text-yellow-300">⭐️ Starpoints provided ⭐️ </p>}
@@ -73,11 +74,6 @@ function PostInfo({ event, params, device }: RightSideProps) {
                             WhatsApp {contact.name}
                         </CustomButton>
                     ))}
-                </div>
-
-                {/* Editable content for author of this post */}
-                <div className="flex w-full">
-                    <DeletePostButton eventId={params.slug} userId={123} />
                 </div>
             </div>
         </div>

@@ -4,19 +4,16 @@ import DescriptionForm from "./DescriptionForm";
 import ImageCarousel from "./ImageCarousel";
 import PostInfo from "./PostInfo";
 import { useParams } from "next/navigation";
-import { PostPageProps } from "@/lib/types";
+import { useEvent } from "@/lib/context/EventContextProvider";
 
 
-type LeftSideProps = {
-    event: PostPageProps
-};
-function LeftSide({ event }: LeftSideProps) {
-    const { slug } = useParams();
+function LeftSide() {
+    const { event, isAuthor } = useEvent()
     return (
         <div className="flex flex-col w-full lg:w-[60%] break-words">
             <ImageCarousel posters={event.poster_url} />
-            <PostInfo params={{ slug: slug as string }} device="mobile" event={event} />
-            <DescriptionForm event={event} />
+            <PostInfo device="mobile" />
+            {isAuthor && <DescriptionForm event={event} />}
             <Markdown>
                 {event?.description || ""}
             </Markdown>

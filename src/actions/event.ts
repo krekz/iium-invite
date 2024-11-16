@@ -5,40 +5,52 @@ import { descSchema, detailSchema, postSchema } from "@/lib/validations/post";
 import prisma from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 
 type Input = {
 	formData: FormData;
-	userId: number;
 };
+
+type TUpdateDescription = {
+	formData: FormData,
+	eventId: string
+}
+
+type TUpdateDetails = {
+	formData: FormData,
+	eventId: string,
+}
 
 type FormDataValues = Record<string, FormDataEntryValue | FormDataEntryValue[] | boolean>;
 
+export const CreatePost = async (input: Input): Promise<{ success: boolean; message: string; eventId: string }> => {
+	try {
+		const { formData } = input;
+		const session = await auth();
+		if (!session) {
+			throw new Error("You must be logged in to do that");
+		}
 
-export const CreatePost = async (input: Input): Promise<{ success: boolean; message: string; id: string }> => {
-	const { formData, userId } = input;
-	if (!userId) throw new Error("You must be logged in to do that");
+		const values: FormDataValues = Object.fromEntries(formData.entries());
+		// handle poster_url and categories separately as they're arrays
+		values.poster_url = formData.getAll("poster_url");
+		values.categories = formData.getAll("categories");
 
-	const values: FormDataValues = Object.fromEntries(formData.entries());
-	// Handle poster_url and categories separately as they're arrays
-	values.poster_url = formData.getAll("poster_url");
-	values.categories = formData.getAll("categories");
-
-	// Handle contacts separately as it's an array of objects
-	const contactsString = formData.get("contacts");
-	if (typeof contactsString === "string") {
-		try {
-			values.contacts = JSON.parse(contactsString);
-		} catch (error) {
-			console.error("Error parsing contacts:", error);
+		// handle contacts separately as it's an array of objects
+		const contactsString = formData.get("contacts");
+		if (typeof contactsString === "string") {
+			try {
+				values.contacts = JSON.parse(contactsString);
+			} catch (error) {
+				console.error("Error parsing contacts:", error);
+				values.contacts = [];
+			}
+		} else {
 			values.contacts = [];
 		}
-	} else {
-		values.contacts = [];
-	}
 
-	values.has_starpoints = values.has_starpoints === 'true'; // convert string to boolean
+		values.has_starpoints = values.has_starpoints === 'true'; // convert string to boolean
 
-	try {
 		const supabase = createClient();
 		const { title, campus, categories, date, description, fee, has_starpoints, location, organizer, poster_url, registration_link, contacts } = postSchema.parse(values)
 		const assignPostId = `post-${uuidv4()}`;
@@ -58,6 +70,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 		const newEvent = await prisma.event.create({
 			data: {
 				id: assignPostId,
+				authorId: session!.user!.id,
 				title,
 				campus,
 				categories,
@@ -75,7 +88,6 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 						phone: contact.phone,
 					})),
 				},
-				// TODO:  authorId: userId,
 			}
 		});
 		revalidatePath("/discover");
@@ -83,24 +95,29 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 		return {
 			success: true,
 			message: "Post created successfully",
-			id: newEvent.id
+			eventId: newEvent.id
 		};
 	} catch (error) {
 		console.log(error);
-		return { success: false, message: "Failed to create post", id: "" };
+		return { success: false, message: "Failed to create post", eventId: "" };
 	}
 
 };
 
-type TDelete = {
-	eventId: string,
-	userId: number,
-}
-
-export const deletePost = async ({ eventId, userId = 123 }: TDelete): Promise<{ success: boolean }> => {
-	// NOTE: delete actions need to re-modify since it doesnt have authorize check
+export const deletePost = async ({ eventId }: { eventId: string }): Promise<{ success: boolean }> => {
 	try {
-		if (!userId) throw new Error("You must be logged in to do that");
+		const session = await auth();
+		if (!session) throw new Error("You must be logged in to do that");
+
+		const event = await prisma.event.findUnique({
+			where: { id: eventId },
+			select: { authorId: true }
+		});
+
+		if (event?.authorId !== session?.user?.id) {
+			throw new Error("You must be the author to delete this post");
+		}
+
 		const supabase = createClient();
 		const getimagePath = await prisma.event.delete({
 			where: {
@@ -110,8 +127,6 @@ export const deletePost = async ({ eventId, userId = 123 }: TDelete): Promise<{ 
 				poster_url: true,
 			}
 		})
-
-		// TODO: Add a check if the user is the author of the post
 
 		const { error: fileError } = await supabase.storage
 			.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
@@ -129,33 +144,40 @@ export const deletePost = async ({ eventId, userId = 123 }: TDelete): Promise<{ 
 	}
 };
 
-type TUpdateDetails = {
-	formData: FormData,
-	userId: string,
-	eventId: string,
-}
-export const updateDetailsPost = async ({ formData, userId, eventId }: TUpdateDetails): Promise<{ success: boolean, message: string }> => {
-
-	const values: FormDataValues = Object.fromEntries(formData.entries());
-	values.categories = formData.getAll("categories");
-	values.has_starpoints = values.has_starpoints === 'true'; // convert string to boolean
-
-	const contactsString = formData.get("contacts");
-	if (typeof contactsString === "string") {
-		try {
-			values.contacts = JSON.parse(contactsString);
-		} catch (error) {
-			console.error("Error parsing contacts:", error);
-			values.contacts = [];
-		}
-	} else {
-		values.contacts = [];
-	}
-
-	// Remove contacts from values as we'll handle it separately
-	const { contacts, ...rest } = detailSchema.parse(values)
+export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): Promise<{ success: boolean, message: string }> => {
 
 	try {
+		const session = await auth();
+		if (!session) throw new Error("You must be logged in to do that");
+
+		const event = await prisma.event.findUnique({
+			where: { id: eventId },
+			select: { authorId: true }
+		});
+
+		if (event?.authorId !== session?.user?.id) {
+			throw new Error("You must be the author to update this post");
+		}
+
+		const values: FormDataValues = Object.fromEntries(formData.entries());
+		values.categories = formData.getAll("categories");
+		values.has_starpoints = values.has_starpoints === 'true'; // convert string to boolean
+
+		const contactsString = formData.get("contacts");
+		if (typeof contactsString === "string") {
+			try {
+				values.contacts = JSON.parse(contactsString);
+			} catch (error) {
+				console.error("Error parsing contacts:", error);
+				values.contacts = [];
+			}
+		} else {
+			values.contacts = [];
+		}
+
+		// Remove contacts from values as we'll handle it separately
+		const { contacts, ...rest } = detailSchema.parse(values)
+
 		const updateEvent = await prisma.event.update({
 			where: {
 				id: eventId,
@@ -186,15 +208,19 @@ export const updateDetailsPost = async ({ formData, userId, eventId }: TUpdateDe
 	}
 }
 
-type TUpdateDescription = {
-	formData: FormData,
-	userId: string,
-	eventId: string
-}
-
-export const updateDescription = async ({ formData, userId, eventId }: TUpdateDescription): Promise<{ success: boolean, message: string }> => {
+export const updateDescription = async ({ formData, eventId }: TUpdateDescription): Promise<{ success: boolean, message: string }> => {
 	try {
-		// todo: add authorization check
+		const session = await auth();
+		if (!session) throw new Error("You must be logged in to do that");
+
+		const event = await prisma.event.findUnique({
+			where: { id: eventId },
+			select: { authorId: true }
+		});
+
+		if (event?.authorId !== session?.user?.id) {
+			throw new Error("You must be the author to update this post");
+		}
 
 		const values: FormDataValues = Object.fromEntries(formData.entries())
 		const { description } = descSchema.parse(values)

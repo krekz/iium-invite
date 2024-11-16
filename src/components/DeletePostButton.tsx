@@ -14,23 +14,27 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/lib/hooks/use-toast';
+import { Trash2 } from 'lucide-react';
 
 
-function DeletePostButton({ eventId, userId }: { eventId: string, userId: number }) {
+function DeletePostButton({ eventId }: { eventId: string }) {
     const { toast } = useToast();
     const router = useRouter();
     const handlePostDeletion = async () => {
         try {
-            const result = await deletePost({ eventId, userId })
+            const result = await deletePost({ eventId })
             if (result.success) {
                 toast({
                     title: "Post Deleted",
-                    variant: "destructive"
+                    variant: "default"
                 })
                 router.push("/discover");
             } else {
-                throw new Error("Failed to delete post");
+                toast({
+                    title: "Failed to delete post",
+                    variant: "destructive"
+                })
             }
         } catch (error) {
             console.log(error)
@@ -38,7 +42,7 @@ function DeletePostButton({ eventId, userId }: { eventId: string, userId: number
     }
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild><Button>Delete Post</Button></AlertDialogTrigger>
+            <AlertDialogTrigger className='bg-red-500 hover:bg-red-500/80' asChild><Button><Trash2 /></Button></AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure want to <strong className='text-destructive'>Delete</strong>  this post?</AlertDialogTitle>
