@@ -14,7 +14,7 @@ import { SquarePen, X, Asterisk } from 'lucide-react'
 import { fixedCategories } from '@/lib/constant';
 import { Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from '../ui/select';
 import { updateDetailsPost } from '@/actions/event';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/lib/hooks/use-toast';
 import { useCategories } from "@/lib/hooks/useCategories";
 import { detailSchema } from "@/lib/validations/post";
 import { Controller, useForm } from "react-hook-form";
@@ -23,26 +23,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
+import { useEvent } from "@/lib/context/EventContextProvider";
+import { useParams } from "next/navigation";
+import CategoryComboBox from "../post/CategoryComboBox";
 
-type EventDetailFormProps = {
-    event: {
-        title: string;
-        location: string;
-        organizer: string;
-        campus: string;
-        fee: string | null;
-        categories: string[];
-        contacts: { name: string, phone: string }[];
-        registration_link: string | null;
-        has_starpoints: boolean;
-    };
-    params: {
-        slug: string;
-    };
-}
-
-function EventDetailForm({ event, params }: EventDetailFormProps) {
+function EventDetailForm() {
     const { toast } = useToast()
+    const { event } = useEvent()
+    const params = useParams() as { slug: string };
 
     const { control, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<z.infer<typeof detailSchema>>({
         resolver: zodResolver(detailSchema),
@@ -79,7 +67,6 @@ function EventDetailForm({ event, params }: EventDetailFormProps) {
         try {
             const result = await updateDetailsPost({
                 formData,
-                userId: "123",
                 eventId: params.slug
             });
 
@@ -239,7 +226,7 @@ function EventDetailForm({ event, params }: EventDetailFormProps) {
                             </div>
                         </div>
                         <div className="px-2 mt-3">
-                            <div className="flex flex-wrap gap-2 mb-4">
+                            <div className="flex flex-wrap gap-2 pb-3">
                                 {selectedCategories.map((cate, index) => (
                                     <div
                                         key={index}
@@ -250,28 +237,11 @@ function EventDetailForm({ event, params }: EventDetailFormProps) {
                                     </div>
                                 ))}
                             </div>
-                            <div className="relative">
-                                <FloatingPanelLabel htmlFor="categories">
-                                    Categories<Asterisk size={12} className="inline-block ml-1 text-red-500" />
-                                </FloatingPanelLabel>
-                                <Select
-                                    onValueChange={(value) => addCategory(value)}
-                                    value=""
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select a category" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {fixedCategories.map((cate) => (
-                                            !selectedCategories.includes(cate) && (
-                                                <SelectItem key={cate} value={cate}>
-                                                    {cate}
-                                                </SelectItem>
-                                            )
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                            <CategoryComboBox
+                                categories={fixedCategories}
+                                addCategory={addCategory}
+                                removeCategory={removeCategory}
+                                selectedCategories={selectedCategories} />
                         </div>
                         <Controller
                             name="has_starpoints"
