@@ -100,6 +100,14 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 				<div className="px-2 pt-2 pb-3 space-y-1">
 					<NavigationLinks isMobile />
 					<div className="px-3 py-2">
+						<Link
+							href="/post"
+							className="block w-full px-4 py-4 rounded-full text-center text-sm font-medium text-white bg-amber-700 hover:bg-amber-800 transition duration-150 ease-in-out"
+						>
+							Post
+						</Link>
+					</div>
+					<div className="px-3 py-2">
 						<AuthButtons isMobile />
 					</div>
 					<div className="px-3 py-2">
