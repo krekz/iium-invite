@@ -75,7 +75,7 @@ function DescriptionForm({ event }: { event: { description: string } }) {
                     <span>Edit Description</span>
                     <SquarePen size={16} />
                 </FloatingPanelTrigger>
-                <FloatingPanelContent className='w-full lg:w-[50rem] max-w-[90vw]'>
+                <FloatingPanelContent className='w-full lg:w-[50rem]'>
                     <FloatingPanelForm onSubmit={handleSubmit(onSubmit)}>
                         <div className="space-y-3 px-2">
                             <div className="relative">

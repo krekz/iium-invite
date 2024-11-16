@@ -94,7 +94,7 @@ export function FloatingPanelRoot({
   return (
     <FloatingPanelContext.Provider value={floatingPanelLogic}>
       <MotionConfig transition={TRANSITION}>
-        <div className={cn("relative", className)}>{children}</div>
+        <div className={cn(className)}>{children}</div>
       </MotionConfig>
     </FloatingPanelContext.Provider>
   )
@@ -250,7 +250,7 @@ export function FloatingPanelContent({
             ref={contentRef}
             layoutId={`floating-panel-${uniqueId}`}
             className={cn(
-              "absolute z-50 overflow-hidden border border-zinc-950/10 bg-white shadow-lg outline-none backdrop-blur-sm dark:border-zinc-50/10 dark:bg-zinc-800/90",
+              "absolute z-50 left-0 overflow-hidden border border-zinc-950/10 bg-white shadow-lg outline-none backdrop-blur-sm dark:border-zinc-50/10 dark:bg-zinc-800/90",
               className
             )}
             style={{
