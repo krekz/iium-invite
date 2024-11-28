@@ -20,6 +20,7 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 					name: true,
 				}
 			},
+			id: true,
 			title: true,
 			description: true,
 			poster_url: true,
@@ -33,9 +34,17 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 			has_starpoints: true,
 			categories: true,
 			contacts: true,
+			bookmarks: {
+				where: {
+					userId: session?.user?.id,
+				},
+				select: {
+					userId: true,
+				}
+			}
 		},
 	})
-
+	
 	if (!event) return notFound();
 
 	const isAuthor = event?.Author?.name === session?.user?.name;

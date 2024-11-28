@@ -8,12 +8,12 @@ import EventDetailForm from "./EventDetailForm";
 import { cn } from "@/lib/utils";
 import { useEvent } from "@/lib/context/EventContextProvider";
 import { useParams } from "next/navigation";
-
+import BookmarkButton from "./BookmarkButton";
 
 function PostInfo({ device }: { device: "mobile" | "desktop" }) {
     const params = useParams() as { slug: string };
     if (!params) throw new Error("Slug is required");
-    const { event, isAuthor } = useEvent();
+    const { event, isAuthor, userId } = useEvent();
     const eventDetails = [
         { label: "Event Date", value: format(new Date(event.date).toLocaleDateString(), "dd/M/yy") },
         { label: "Location", value: event.location },
@@ -55,7 +55,7 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
                         })}
                     </div>
                 </div>
-
+                <BookmarkButton eventId={event.id} initialBookmarked={event.bookmarks[0]?.userId === userId} />
                 <div className="space-y-1 mt-4">
                     {event.registration_link && <CustomButton
                         variant="default"

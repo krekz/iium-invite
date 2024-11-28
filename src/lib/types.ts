@@ -21,6 +21,7 @@ export type EventsProps = {
 }
 
 export type PostPageProps = {
+    id: string;
     title: string;
     description: string;
     poster_url: string[];
@@ -34,4 +35,5 @@ export type PostPageProps = {
     has_starpoints: boolean;
     categories: string[];
     contacts: { name: string, phone: string }[];
+    bookmarks: { userId: string }[];
 }
