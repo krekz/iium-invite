@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
             {
                 protocol: 'https',
                 hostname: process.env.NEXT_PUBLIC_SUPABASE_URL!.slice(8), //slice to remove "https://" from env variable
+            },
+            {
+                protocol: 'https',
+                hostname: "lh3.googleusercontent.com",
             }
         ]
     }

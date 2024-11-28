@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import PasswordProtection from "@/components/temporary-auth/PasswordProtection";
 import Footer from "@/components/Footer";
 import { auth } from "@/auth"
+import { SessionProvider } from "next-auth/react";
 
 const poppins = Poppins({
 	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -58,10 +59,14 @@ export default async function RootLayout({
 					<Toaster />
 					<PasswordProtection>
 						<ReactQueryProvider>
-							<Navbar session={{ user: session?.user?.name }} />
-							<TooltipProvider>
-								{children}
-							</TooltipProvider>
+							<SessionProvider>
+								<main className="w-full md:container">
+									<Navbar session={{ user: session?.user?.name }} />
+									<TooltipProvider>
+										{children}
+									</TooltipProvider>
+								</main>
+							</SessionProvider>
 						</ReactQueryProvider>
 					</PasswordProtection>
 					<Footer />
