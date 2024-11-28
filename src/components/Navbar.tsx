@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ModeToggle } from "./theme-switch";
 import { Button } from "./ui/button";
 import { SignIn, SignOut } from "@/actions/login-signout";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import Image from "next/image";
 
 export default ({ session }: { session: { user: string | undefined | null } }) => {
@@ -25,12 +25,12 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 				Sign in
 			</Button>
 		) : (
-			<button
-				onClick={async () => await SignOut({ redirectTo: "/" })}
-				className={`rounded-full size-12 bg-transparent ${buttonClass}`}
+			<Link
+				href="/account"
+				className={`rounded-full size-12 bg-transparent flex items-center justify-center ${buttonClass}`}
 			>
-				<LogOut />
-			</button>
+				<User className="size-6" />
+			</Link>
 		);
 	};
 
