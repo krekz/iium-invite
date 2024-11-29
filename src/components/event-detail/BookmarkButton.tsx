@@ -18,7 +18,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
   const { mutate: toggleBookmark, isPending } = useMutation({
     mutationFn: async (isCurrentlyBookmarked: boolean) => {
-      const response = await fetch('/api/bookmarks', {
+      const response = await fetch('/api/user/bookmarks', {
         method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
       })
 
       if (!response.ok) {
-        throw new Error(isCurrentlyBookmarked ? 'Failed to remove bookmark' : 'Failed to add bookmark')
+        throw new Error("Too many requests")
       }
 
       return !isCurrentlyBookmarked
@@ -44,15 +44,15 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
       toast({
         title: 'Error',
         description: err.message,
-
+        variant: 'destructive'
       })
     },
-    onSuccess: (newBookmarked) => {
-      toast({
-        title: newBookmarked ? 'Bookmark added' : 'Bookmark removed',
-        variant: newBookmarked ? 'success' : 'destructive'
-      })
-    }
+    // onSuccess: (newBookmarked) => {
+    //   toast({
+    //     title: newBookmarked ? 'Bookmark added' : 'Bookmark removed',
+    //     variant: newBookmarked ? 'success' : 'destructive'
+    //   })
+    // }
   })
 
   const isBookmarked = queryClient.getQueryData(['bookmarks', eventId]) ?? initialBookmarked

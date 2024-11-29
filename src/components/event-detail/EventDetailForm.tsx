@@ -82,7 +82,7 @@ function EventDetailForm() {
             console.error("Error updating event details:", error);
             toast({
                 title: "Error",
-                description: "An unexpected error occurred",
+                description: "Too many requests. Please try again later.",
                 variant: "destructive"
             });
         }

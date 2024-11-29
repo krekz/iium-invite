@@ -32,7 +32,7 @@ function DeletePostButton({ eventId }: { eventId: string }) {
                 router.push("/discover");
             } else {
                 toast({
-                    title: "Failed to delete post",
+                    title: "Too many requests. Please try again later.",
                     variant: "destructive"
                 })
             }
