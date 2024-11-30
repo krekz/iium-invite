@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        if (!checkRateLimit(session.user!.id!, { maxRequests: 5, windowMs: 30 * 1000 })) {
+        if (!checkRateLimit(session.user!.id!, { maxRequests: 15, windowMs: 30 * 1000 })) {
             return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
         }
 
@@ -77,7 +77,6 @@ export async function GET(request: NextRequest) {
         const bookmarks = await prisma.bookmark.findMany({
             where: {
                 userId: session.user.id,
-                // Ensure the event still exists
                 event: {
                     id: { not: undefined }
                 }
@@ -111,7 +110,7 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        if (!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })) {
+        if (!checkRateLimit(session.user.id, { maxRequests: 15, windowMs: 30 * 1000 })) {
             return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
         }
 
