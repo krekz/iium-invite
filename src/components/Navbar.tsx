@@ -21,6 +21,7 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 			<Button
 				onClick={async () => await SignIn()}
 				className={buttonClass}
+				variant={"link"}
 			>
 				Sign in
 			</Button>

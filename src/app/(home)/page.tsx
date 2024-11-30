@@ -62,21 +62,21 @@ async function Home() {
 	const randomEvents = [...events].sort(() => Math.random() - 0.5).slice(0, 3);
 
 	const eventSections: EventSection[] = [
-		{
+		...(upcomingEvents.length > 0 ? [{
 			title: "Upcoming Events",
 			href: "/discover",
 			events: upcomingEvents
-		},
-		{
+		}] : []),
+		...(newlyAddedEvents.length > 0 ? [{
 			title: "Newly Added",
 			href: "/discover",
 			events: newlyAddedEvents
-		},
-		{
+		}] : []),
+		...(weekendEvents.length > 0 ? [{
 			title: "This Weekend",
 			href: "/discover",
 			events: weekendEvents
-		},
+		}] : []),
 		...(ongoingEvents.length > 0 ? [{
 			title: "Ongoing Events",
 			href: "/discover",
