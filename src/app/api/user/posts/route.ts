@@ -25,11 +25,11 @@ export async function GET(request: NextRequest) {
             }
         })
 
-        if (!posts || posts.length === 0) {
-            return NextResponse.json({ error: 'No posts found' }, { status: 404 })
-        }
-
-        return NextResponse.json(posts)
+        return NextResponse.json(posts, {
+            headers: {
+                'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+            },
+        });
     } catch (error) {
         console.error('Fetch posts error:', error)
         return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 })
