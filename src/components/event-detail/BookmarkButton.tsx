@@ -3,6 +3,8 @@ import { BookmarkIcon } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/lib/hooks/use-toast'
+import { useRouter, useParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 interface BookmarkButtonProps {
   eventId: string
@@ -15,9 +17,18 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 }) => {
   const queryClient = useQueryClient()
   const { toast } = useToast();
+  const router = useRouter();
+  const { slug } = useParams()
+  const loginPath = (path: string) => `/api/auth/signin?callbackUrl=/events/${path}`
+  const { data: session } = useSession();
 
   const { mutate: toggleBookmark, isPending } = useMutation({
     mutationFn: async (isCurrentlyBookmarked: boolean) => {
+      if (!session?.user) {
+        router.push(loginPath(String(slug)));
+        return false;
+      }
+
       const response = await fetch('/api/user/bookmarks', {
         method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
         headers: {
@@ -33,6 +44,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
       return !isCurrentlyBookmarked
     },
     onMutate: async (isCurrentlyBookmarked) => {
+      if (!session?.user) return { previousBookmarked: false };
+
       await queryClient.cancelQueries({ queryKey: ['bookmarks', eventId] }) //cancel outgoing refetch
       const previousBookmarked = queryClient.getQueryData(['bookmarks', eventId]) // store previous value
       queryClient.setQueryData(['bookmarks', eventId], !isCurrentlyBookmarked) //optimisc update the ui
@@ -55,11 +68,20 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     // }
   })
 
-  const isBookmarked = queryClient.getQueryData(['bookmarks', eventId]) ?? initialBookmarked
+  // Only use initialBookmarked if user is logged in
+  const isBookmarked = session?.user ? (queryClient.getQueryData(['bookmarks', eventId]) ?? initialBookmarked) : false
+
+  const handleBookmarkClick = () => {
+    if (!session?.user) {
+      router.push(loginPath(String(slug)));
+      return;
+    }
+    toggleBookmark(!!isBookmarked);
+  };
 
   return (
     <button
-      onClick={() => toggleBookmark(!!isBookmarked)}
+      onClick={handleBookmarkClick}
       disabled={isPending}
       className={cn(
         'flex items-center justify-center w-[10%] p-2 rounded-full transition-colors duration-200',
