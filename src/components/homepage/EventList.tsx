@@ -18,9 +18,21 @@ type EventsProps = {
 };
 
 function EventList({ events }: EventsProps) {
+	if (!events || events.length === 0) {
+		return (
+			<div className="w-full flex flex-col items-center justify-center h-full text-muted-foreground">
+				<svg xmlns="http://www.w3.org/2000/svg" className="size-20 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 20h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+				</svg>
+				<p className="text-xl font-semibold">No events found</p>
+				<p className="text-sm">Try adjusting your search criteria</p>
+			</div>
+		);
+	}
+
 	return (
-		<div className="w-full md:container">
-			<div className="p-3 max-w-7xl gap-y-2 gap-x-1 mx-auto md:py-8 md:pt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 text-amber-900">
+		<div className="w-full">
+			<div className="gap-y-2 gap-x-1 pb-5 mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 text-amber-900">
 				{events.map((event, e_index) => (
 					<Link
 						// scroll={false}

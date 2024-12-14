@@ -1,27 +1,28 @@
-import EventFilter from "@/components/EventFilter";
+import { getEvents } from "@/actions/get-events";
+import Filter from "@/components/discover/Filter";
 import EventList from "@/components/homepage/EventList";
-import prisma from "@/lib/prisma";
 
-async function Events() {
-	const events = await prisma.event.findMany({
-		select: {
-			id: true,
-			title: true,
-			organizer: true,
-			location: true,
-			categories: true,
-			date: true,
-			poster_url: true,
-			has_starpoints: true,
-		}
-	})
+async function Events({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+	const { q, category, campus, fee, starpoints } = await searchParams;
+
+	const events = await getEvents({
+		q: q as string,
+		category: category as string,
+		campus: campus as string,
+		fee: fee as string,
+		has_starpoints: starpoints as string
+	});
+
 	return (
-		<div className="flex flex-row-reverse min-h-dvh">
-			{/* <div className="flex justify-center text-3xl font-bold p-3">Events</div> */}
-			<EventList events={events} />
-			{/* <aside>
-				<EventFilter />
-			</aside> */}
+		<div className="min-h-dvh w-full px-4 md:px-6 lg:px-8">
+			<div className="flex flex-col lg:flex-row gap-4">
+				<aside className="w-full lg:w-64">
+					<Filter />
+				</aside>
+				<div className="flex-1">
+					<EventList events={events} />
+				</div>
+			</div>
 		</div>
 	);
 }

@@ -108,7 +108,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 					authorId: session.user!.id!,
 					title,
 					campus,
-					categories,
+					categories: categories.map(cat => cat.toLowerCase()),
 					date,
 					description,
 					fee,
@@ -247,6 +247,7 @@ export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): 
 				where: { id: eventId },
 				data: {
 					...rest,
+					categories: rest.categories.map(cat => cat.toLowerCase()),
 					contacts: {
 						deleteMany: {},
 						create: contacts.map((contact) => ({
