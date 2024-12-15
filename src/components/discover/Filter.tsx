@@ -11,7 +11,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { SlidersHorizontal } from "lucide-react"
+import { SlidersHorizontal, X } from "lucide-react"
 import SearchInput from '../SearchInput'
 
 const FILTER_OPTIONS = {
@@ -42,6 +42,10 @@ function Filter() {
         router.replace(`?${params.toString()}`)
     }
 
+    const clearAllFilters = () => {
+        router.replace('?')
+    }
+
     const CheckboxFilter = ({
         id,
         label,
@@ -52,18 +56,34 @@ function Filter() {
         label: string
         paramKey?: string
         getValue?: (value: string) => string
-    }) => (
-        <div className="flex items-center space-x-2">
-            <Checkbox
-                id={id}
-                checked={searchParams.get(paramKey) === getValue(id)}
-                onCheckedChange={(checked) =>
-                    updateSearchParams(paramKey, checked ? getValue(id) : false)
-                }
-            />
-            <Label htmlFor={id}>{label}</Label>
-        </div>
-    )
+    }) => {
+        const isChecked = searchParams.get(paramKey) === getValue(id)
+
+        return (
+            <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 w-full">
+                    <Checkbox
+                        id={id}
+                        checked={isChecked}
+                        onCheckedChange={(checked) =>
+                            updateSearchParams(paramKey, checked ? getValue(id) : false)
+                        }
+                    />
+                    <Label className='cursor-pointer w-full' htmlFor={id}>{label}</Label>
+                </div>
+                {isChecked && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => updateSearchParams(paramKey, false)}
+                    >
+                        <X className="h-4 w-4" />
+                    </Button>
+                )}
+            </div>
+        )
+    }
 
     const FilterSection = ({
         title,
@@ -92,6 +112,19 @@ function Filter() {
 
     const FilterContent = () => (
         <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="font-semibold text-lg">Filters</h2>
+                {getActiveFiltersCount() > 0 && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearAllFilters}
+                        className="text-muted-foreground hover:text-primary"
+                    >
+                        Clear all
+                    </Button>
+                )}
+            </div>
             <FilterSection
                 title="Categories"
                 items={FILTER_OPTIONS.categories}
