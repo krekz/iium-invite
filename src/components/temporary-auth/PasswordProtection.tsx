@@ -1,10 +1,8 @@
-"use client"
-import { useToast } from '@/lib/hooks/use-toast';
+"use client";
 import React, { useState, useEffect } from 'react';
-
-const CORRECT_PASSWORD = process.env.NEXT_PUBLIC_CORRECT_PASSWORD!;
-const AUTH_KEY = process.env.NEXT_PUBLIC_AUTH_KEY!;
-
+import { useToast } from '@/lib/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 interface PasswordProtectionProps {
     children: React.ReactNode;
@@ -13,58 +11,75 @@ interface PasswordProtectionProps {
 const PasswordProtection: React.FC<PasswordProtectionProps> = ({ children }) => {
     const [password, setPassword] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadingText, setLoadingText] = useState('Checking permissions...');
-    const { toast } = useToast()
+    const [isChecking, setIsChecking] = useState(true);
+    const { toast } = useToast();
+    const router = useRouter();
 
     useEffect(() => {
-        const storedAuth = localStorage.getItem(AUTH_KEY);
-        if (storedAuth === 'true') {
-            setIsAuthenticated(true);
-        }
-        setIsLoading(false);
+        const checkAuth = async () => {
+            try {
+                const res = await axios.get('/api/auth/beta-access', {
+                    withCredentials: true,
+                });
+
+                if (res.status === 200) {
+                    setIsAuthenticated(true);
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            } finally {
+                setIsChecking(false);
+            }
+        };
+
+        checkAuth();
     }, []);
 
-    useEffect(() => {
-        if (isLoading) {
-            const texts = ['Verifying...', 'Almost there...'];
-            let index = 0;
-            const intervalId = setInterval(() => {
-                setLoadingText(texts[index]);
-                index = (index + 1) % texts.length;
-            }, 2000);
-
-            return () => clearInterval(intervalId);
-        }
-    }, [isLoading]);
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === CORRECT_PASSWORD) {
-            setIsAuthenticated(true);
-            localStorage.setItem(AUTH_KEY, 'true');
+
+        try {
+            const res = await axios.post('/api/auth/beta-access',
+                { password },
+                {
+                    withCredentials: true, // Important for cookies
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
+
+            if (res.data.success) {
+                toast({
+                    title: 'Access Granted',
+                    description: 'Welcome to Eventure',
+                    variant: 'success',
+                    duration: 2000,
+                });
+                setIsAuthenticated(true);
+                router.refresh();
+            } else {
+                toast({
+                    title: 'Access Denied',
+                    description: res.data.message || 'Incorrect password',
+                    variant: 'destructive',
+                    duration: 1500,
+                });
+            }
+        } catch (error) {
             toast({
-                title: 'Access Granted',
-                description: 'Welcome to Eventure',
-                variant: 'success',
-                duration: 2000,
-            })
-        } else {
-            toast({
-                title: 'Incorrect Password',
-                description: 'Please try again',
+                title: 'Error',
+                description: 'Something went wrong. Please try again later.',
                 variant: 'destructive',
                 duration: 1500,
-            })
+            });
         }
     };
 
-    if (isLoading) {
+    if (isChecking) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-center">
                     <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-                    <p className="mt-4 text-xl font-semibold text-gray-700 dark:text-gray-300">{loadingText}</p>
+                    <p className="mt-4 text-xl font-semibold text-gray-700 dark:text-gray-300">Checking permissions...</p>
                 </div>
             </div>
         );
@@ -101,7 +116,7 @@ const PasswordProtection: React.FC<PasswordProtectionProps> = ({ children }) => 
                         Access Beta
                     </button>
                 </form>
-                <p className="mt-6 text-center  text-sm">Authorized users only. Contact admin for access.</p>
+                <p className="mt-6 text-center text-sm">Authorized users only. Contact admin for access.</p>
             </div>
         </div>
     );
