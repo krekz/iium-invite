@@ -12,13 +12,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 function EventSuggestion() {
-    const { data: Events, isLoading } = useQuery({
+    const { data: Events } = useQuery({
         queryKey: "events",
         queryFn: getEvents,
     })
 
     return (
-        <>
+        <div className="py-5">
             <h1 className="font-bold text-3xl">Events you may like</h1>
             <Carousel className="hidden md:block">
                 <CarouselContent className="-ml-4">
@@ -62,7 +62,7 @@ function EventSuggestion() {
                     </Link>
                 ))}
             </div>
-        </>
+        </div>
     )
 }
 
