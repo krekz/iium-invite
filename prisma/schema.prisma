@@ -9,21 +9,21 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String          @unique
-  emailVerified DateTime?
+  email         String    @unique
+  emailVerified Boolean?  @default(false)
+  iiumEmail     String?   @unique // verified email in order user to post event
   matricNumber  String?
   image         String?
   accounts      Account[]
   sessions      Session[]
   events        Event[]
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  bookmarks Bookmark[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  bookmarks         Bookmark[]
+  VerificationToken VerificationToken?
 }
 
 model Account {
@@ -58,27 +58,13 @@ model Session {
 }
 
 model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@id([identifier, token])
-}
-
-// Optional for WebAuthn support
-model Authenticator {
-  credentialID         String  @unique
-  userId               String
-  providerAccountId    String
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType String
-  credentialBackedUp   Boolean
-  transports           String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([userId, credentialID])
+  id        String   @id @default(cuid())
+  tokenHash String
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  isValid   Boolean  @default(true)
 }
 
 model Event {
@@ -95,7 +81,7 @@ model Event {
   categories        String[]
   has_starpoints    Boolean
   contacts          Contact[]
-  published         Boolean    @default(false)
+  published         Boolean    @default(true)
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   Author            User?      @relation(fields: [authorId], references: [id])
