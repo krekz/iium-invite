@@ -21,7 +21,7 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
         { label: "Campus", value: event.campus },
     ];
     return (
-        <div className={cn("w-full lg:w-[35%] lg:sticky lg:top-10 lg:self-start py-3",
+        <div className={cn("w-full lg:w-[40%] lg:sticky lg:top-10 lg:self-start py-3",
             device === "mobile" ? "lg:hidden" : "hidden lg:block"
         )}>
             <div className="flex flex-col gap-2 w-full">

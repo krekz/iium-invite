@@ -1,7 +1,7 @@
 import Filter from "@/components/discover/Filter";
 import EventList from "@/components/homepage/EventList";
 
-async function Events({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+async function Events() {
 	return (
 		<div className="min-h-dvh w-full px-4 md:px-6 lg:px-8">
 			<div className="flex flex-col lg:flex-row gap-4">

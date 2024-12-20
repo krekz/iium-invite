@@ -25,9 +25,6 @@ import { cn } from "@/lib/utils";
 
 function DescriptionForm({ event }: { event: { description: string } }) {
     const params = useParams<{ slug: string }>()
-
-
-
     const { toast } = useToast()
 
     const { control, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<z.infer<typeof descSchema>>({
@@ -36,7 +33,6 @@ function DescriptionForm({ event }: { event: { description: string } }) {
             description: event.description
         },
     });
-
 
     const onSubmit = async (data: z.infer<typeof descSchema>) => {
         const formData = new FormData();

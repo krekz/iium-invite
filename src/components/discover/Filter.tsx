@@ -16,7 +16,7 @@ import SearchInput from '../SearchInput'
 
 const FILTER_OPTIONS = {
     categories: ["Theatre", "Career", "Workshop", "Sports"],
-    campuses: ["Gombak", "Kuantan", "Pahang", "Pagoh"],
+    campuses: ["Gombak", "Kuantan", "Pagoh", "Gambang"],
     additionalFilters: [
         { id: 'fee', label: 'Fee' },
         { id: 'starpoints', label: 'Starpoints' }

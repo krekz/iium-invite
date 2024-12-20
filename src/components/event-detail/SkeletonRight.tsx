@@ -2,7 +2,7 @@ import React from 'react';
 
 const SkeletonRight: React.FC = () => {
     return (
-        <div className="w-full lg:w-[35%] lg:sticky lg:top-10 lg:self-start">
+        <div className="w-full lg:w-[40%] lg:sticky lg:top-10 lg:self-start">
             <div className="flex flex-col gap-2 w-full">
                 {/* Edit form skeleton */}
                 <div className="h-10 bg-white/20 rounded animate-pulse"></div>
