@@ -36,7 +36,7 @@ export default async function middleware(request: NextRequest) {
         case pathname.startsWith('/events'): {
             const eventId = pathname.split('/').pop()
             if (!eventId) {
-                return NextResponse.error()
+                return NextResponse.redirect(new URL('/404', request.url))
             }
 
             const event = await prisma.event.findUnique({
@@ -52,22 +52,22 @@ export default async function middleware(request: NextRequest) {
 
             // non existent events
             if (!event) {
-                return NextResponse.error()
+                return NextResponse.redirect(new URL('/404', request.url))
             }
 
             // expired events
             if (event.date && new Date(Date.now()) > new Date(event.date)) {
                 if (!session?.user) {
-                    return NextResponse.error()
+                    return NextResponse.redirect(new URL('/404', request.url))
                 }
                 if (session?.user.id !== event.authorId) {
-                    return NextResponse.error()
+                    return NextResponse.redirect(new URL('/404', request.url))
                 }
             }
             break
         }
         case pathname.startsWith("/verify-email"): {
-            if (session?.user.emailVerified) return NextResponse.error()
+            if (session?.user.emailVerified) return NextResponse.redirect(new URL('/404', request.url))
         }
     }
 
