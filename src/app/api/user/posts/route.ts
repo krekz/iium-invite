@@ -22,6 +22,9 @@ export async function GET(request: NextRequest) {
             },
             orderBy: {
                 createdAt: 'desc'
+            },
+            cacheStrategy: {
+                ttl: 60 * 60 // 1 hour
             }
         })
 

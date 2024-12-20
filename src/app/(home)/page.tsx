@@ -34,7 +34,11 @@ async function Home() {
 		},
 		orderBy: {
 			date: 'asc'
+		},
+		cacheStrategy: {
+			ttl: 60 * 5 // 5 minutes
 		}
+
 	});
 
 	const today = new Date();

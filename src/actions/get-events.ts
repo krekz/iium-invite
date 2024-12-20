@@ -23,6 +23,9 @@ export async function getEvents(searchParams?: SearchParams) {
             try {
                 const events = await prisma.event.findMany({
                     where: {
+                        date: {
+                            gt: new Date()
+                        },
                         AND: [
                             searchQuery ? {
                                 OR: [
@@ -76,6 +79,10 @@ export async function getEvents(searchParams?: SearchParams) {
                         date: true,
                         poster_url: true,
                         has_starpoints: true,
+                    },
+                    cacheStrategy: {
+                        ttl: 60 * 5, // 5 minutes,
+                        swr: 60 * 2.5,
                     }
                 });
                 return events;
