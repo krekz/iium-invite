@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { checkRateLimit } from "@/lib/server-only";
+import { checkRateLimit, compressImage } from "@/lib/server-only";
 import { unstable_cache } from 'next/cache';
 
 type Input = {
@@ -51,6 +51,8 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 			throw new Error("Too many requests. Please try again later.");
 		}
 
+		if (session.user.emailVerified === false) throw new Error("You must verify your email to create a post");
+
 		const { formData } = input;
 		const values: FormDataValues = Object.fromEntries(formData.entries());
 
@@ -77,30 +79,25 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 		const assignPostId = `post-${uuidv4()}`;
 		const supabase = createClient();
 
-		const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
-		const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
+		const uploadedFiles = await Promise.all(
+			poster_url.map(async (file) => {
+				// Compress the image
+				const compressedImage = await compressImage(file);
 
-		const uploadedFiles = await Promise.all(poster_url.map(async (file) => {
-			if (!ALLOWED_TYPES.includes(file.type)) {
-				throw new Error("Invalid file type. Only JPEG, PNG and WebP allowed.");
-			}
-			if (file.size > MAX_FILE_SIZE) {
-				throw new Error("File too large. Maximum size is 5MB.");
-			}
+				const filePath = `${assignPostId}/${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+				const { data, error } = await supabase.storage
+					.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
+					.upload(filePath, compressedImage, {
+						cacheControl: "3600",
+						upsert: false,
+						contentType: "image/jpeg",
+					});
 
-			const filePath = `${assignPostId}/${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-			const { data, error } = await supabase.storage
-				.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
-				.upload(filePath, file, {
-					cacheControl: '3600',
-					upsert: false
-				});
+				if (error) throw new Error("Failed to upload file.");
+				return data.path;
+			})
+		);
 
-			if (error) throw error;
-			return data.path;
-		}));
-
-		// Create event with transaction to ensure atomicity
 		const newEvent = await prisma.$transaction(async (tx) => {
 			const event = await tx.event.create({
 				data: {

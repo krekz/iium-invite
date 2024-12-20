@@ -42,13 +42,13 @@ export const postSchema =
 				(files) =>
 					files.every(
 						(file) =>
-							file.size <= 1024 * 1024 * 5 &&
+							file.size <= 1024 * 1024 * 0.5 &&
 							["image/png", "image/jpeg", "image/jpg", "video/mp4"].includes(
 								file.type,
 							),
 					),
 				{
-					message: "Invalid file format or size, 1MB is the maximum",
+					message: "Invalid file format or size, each file should be less than 500KB",
 				},
 			),
 		date: z.coerce.date().refine(
@@ -63,3 +63,8 @@ export const postSchema =
 		.and(descSchema);
 
 
+export const emailSchema = z.object({
+	email: z.string().email().refine((email) => email.endsWith("@live.iium.edu.my"), {
+		message: "Only @live.iium email addresses are allowed"
+	})
+});
