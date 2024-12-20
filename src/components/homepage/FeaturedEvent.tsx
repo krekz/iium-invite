@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import Image from "next/image";
 
 
 const featuredEvents = [
@@ -11,7 +12,7 @@ const featuredEvents = [
         title: "International Culture Festival",
         description: "Experience diverse cultures through food, music, and performances.",
         date: "May 5, 2024",
-        image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&q=80&w=1000",
+        image: "/carousel-3.webp",
         highlight: "30+ Countries Represented"
     },
     {
@@ -19,7 +20,7 @@ const featuredEvents = [
         title: "Innovation Summit 2024",
         description: "Join industry leaders and innovators in this groundbreaking event.",
         date: "May 10, 2024",
-        image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=1000",
+        image: "/carousel-2.webp",
         highlight: "Keynote by Tech Leaders"
     },
     {
@@ -27,7 +28,7 @@ const featuredEvents = [
         title: "Sports Championship",
         description: "Annual inter-university sports competition with exciting matches.",
         date: "May 15, 2024",
-        image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&q=80&w=1000",
+        image: "/carousel-1.webp",
         highlight: "15 Universities Competing"
     }
 ];
@@ -112,11 +113,14 @@ function FeaturedEvent() {
                                 </div>
                             </div>
                             <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/5 transition-colors rounded-2xl" />
-                            <img
-                                src={event.image}
-                                alt={event.title}
-                                className="w-full h-[250px] md:h-[400px] object-cover rounded-2xl shadow-xl"
-                            />
+                            <div className="relative w-[full] h-[250px] md:h-[500px]">
+                                <Image
+                                    src={event.image}
+                                    alt={event.title}
+                                    fill
+                                    className="rounded-2xl shadow-xl object-fill"
+                                />
+                            </div>
                         </div>
                         <div className="space-y-4 md:space-y-6 px-4 md:px-0">
                             <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full">
