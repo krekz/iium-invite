@@ -1,10 +1,10 @@
-import { auth } from '@/auth'
+"use client"
 import Bookmarks from '@/components/account/bookmarks'
 import Informations from '@/components/account/informations'
 import Sidebar from '@/components/account/sidebar'
 import UserPosts from '@/components/account/user-posts'
-import { SearchParams } from 'next/dist/server/request/search-params'
-import { redirect } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 
 const VIEW_OPTIONS = {
   INFORMATION: 'informations',
@@ -26,19 +26,11 @@ const MainContent = ({ currentView }: { currentView: ViewOption | string | strin
   }
 }
 
-async function UserPage({
-  searchParams
-}: {
-  searchParams: Promise<SearchParams>
-}) {
-  const session = await auth()
-  if (!session) {
-    redirect(`/api/auth/signin?callbackUrl=/account`)
-  }
+function UserPage() {
 
-  const user = session.user
-  const query = await searchParams
-  const currentView = query.option
+  const user = useSession().data?.user
+  const searchParams = useSearchParams()
+  const currentView = searchParams.get('option') || VIEW_OPTIONS.INFORMATION
 
   return (
     <main className='flex justify-between min-h-dvh py-10 px-4 sm:px-6'>
