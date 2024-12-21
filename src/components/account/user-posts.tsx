@@ -16,7 +16,9 @@ function UserPosts() {
     const { data: posts, isLoading } = useQuery<UserPost[]>({
         queryKey: ['user-posts'],
         queryFn: async () => {
-            const res = await fetch(`/api/user/posts`)
+            const res = await fetch(`/api/user/posts`, {
+                cache: 'force-cache',
+            })
             if (!res.ok) {
                 throw new Error('Failed to fetch posts')
             }

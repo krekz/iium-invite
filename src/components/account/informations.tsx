@@ -1,6 +1,4 @@
 "use client";
-import React from 'react'
-import { useSearchParams, useParams } from 'next/navigation'
 
 function Informations() {
 
