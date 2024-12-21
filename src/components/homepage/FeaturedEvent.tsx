@@ -75,7 +75,7 @@ function FeaturedEvent() {
         }
 
         return () => {
-            clearInterval(progressInterval.current);
+            clearInterval(progressInterval.current as number);
         };
     }, [isHovered, activeIndex]);
     return (

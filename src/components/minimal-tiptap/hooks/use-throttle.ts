@@ -15,7 +15,7 @@ export function useThrottle<T extends (...args: any[]) => void>(
           lastRan.current = Date.now()
         } else {
           if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current)
+            clearTimeout(timeoutRef.current as number)
           }
           timeoutRef.current = setTimeout(
             () => {
