@@ -16,9 +16,7 @@ function Bookmarks() {
   const { data, isLoading } = useQuery<Bookmark[]>({
     queryKey: ['bookmarks'],
     queryFn: async () => {
-      const res = await fetch('/api/user/bookmarks', {
-        cache: 'force-cache'
-      })
+      const res = await fetch('/api/user/bookmarks')
       if (!res.ok) {
         throw new Error('Failed to fetch bookmarks')
       }

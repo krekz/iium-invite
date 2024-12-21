@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma'
 import { auth } from '@/auth'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/server-only'
+import { revalidatePath } from 'next/cache'
 
 const bookmarkSchema = z.object({
     eventId: z.string().regex(/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
@@ -55,6 +56,9 @@ export async function POST(request: NextRequest) {
             })
         })
 
+        revalidatePath(`/api/user/bookmarks`)
+        revalidatePath('/account?option=bookmarks')
+
         return NextResponse.json({ message: "Bookmarked" }, { status: 201 })
 
     } catch (error) {
@@ -92,6 +96,9 @@ export async function GET(request: NextRequest) {
             },
             orderBy: {
                 createdAt: 'desc'
+            },
+            cacheStrategy: {
+                ttl: 30
             }
         })
 
