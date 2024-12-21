@@ -59,8 +59,8 @@ export async function GET() {
 
     // compare in constant time to prevent timing attacks
     const isValid = crypto.timingSafeEqual(
-        Buffer.from(hash),
-        Buffer.from(expectedHash)
+        new Uint8Array(Buffer.from(hash)),
+        new Uint8Array(Buffer.from(expectedHash))
     );
 
     if (!isValid) {

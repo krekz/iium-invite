@@ -37,7 +37,7 @@ function FeaturedEvent() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
     const [progress, setProgress] = useState<number>(0);
-    const progressInterval = useRef<NodeJS.Timer>(undefined);
+    const progressInterval = useRef<NodeJS.Timer | number>(undefined);
     const lastProgressRef = useRef<number>(0);
 
     const nextSlide = () => {
