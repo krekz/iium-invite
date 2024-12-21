@@ -2,6 +2,7 @@ import NextAuth, { DefaultSession } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from "@/lib/prisma"
 import google from "next-auth/providers/google"
+import { cache } from "react"
 
 declare module "next-auth" {
 	interface Session {
@@ -37,4 +38,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 			}
 		},
 	}
+})
+
+export const getAuth = cache(async () => {
+	const session = await auth()
+	return session
 })

@@ -8,8 +8,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider"
 import PasswordProtection from "@/components/temporary-auth/PasswordProtection";
 import Footer from "@/components/Footer";
-import { auth } from "@/auth"
-import { SessionProvider } from "next-auth/react";
+import { getAuth as cachedAuth } from "@/auth"
+import NextSessionProvider from "@/lib/context/SessionProvider";
 
 const poppins = Poppins({
 	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -46,7 +46,7 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const session = await auth();
+	const session = await cachedAuth()
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${poppins.className}`}>
@@ -59,14 +59,14 @@ export default async function RootLayout({
 					<Toaster />
 					<PasswordProtection>
 						<ReactQueryProvider>
-							<SessionProvider>
+							<NextSessionProvider session={session} >
 								<main className="w-full md:container">
 									<Navbar session={{ user: session?.user?.name }} />
 									<TooltipProvider>
 										{children}
 									</TooltipProvider>
 								</main>
-							</SessionProvider>
+							</NextSessionProvider>
 						</ReactQueryProvider>
 					</PasswordProtection>
 					<Footer />
