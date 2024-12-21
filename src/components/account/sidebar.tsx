@@ -3,18 +3,17 @@
 import { User } from 'next-auth'
 import Image from 'next/image'
 import React from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Logout from '../Logout'
 
 function Sidebar({ user }: { user: User | undefined }) {
-    const router = useRouter()
     const searchParams = useSearchParams()
     const currentOption = searchParams.get('option') || 'informations'
 
     const handleOptionClick = (option: string) => {
-        const params = new URLSearchParams(searchParams)
-        params.set('option', option.toLowerCase().replace(' ', '-'))
-        router.push(`?${params.toString()}`)
+        const params = new URLSearchParams(searchParams.toString())
+        option ? params.set('option', option.toLowerCase().replace(' ', '-')) : params.delete('option')
+        history.pushState(null, '', `?${params.toString()}`)
     }
 
     return (

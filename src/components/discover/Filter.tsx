@@ -39,7 +39,7 @@ function Filter() {
     const updateSearchParams = (key: string, value: string | boolean) => {
         const params = new URLSearchParams(searchParams.toString())
         value ? params.set(key, value.toString()) : params.delete(key)
-        router.replace(`?${params.toString()}`)
+        history.pushState(null, '', `?${params.toString()}`)
     }
 
     const clearAllFilters = () => {
