@@ -60,7 +60,7 @@ function FeaturedEvent() {
                     lastProgressRef.current = newProgress;
 
                     if (newProgress >= 100) {
-                        clearInterval(progressInterval.current);
+                        clearInterval(progressInterval.current as number);
                         nextSlide();
                         return 0;
                     }
