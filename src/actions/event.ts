@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { checkRateLimit, compressImage } from "@/lib/server-only";
 import { unstable_cache } from 'next/cache';
+import crypto from 'crypto';
 
 type Input = {
 	formData: FormData;
@@ -77,6 +78,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 		const { title, campus, categories, date, description, fee, has_starpoints, location, organizer, poster_url, registration_link, contacts } = postSchema.parse(values)
 
 		const assignPostId = `post-${uuidv4()}`;
+		const encryptedUserId = crypto.createHash("sha256").update(session.user.id).digest("hex"); // preventing exposed userId in public supabase bucket url
 		const supabase = createClient();
 
 		const uploadedFiles = await Promise.all(
@@ -84,7 +86,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 				// Compress the image
 				const compressedImage = await compressImage(file);
 
-				const filePath = `${assignPostId}/${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+				const filePath = `post/user-${encryptedUserId}/${assignPostId}/${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
 				const { data, error } = await supabase.storage
 					.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
 					.upload(filePath, compressedImage, {
