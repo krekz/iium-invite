@@ -93,6 +93,7 @@ model Event {
   @@index([registrationEndDate, active]) // use in cron api
   @@index([date, active]) // use in cron api
   @@index([active])
+  @@index([authorId])
 }
 
 model Contact {
