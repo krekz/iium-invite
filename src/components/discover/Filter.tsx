@@ -71,16 +71,6 @@ function Filter() {
                     />
                     <Label className='cursor-pointer w-full' htmlFor={id}>{label}</Label>
                 </div>
-                {isChecked && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => updateSearchParams(paramKey, false)}
-                    >
-                        <X className="h-4 w-4" />
-                    </Button>
-                )}
             </div>
         )
     }
@@ -119,7 +109,7 @@ function Filter() {
                         variant="ghost"
                         size="sm"
                         onClick={clearAllFilters}
-                        className="text-muted-foreground hover:text-primary"
+                        className="text-muted-foreground hover:text-primary h-0"
                     >
                         Clear all
                     </Button>
