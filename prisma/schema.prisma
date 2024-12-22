@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -88,6 +88,9 @@ model Event {
   Author            User?      @relation(fields: [authorId], references: [id])
   authorId          String?
   bookmarks         Bookmark[]
+
+  @@index([date])
+  @@index([authorId, date])
 }
 
 model Contact {
