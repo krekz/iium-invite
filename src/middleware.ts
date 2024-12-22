@@ -39,7 +39,7 @@ export default auth(async (request) => {
             const event = await prisma.event.findUnique({
                 where: { id: eventId },
                 select: {
-                    date: true,
+                    active: true,
                     authorId: true
                 },
                 cacheStrategy: {
@@ -53,7 +53,7 @@ export default auth(async (request) => {
             }
 
             // expired events
-            if (event.date && new Date(Date.now()) > new Date(event.date)) {
+            if (!event.active) {
                 if (!user) {
                     return NextResponse.redirect(new URL('/404', request.url))
                 }

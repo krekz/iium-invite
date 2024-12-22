@@ -22,7 +22,10 @@ interface EventSection {
 
 async function Home() {
 	const events = await prisma.event.findMany({
-		take: 10,
+		where: {
+			active: true
+		},
+		take: 15,
 		select: {
 			id: true,
 			title: true,

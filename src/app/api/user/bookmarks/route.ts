@@ -82,8 +82,9 @@ export async function GET(request: NextRequest) {
             where: {
                 userId: session.user.id,
                 event: {
-                    id: { not: undefined }
-                }
+                    id: { not: undefined },
+                    active: true,
+                },
             },
             select: {
                 event: {

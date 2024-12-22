@@ -69,28 +69,30 @@ model VerificationToken {
 }
 
 model Event {
-  id                String     @id @unique
-  title             String     @db.VarChar(255)
-  description       String
-  poster_url        String[]
-  date              DateTime
-  campus            String
-  location          String
-  organizer         String
-  fee               String?
-  registration_link String?
-  categories        String[]
-  has_starpoints    Boolean
-  contacts          Contact[]
-  published         Boolean    @default(true)
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
-  Author            User?      @relation(fields: [authorId], references: [id])
-  authorId          String?
-  bookmarks         Bookmark[]
+  id                  String     @id @unique
+  title               String     @db.VarChar(255)
+  description         String
+  poster_url          String[]
+  date                DateTime // event date or start date
+  registrationEndDate DateTime?
+  campus              String
+  location            String
+  organizer           String
+  fee                 String?
+  registration_link   String?
+  categories          String[]
+  has_starpoints      Boolean
+  contacts            Contact[]
+  active              Boolean    @default(true)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  Author              User?      @relation(fields: [authorId], references: [id])
+  authorId            String?
+  bookmarks           Bookmark[]
 
-  @@index([date])
-  @@index([authorId, date])
+  @@index([registrationEndDate, active]) // use in cron api
+  @@index([date, active]) // use in cron api
+  @@index([active])
 }
 
 model Contact {

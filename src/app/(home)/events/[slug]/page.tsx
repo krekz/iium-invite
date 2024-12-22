@@ -14,6 +14,7 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 	const event = await prisma.event.findUnique({
 		where: {
 			id: params.slug,
+			active: true,
 		},
 		select: {
 			Author: {

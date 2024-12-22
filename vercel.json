@@ -1,0 +1,11 @@
+{
+    "crons": [
+        {
+            "path": "/api/cron/active-events",
+            "schedule": "0 0 * * *",
+            "headers": {
+                "Authorization" : "Bearer vswYMdjD9Y3TTmlpk7rDZKMC9EC3jIRrriRpFtOEc1tpz2ZxOYmgk0E7e72TXaH6"
+            }
+        }
+    ]
+}
