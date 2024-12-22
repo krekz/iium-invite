@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 import { auth } from '@/auth'
 import prisma from './lib/prisma'
 
@@ -10,9 +9,9 @@ const PROTECTED_ROUTES = {
     VERIFY_EMAIL: '/verify-email'
 } as const
 
-export default async function middleware(request: NextRequest) {
-    const session = await auth()
+export default auth(async (request) => {
     const { pathname } = request.nextUrl
+    const user = request.auth?.user
 
     const getSignInUrl = (callbackPath: string) => {
         const url = new URL('/api/auth/signin', request.url)
@@ -21,15 +20,14 @@ export default async function middleware(request: NextRequest) {
     }
 
     switch (true) {
-        // route required authentication
-        case !session?.user && (
+        case !user && (
             pathname.startsWith(PROTECTED_ROUTES.POST) ||
             pathname.startsWith(PROTECTED_ROUTES.ACCOUNT) ||
             pathname.startsWith(PROTECTED_ROUTES.VERIFY_EMAIL)
         ):
             return NextResponse.redirect(getSignInUrl(pathname))
 
-        case !session?.user.emailVerified && pathname.startsWith(PROTECTED_ROUTES.POST): {
+        case !user?.emailVerified && pathname.startsWith(PROTECTED_ROUTES.POST): {
             return NextResponse.redirect(new URL('/verify-email', request.url))
         }
 
@@ -38,7 +36,6 @@ export default async function middleware(request: NextRequest) {
             if (!eventId) {
                 return NextResponse.redirect(new URL('/404', request.url))
             }
-
             const event = await prisma.event.findUnique({
                 where: { id: eventId },
                 select: {
@@ -46,7 +43,7 @@ export default async function middleware(request: NextRequest) {
                     authorId: true
                 },
                 cacheStrategy: {
-                    ttl: 60 * 60 * 24 // 1 day cacbe
+                    ttl: 15
                 }
             })
 
@@ -57,22 +54,23 @@ export default async function middleware(request: NextRequest) {
 
             // expired events
             if (event.date && new Date(Date.now()) > new Date(event.date)) {
-                if (!session?.user) {
+                if (!user) {
                     return NextResponse.redirect(new URL('/404', request.url))
                 }
-                if (session?.user.id !== event.authorId) {
+                // only author can view expired events
+                if (user.id !== event.authorId) {
                     return NextResponse.redirect(new URL('/404', request.url))
                 }
             }
             break
         }
         case pathname.startsWith("/verify-email"): {
-            if (session?.user.emailVerified) return NextResponse.redirect(new URL('/404', request.url))
+            if (user?.emailVerified) return NextResponse.redirect(new URL('/404', request.url))
         }
     }
 
     return NextResponse.next()
-}
+})
 
 // Configure path matching
 export const config = {
