@@ -5,10 +5,10 @@ export const dynamic = 'force-dynamic'; // static by default, unless reading the
 
 export async function GET(request: NextRequest) {
   const secretKey = process.env.CRON_SECRET_KEY;
-  const providedKey = request.headers.get('Authorization');
+  const providedKey = request.nextUrl.searchParams.get('key');
 
-  if (!providedKey || providedKey !== `Bearer ${secretKey}`) {
-    return new Response('Unauthorized', { status: 401 });
+  if (!providedKey || providedKey !== secretKey) {
+    return new Response("Nice try", { status: 401 });
   }
 
   try {
