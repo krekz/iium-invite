@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { auth } from '@/auth'
+import { checkRateLimit } from '@/lib/server-only';
 
 export async function GET(request: NextRequest) {
     try {
         const session = await auth();
-        if (!session) {
+        if (!session?.user.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        if (!checkRateLimit(session.user.id)) {
+            return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
         }
 
         const posts = await prisma.event.findMany({
@@ -24,15 +29,11 @@ export async function GET(request: NextRequest) {
                 createdAt: 'desc'
             },
             cacheStrategy: {
-                ttl: 60 * 60 // 1 hour
+                ttl: 10
             }
         })
 
-        return NextResponse.json(posts, {
-            headers: {
-                'Cache-Control': 'private, no-cache, no-store, must-revalidate',
-            },
-        });
+        return NextResponse.json(posts);
     } catch (error) {
         console.error('Fetch posts error:', error)
         return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 })

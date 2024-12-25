@@ -98,8 +98,8 @@ export async function GET(request: NextRequest) {
             orderBy: {
                 createdAt: 'desc'
             },
-            cacheStrategy: {
-                ttl: 30
+            cacheStrategy:{
+                ttl: 10
             }
         })
 

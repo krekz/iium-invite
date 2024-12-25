@@ -7,8 +7,8 @@ interface RateLimitOptions {
 }
 
 const rateLimitMap = new Map<string, { count: number, timestamp: number }>() // map is used for memory management
-const DEFAULT_WINDOW_MS = 60 * 1000 // 1 minute
-const DEFAULT_MAX_REQUESTS = 10
+const DEFAULT_WINDOW_MS = 30 * 1000 // 30 seconds
+const DEFAULT_MAX_REQUESTS = 20
 
 export function checkRateLimit(userId: string, options: RateLimitOptions = {}): boolean {
     const {
