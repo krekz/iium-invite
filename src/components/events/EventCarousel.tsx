@@ -28,6 +28,8 @@ function EventCarousel({ events }: EventsProps) {
 		<Carousel
 			opts={{
 				align: "start",
+				dragFree: true,
+				duration: 50,
 			}}
 			className="w-full pt-2"
 		>

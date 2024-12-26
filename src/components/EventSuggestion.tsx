@@ -22,10 +22,15 @@ function EventSuggestion() {
     return (
         <div className="py-5">
             <h1 className="font-bold text-3xl">Events you may like</h1>
-            <Carousel className="hidden md:block">
+            <Carousel
+                opts={{
+                    dragFree: true,
+                }
+                }
+                className="hidden md:block">
                 <CarouselContent className="-ml-4">
                     {Events?.map((event, index) => (
-                        <CarouselItem key={index} className="cursor-pointer pl-1 basis-1/2 lg:basis-1/4">
+                        <CarouselItem key={index} className="cursor-pointer pl-1 basis-1/2 lg:basis-[25%]">
                             <Link href={`/events/${event.id}`}>
                                 <div className="w-full aspect-square relative group">
                                     <Image
