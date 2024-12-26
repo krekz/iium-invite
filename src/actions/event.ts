@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { checkRateLimit, compressImage } from "@/lib/server-only";
+import { checkRateLimit, uploadImage } from "@/lib/server-only";
 import { unstable_cache } from 'next/cache';
 import crypto from 'crypto';
 
@@ -28,16 +28,22 @@ type FormDataValues = Record<string, FormDataEntryValue | FormDataEntryValue[] |
 
 // Cache events for 1 minute
 const getCachedEvents = unstable_cache(
-	async () => {
+	async (currentPostId: string) => {
 		return await prisma.event.findMany({
+			where: {
+				active: true,
+				id: {
+					not: currentPostId
+				}
+			},
 			take: 7,
 			select: {
 				id: true,
 				poster_url: true
-			}
+			},
 		});
 	},
-	['events-cache'],
+	['events'],
 	{ revalidate: 60 }
 );
 
@@ -76,29 +82,10 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 		values.has_starpoints = values.has_starpoints === 'true';
 
 		const { title, campus, categories, date, description, fee, has_starpoints, location, organizer, poster_url, registration_link, contacts } = postSchema.parse(values)
-
 		const assignPostId = `post-${uuidv4()}`;
 		const encryptedUserId = crypto.createHash("sha256").update(session.user.id).digest("hex"); // preventing exposed userId in public supabase bucket url
-		const supabase = createClient();
 
-		const uploadedFiles = await Promise.all(
-			poster_url.map(async (file) => {
-				// Compress the image
-				const compressedImage = await compressImage(file);
-
-				const filePath = `post/user-${encryptedUserId}/${assignPostId}/${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-				const { data, error } = await supabase.storage
-					.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
-					.upload(filePath, compressedImage, {
-						cacheControl: "3600",
-						upsert: false,
-						contentType: "image/jpeg",
-					});
-
-				if (error) throw new Error("Failed to upload file.");
-				return data.path;
-			})
-		);
+		const uploadedFiles = await uploadImage(poster_url, encryptedUserId, assignPostId);
 
 		const newEvent = await prisma.$transaction(async (tx) => {
 			const event = await tx.event.create({
@@ -328,9 +315,9 @@ export const updateDescription = async ({ formData, eventId }: TUpdateDescriptio
 	}
 };
 
-export const getEvents = async () => {
+export const getEvents = async (currentPostId: string) => {
 	try {
-		return await getCachedEvents();
+		return await getCachedEvents(currentPostId);
 	} catch (error) {
 		console.error("[GetEvents]", error);
 		return [];

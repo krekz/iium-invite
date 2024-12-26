@@ -10,11 +10,13 @@ import { useQuery } from "react-query";
 import { getEvents } from "@/actions/event";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 function EventSuggestion() {
+    const { slug: currentPostId } = useParams()
     const { data: Events } = useQuery({
-        queryKey: "events",
-        queryFn: getEvents,
+        queryKey: ['events', currentPostId],
+        queryFn: () => getEvents(currentPostId as string),
     })
 
     return (
