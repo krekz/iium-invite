@@ -39,7 +39,7 @@ async function Home() {
 			date: 'asc'
 		},
 		cacheStrategy: {
-			ttl: 60 * 5 // 5 minutes
+			ttl: 60 * 2 // 2 minutes
 		}
 
 	});

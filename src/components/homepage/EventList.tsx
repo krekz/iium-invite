@@ -33,7 +33,7 @@ function EventList() {
 	const { data: events, isLoading, error } = useQuery<Event[]>({
 		queryKey: ["events", ...Object.values(queryParams)],
 		queryFn: () => getEvents(queryParams),
-		staleTime: 1000 * 60 * 5, // 5 minutes
+		staleTime: 1000 * 60 * 2, // 2 minutes
 		refetchOnWindowFocus: false,
 	});
 
