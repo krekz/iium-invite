@@ -70,9 +70,9 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 				<div className="max-w-screen-xl mx-auto px-4">
 					<div className="flex justify-between items-center h-24">
 						<div className="flex items-center">
-							<Link href="/" className="flex items-center mr-6">
+							<a href="/"  className="flex items-center mr-6">
 								<Image alt="logo" src="/eventure-logo.png" width={100} height={100} />
-							</Link>
+							</a>
 							<div className="hidden sm:flex sm:items-center space-x-4">
 								<NavigationLinks />
 								<ModeToggle />

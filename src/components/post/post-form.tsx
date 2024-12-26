@@ -98,7 +98,6 @@ function PostForm({ editablePost }: EventFormProps) {
 		noDragEventsBubbling: true,
 	});
 
-	// Dropzone for the entire page
 	const { getRootProps: getPageRootProps, isDragActive: isPageDragActive } = useDropzone({
 		onDrop,
 		accept: {
@@ -107,7 +106,7 @@ function PostForm({ editablePost }: EventFormProps) {
 			'image/jpg': []
 		},
 		maxFiles: 3,
-		noClick: true, // Prevents file dialog from opening when clicking anywhere
+		noClick: true, 
 		noDragEventsBubbling: true,
 	});
 
@@ -124,7 +123,6 @@ function PostForm({ editablePost }: EventFormProps) {
 	const onSubmit = async (values: z.infer<typeof postSchema>) => {
 		const formData = new FormData();
 
-		// Helper function to append form data
 		const appendFormData = (key: string, value: any) => {
 			if (Array.isArray(value)) {
 				if (key === 'contacts') {
@@ -139,9 +137,7 @@ function PostForm({ editablePost }: EventFormProps) {
 			}
 		};
 
-		// Append form values
 		Object.entries(values).forEach(([key, value]) => appendFormData(key, value));
-		// Append selected files
 		selectedFiles.forEach((file, index) => formData.append(`poster_url[${index}]`, file));
 
 		try {
