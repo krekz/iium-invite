@@ -42,7 +42,7 @@ function CategoryComboBox({ categories, addCategory, removeCategory, selectedCat
               {categories.map((cate, index) => (
                 <CommandItem
                   key={index}
-                  value={cate}
+                  value={cate.toLowerCase()}
                   onSelect={(currentValue) => {
                     if (!selectedCategories.includes(currentValue)) {
                       addCategory(currentValue);
@@ -54,7 +54,7 @@ function CategoryComboBox({ categories, addCategory, removeCategory, selectedCat
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      selectedCategories.includes(cate) ? "opacity-100" : "opacity-0"
+                      selectedCategories.includes(cate.toLowerCase()) ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {cate}
