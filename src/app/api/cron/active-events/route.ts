@@ -1,14 +1,13 @@
 import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
 
 export const dynamic = 'force-dynamic'; // static by default, unless reading the request
 
 export async function GET(request: NextRequest) {
-  const secretKey = process.env.CRON_SECRET_KEY;
-  const providedKey = request.nextUrl.searchParams.get('key');
 
-  if (!providedKey || providedKey !== secretKey) {
-    return new Response("Nice try", { status: 401 });
+  if (request.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new Response('Unauthorized', { status: 401 });
   }
 
   try {
@@ -29,7 +28,10 @@ export async function GET(request: NextRequest) {
         active: false,
       }
     })
-    console.log('Cron job ran successfully');
+    revalidatePath('/')
+    revalidatePath('/discover')
+    revalidatePath('/account?option=bookmarks')
+    revalidatePath('/account?option=posts')
     return new Response('Cron job ran successfully');
   } catch (error) {
     console.error('Error updating events', error);
