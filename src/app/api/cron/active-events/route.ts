@@ -14,16 +14,16 @@ export async function GET(request: NextRequest) {
         OR: [
           {
             registrationEndDate: { lte: new Date() },
-            active: true,
+            isActive: true,
           },
           {
             date: { lte: new Date() },
-            active: true,
+            isActive: true,
           }
         ],
       },
       data: {
-        active: false,
+        isActive: false,
       }
     })
     revalidatePath('/')

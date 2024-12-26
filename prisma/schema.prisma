@@ -83,16 +83,16 @@ model Event {
   categories          String[]
   has_starpoints      Boolean
   contacts            Contact[]
-  active              Boolean    @default(true)
+  isActive            Boolean    @default(true)
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
   Author              User?      @relation(fields: [authorId], references: [id])
   authorId            String?
   bookmarks           Bookmark[]
 
-  @@index([registrationEndDate, active]) // use in cron api
-  @@index([date, active]) // use in cron api
-  @@index([active])
+  @@index([registrationEndDate, isActive]) // use in cron api
+  @@index([date, isActive]) // use in cron api
+  @@index([isActive])
   @@index([authorId])
 }
 

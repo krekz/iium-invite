@@ -68,7 +68,7 @@ CREATE TABLE "Event" (
     "registration_link" TEXT,
     "categories" TEXT[],
     "has_starpoints" BOOLEAN NOT NULL,
-    "active" BOOLEAN NOT NULL DEFAULT true,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "authorId" TEXT,
@@ -112,13 +112,13 @@ CREATE UNIQUE INDEX "VerificationToken_userId_key" ON "VerificationToken"("userI
 CREATE UNIQUE INDEX "Event_id_key" ON "Event"("id");
 
 -- CreateIndex
-CREATE INDEX "Event_registrationEndDate_active_idx" ON "Event"("registrationEndDate", "active");
+CREATE INDEX "Event_registrationEndDate_isActive_idx" ON "Event"("registrationEndDate", "isActive");
 
 -- CreateIndex
-CREATE INDEX "Event_date_active_idx" ON "Event"("date", "active");
+CREATE INDEX "Event_date_isActive_idx" ON "Event"("date", "isActive");
 
 -- CreateIndex
-CREATE INDEX "Event_active_idx" ON "Event"("active");
+CREATE INDEX "Event_isActive_idx" ON "Event"("isActive");
 
 -- CreateIndex
 CREATE INDEX "Event_authorId_idx" ON "Event"("authorId");

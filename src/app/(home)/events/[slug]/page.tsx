@@ -16,7 +16,7 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 			id: params.slug,
 			OR: [
 				{
-					active: true
+					isActive: true
 				},
 				{
 					authorId: session?.user?.id

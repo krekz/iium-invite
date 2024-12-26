@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
                 userId: session.user.id,
                 event: {
                     id: { not: undefined },
-                    active: true,
+                    isActive: true,
                 },
             },
             select: {
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
             orderBy: {
                 createdAt: 'desc'
             },
-            cacheStrategy:{
+            cacheStrategy: {
                 ttl: 10
             }
         })

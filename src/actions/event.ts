@@ -31,7 +31,7 @@ const getCachedEvents = unstable_cache(
 	async (currentPostId: string) => {
 		return await prisma.event.findMany({
 			where: {
-				active: true,
+				isActive: true,
 				id: {
 					not: currentPostId
 				}

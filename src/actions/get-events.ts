@@ -23,7 +23,7 @@ export async function getEvents(searchParams?: SearchParams) {
             try {
                 const events = await prisma.event.findMany({
                     where: {
-                        active: true,
+                        isActive: true,
                         AND: [
                             searchQuery ? {
                                 OR: [
