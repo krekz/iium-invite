@@ -1,5 +1,7 @@
 import "server-only"
 import sharp from 'sharp'
+import { createClient } from "./supabase/server";
+import { v4 as uuidv4 } from 'uuid';
 
 interface RateLimitOptions {
     maxRequests?: number
@@ -39,7 +41,7 @@ export function checkRateLimit(userId: string, options: RateLimitOptions = {}): 
 }
 
 
-const MAX_IMAGE_SIZE = 200 * 1024; // 200KB
+const MAX_IMAGE_SIZE = 130 * 1024; // 130KB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
 
 export const compressImage = async (file: File): Promise<Buffer> => {
@@ -49,11 +51,11 @@ export const compressImage = async (file: File): Promise<Buffer> => {
 
     const buffer = await file.arrayBuffer();
     let compressedImage = await sharp(Buffer.from(buffer))
-        .resize({ width: 1080, withoutEnlargement: true }) // Resize to reasonable dimensions
-        .toFormat("jpeg", { quality: 80 }) // Compress with quality
+        .resize({ width: 1080, withoutEnlargement: true })
+        .toFormat("jpeg", { quality: 80 })
         .toBuffer();
 
-    // Further reduce size if it exceeds the limit
+    // reduce size if it exceeds the limit
     while (compressedImage.byteLength > MAX_IMAGE_SIZE) {
         const qualityReduction = Math.max(10, Math.floor((compressedImage.byteLength / MAX_IMAGE_SIZE) * 80));
         compressedImage = await sharp(compressedImage)
@@ -62,4 +64,26 @@ export const compressImage = async (file: File): Promise<Buffer> => {
     }
 
     return compressedImage;
+};
+
+export const uploadImage = async (files: File[], encryptedUserId: string, assignPostId: string): Promise<string[]> => {
+    const supabase = createClient();
+
+    return await Promise.all(
+        files.map(async (file) => {
+            const compressedImage = await compressImage(file);
+
+            const filePath = `post/user-${encryptedUserId}/${assignPostId}/${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+            const { data, error } = await supabase.storage
+                .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
+                .upload(filePath, compressedImage, {
+                    cacheControl: "3600",
+                    upsert: false,
+                    contentType: "image/jpeg",
+                });
+
+            if (error) throw new Error("Failed to upload file.");
+            return data.path;
+        })
+    );
 };
