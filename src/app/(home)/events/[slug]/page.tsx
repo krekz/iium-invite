@@ -7,7 +7,6 @@ import { auth } from "@/auth";
 import { EventProvider } from "@/lib/context/EventContextProvider";
 
 async function EventDetails(props: { params: Promise<{ slug: string }> }) {
-	// TODO: display only event not expired
 	const params = await props.params;
 	const session = await auth();
 
@@ -53,7 +52,7 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 			}
 		},
 		cacheStrategy: {
-			swr: 30,
+			ttl: 60
 		}
 	})
 
