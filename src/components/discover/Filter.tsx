@@ -16,7 +16,6 @@ import SearchInput from '../SearchInput'
 
 const FILTER_OPTIONS = {
     categories: ["Theatre", "Career", "Workshop", "Sports"],
-    campuses: ["Gombak", "Kuantan", "Pagoh", "Gambang"],
     additionalFilters: [
         { id: 'fee', label: 'Fee' },
         { id: 'starpoints', label: 'Starpoints' }
@@ -30,7 +29,6 @@ function Filter() {
     const getActiveFiltersCount = () => {
         let count = 0
         if (searchParams.get('category')) count++
-        if (searchParams.get('campus')) count++
         if (searchParams.get('fee')) count++
         if (searchParams.get('starpoints')) count++
         return count
@@ -119,11 +117,6 @@ function Filter() {
                 title="Categories"
                 items={FILTER_OPTIONS.categories}
                 paramKey="category"
-            />
-            <FilterSection
-                title="Campus"
-                items={FILTER_OPTIONS.campuses}
-                paramKey="campus"
             />
             <div className="space-y-4">
                 <h3 className="font-medium">Additional Filters</h3>

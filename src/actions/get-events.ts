@@ -49,7 +49,7 @@ export async function getEvents(searchParams?: SearchParams) {
                             } : {},
                             campus ? {
                                 campus: {
-                                    equals: campus,
+                                    equals: campus === 'all' ? undefined : campus,
                                     mode: 'insensitive'
                                 }
                             } : {},
@@ -79,8 +79,7 @@ export async function getEvents(searchParams?: SearchParams) {
                         has_starpoints: true,
                     },
                     cacheStrategy: {
-                        ttl: 60 * 5, // 5 minutes,
-                        swr: 60 * 2.5,
+                        ttl: 30,
                     }
                 });
                 return events;

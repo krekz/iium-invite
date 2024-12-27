@@ -20,12 +20,16 @@ interface Event {
 	has_starpoints: boolean;
 }
 
-function EventList() {
+type EventListProps = {
+	campus: "all" | "gombak" | "kuantan" | "pagoh" | "gambang"
+};
+
+function EventList({ campus }: EventListProps) {
 	const searchParams = useSearchParams();
 	const queryParams = {
 		q: searchParams.get("q") ?? undefined,
 		category: searchParams.get("category") ?? undefined,
-		campus: searchParams.get("campus") ?? undefined,
+		campus: campus,
 		fee: searchParams.get("fee") === "true" ? "true" : undefined,
 		has_starpoints: searchParams.get("starpoints") === "true" ? "true" : undefined
 	};
@@ -33,7 +37,6 @@ function EventList() {
 	const { data: events, isLoading, error } = useQuery<Event[]>({
 		queryKey: ["events", ...Object.values(queryParams)],
 		queryFn: () => getEvents(queryParams),
-		staleTime: 1000 * 60 * 2, // 2 minutes
 		refetchOnWindowFocus: false,
 	});
 
