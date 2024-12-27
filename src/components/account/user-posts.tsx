@@ -10,6 +10,7 @@ interface UserPost {
     organizer: string
     location: string
     poster_url: string[]
+    isActive: string
 }
 
 function UserPosts() {
@@ -47,14 +48,22 @@ function UserPosts() {
                         <Link
                             href={`/events/${post.id}`}
                             key={post.title}
+                            className={!post.isActive ? 'opacity-50' : ''}
                         >
                             <div className='aspect-square w-full relative overflow-hidden rounded-lg'>
                                 <Image
                                     src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${post.poster_url[0]}`}
                                     alt={post.title}
                                     fill
-                                    className='overflow-hidden hover:scale-105 transition-all duration-700'
+                                    className={`overflow-hidden hover:scale-105 transition-all duration-700 ${!post.isActive}? 'grayscale' : ''}`}
                                 />
+                                {!post.isActive && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                        <span className="text-white font-semibold px-3 py-1 rounded-full bg-black/50">
+                                            Expired
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                             <p className='font-semibold'>{post.title}</p>
                         </Link>

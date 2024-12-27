@@ -43,7 +43,7 @@ function UserPage() {
   }
 
   return (
-    <main className='flex justify-between min-h-dvh py-10 px-4 sm:px-6'>
+    <div className='flex justify-between min-h-dvh py-3 px-4 sm:px-6'>
       <div className='flex flex-col w-full max-w-5xl mx-auto'>
         <header className='flex flex-col sm:flex-row justify-between w-full gap-4 sm:gap-0'>
           <h1 className='text-2xl font-semibold'>
@@ -60,7 +60,7 @@ function UserPage() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   )
 }
 

@@ -24,9 +24,10 @@ export async function GET(request: NextRequest) {
                 organizer: true,
                 location: true,
                 poster_url: true,
+                isActive: true
             },
             orderBy: {
-                createdAt: 'desc'
+                isActive: 'desc'
             },
             cacheStrategy: {
                 ttl: 10
