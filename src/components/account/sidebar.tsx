@@ -4,7 +4,6 @@ import { User } from 'next-auth'
 import Image from 'next/image'
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
-import Logout from '../Logout'
 
 function Sidebar({ user }: { user: User | undefined }) {
     const searchParams = useSearchParams()
@@ -17,7 +16,7 @@ function Sidebar({ user }: { user: User | undefined }) {
     }
 
     return (
-        <nav className='w-full md:w-1/3 flex flex-col items-center md:items-start'>
+        <nav className='hidden md:flex w-full md:w-1/3 flex-col items-center md:items-start'>
             <Image src={user?.image!} alt='thumbnail' width={80} height={80} className='rounded-full' />
             <p className='text-xl mt-1 font-medium text-center md:text-left'>{user?.name}</p>
             <p className='text-sm font-thin text-center md:text-left'>{user?.email}</p>
@@ -41,9 +40,6 @@ function Sidebar({ user }: { user: User | undefined }) {
                 >
                     Bookmarks
                 </p>
-
-                <Logout />
-
             </div>
         </nav>
     )

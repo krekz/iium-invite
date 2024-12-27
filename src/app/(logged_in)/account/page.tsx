@@ -25,19 +25,29 @@ const MainContent = ({ currentView }: { currentView: ViewOption | string | strin
       return <Informations />
   }
 }
-
 function UserPage() {
-
   const user = useSession().data?.user
   const searchParams = useSearchParams()
   const currentView = searchParams.get('option') || VIEW_OPTIONS.INFORMATION
+
+  const getPageTitle = () => {
+    const firstName = user?.name?.split(' ')[0]
+    switch (currentView) {
+      case VIEW_OPTIONS.POSTS:
+        return `${firstName}'s Posts`
+      case VIEW_OPTIONS.BOOKMARKS:
+        return `${firstName}'s Bookmarks`
+      default:
+        return `${firstName}'s Account`
+    }
+  }
 
   return (
     <main className='flex justify-between min-h-dvh py-10 px-4 sm:px-6'>
       <div className='flex flex-col w-full max-w-5xl mx-auto'>
         <header className='flex flex-col sm:flex-row justify-between w-full gap-4 sm:gap-0'>
           <h1 className='text-2xl font-semibold'>
-            {user?.name?.split(' ')[0]}&apos;s Account
+            {getPageTitle()}
           </h1>
         </header>
 
