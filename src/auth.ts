@@ -41,7 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 					name: token.name,
 					email: token.email,
 					image: token.picture,
-					emailVerified: token.isVerified as boolean,
+					isVerified: token.isVerified as boolean,
 				}
 			}
 		}
