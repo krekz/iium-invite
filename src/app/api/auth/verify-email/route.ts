@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
             prisma.user.update({
                 where: { id: decoded.userId },
                 data: {
-                    emailVerified: true,
+                    isVerified: true,
                     iiumEmail: decoded.email
                 },
             })
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
         }
 
         // cek current user already verified 
-        if (session.user.emailVerified) {
+        if (session.user.isVerified) {
             return NextResponse.json({ message: "Email already verified" }, { status: 400 });
         }
 

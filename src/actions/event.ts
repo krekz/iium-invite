@@ -58,7 +58,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 			throw new Error("Too many requests. Please try again later.");
 		}
 
-		if (session.user.emailVerified === false) throw new Error("You must verify your email to create a post");
+		if (session.user.isVerified === false) throw new Error("You must verify your email to create a post");
 
 		const { formData } = input;
 		const values: FormDataValues = Object.fromEntries(formData.entries());
