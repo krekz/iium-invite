@@ -3,42 +3,51 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from "@/lib/prisma"
 import google from "next-auth/providers/google"
 import { cache } from "react"
-
 declare module "next-auth" {
 	interface Session {
 		user: {
-			/** The user's postal address. */
-			emailVerified: boolean
-			/**
-			 * By default, TypeScript merges new interface properties and overwrites existing ones.
-			 * In this case, the default session user properties will be overwritten,
-			 * with the new ones defined above. To keep the default session user properties,
-			 * you need to add them back into the newly declared interface.
-			 */
+			isVerified: boolean | null
 		} & DefaultSession["user"]
 	}
 
+	interface User {
+		isVerified?: boolean
+	}
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
 	adapter: PrismaAdapter(prisma),
 	providers: [google],
-
+	session: {
+		strategy: "jwt",
+		maxAge: 7 * 24 * 60 * 60, // 7 days
+	},
 	callbacks: {
-		session({ session, user }) {
+		jwt({ token, user, trigger, session }) {
+			if (user) {
+				token.id = user.id
+				token.isVerified = user.isVerified
+			}
+			if (trigger === "update" && session) {
+				token.isVerified = session.user.isVerified
+			}
+			return token
+		},
+		session({ session, token }) {
 			return {
 				expires: session.expires,
 				user: {
-					id: user.id,
-					name: user.name,
-					email: user.email,
-					image: user.image,
-					emailVerified: user.emailVerified
+					id: token.id as string,
+					name: token.name,
+					email: token.email,
+					image: token.picture,
+					emailVerified: token.isVerified as boolean,
 				}
 			}
-		},
+		}
 	}
 })
+
 
 export const getAuth = cache(async () => {
 	const session = await auth()
