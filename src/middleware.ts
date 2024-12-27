@@ -1,17 +1,34 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import prisma from './lib/prisma'
+import { cache } from 'react'
 
-// protected routes that require authentication
-const PROTECTED_ROUTES = {
+export const getEventAccess = cache(async (eventId: string) => {
+    return prisma.event.findUnique({
+        where: { id: eventId },
+        select: {
+            isActive: true,
+            authorId: true
+        },
+        cacheStrategy: { ttl: 60 }
+    })
+})
+
+export const PROTECTED_ROUTES = {
     POST: '/post',
     ACCOUNT: '/account',
-    VERIFY_EMAIL: '/verify-email'
+    VERIFY_EMAIL: '/verify-email',
+    // EVENTS: '/events'
 } as const
 
 export default auth(async (request) => {
     const { pathname } = request.nextUrl
     const user = request.auth?.user
+
+    // helper func
+    const createRedirectResponse = (path: string) => {
+        return NextResponse.redirect(new URL(path, request.url))
+    }
 
     const getSignInUrl = (callbackPath: string) => {
         const url = new URL('/api/auth/signin', request.url)
@@ -19,62 +36,54 @@ export default auth(async (request) => {
         return url
     }
 
-    switch (true) {
-        case !user && (
-            pathname.startsWith(PROTECTED_ROUTES.POST) ||
-            pathname.startsWith(PROTECTED_ROUTES.ACCOUNT) ||
-            pathname.startsWith(PROTECTED_ROUTES.VERIFY_EMAIL)
-        ):
-            return NextResponse.redirect(getSignInUrl(pathname))
+    // early return for public routes
+    const isProtectedRoute = Object.values(PROTECTED_ROUTES).some(route => pathname.startsWith(route))
+    if (!isProtectedRoute) {
+        return NextResponse.next()
+    }
 
-        case !user?.emailVerified && pathname.startsWith(PROTECTED_ROUTES.POST): {
-            return NextResponse.redirect(new URL('/verify-email', request.url))
-        }
+    // auth checks
+    if (!user && isProtectedRoute) {
+        return NextResponse.redirect(getSignInUrl(pathname))
+    }
 
-        case pathname.startsWith('/events'): {
-            const eventId = pathname.split('/').pop()
-            if (!eventId) {
-                return NextResponse.redirect(new URL('/404', request.url))
-            }
-            const event = await prisma.event.findUnique({
-                where: { id: eventId },
-                select: {
-                    isActive: true,
-                    authorId: true
-                },
-                cacheStrategy: {
-                    ttl: 15
-                }
-            })
+    // specific route logic
+    if (pathname.startsWith(PROTECTED_ROUTES.POST) && !user?.isVerified) {
+        return createRedirectResponse('/verify-email')
+    }
 
-            // non existent events
-            if (!event) {
-                return NextResponse.redirect(new URL('/404', request.url))
-            }
+    if (pathname.startsWith(PROTECTED_ROUTES.VERIFY_EMAIL) && user?.isVerified) {
+        return createRedirectResponse('/404')
+    }
 
-            // expired events
+    // event page logic
+    if (pathname.startsWith("/events")) {
+        const eventId = pathname.split('/').pop()
+        if (!eventId) return createRedirectResponse('/404')
+
+        try {
+            const event = await getEventAccess(eventId)
+
+            if (!event) return createRedirectResponse('/404')
+
             if (!event.isActive) {
-                if (!user) {
-                    return NextResponse.redirect(new URL('/404', request.url))
-                }
-                // only author can view expired events
-                if (user.id !== event.authorId) {
-                    return NextResponse.redirect(new URL('/404', request.url))
-                }
+                const isAuthorized = user && user.id === event.authorId
+                if (!isAuthorized) return createRedirectResponse('/404')
             }
-            break
-        }
-        case pathname.startsWith("/verify-email"): {
-            if (user?.emailVerified) return NextResponse.redirect(new URL('/404', request.url))
+        } catch (error) {
+            console.error('Error accessing event:', error)
+            return createRedirectResponse('/500')
         }
     }
 
     return NextResponse.next()
 })
 
-// Configure path matching
 export const config = {
     matcher: [
-        '/((?!api/auth|_next/static|_next/image|favicon\\.ico).*)',
+        '/events/:path*',
+        '/post/:path*',
+        '/account/:path*',
+        '/verify-email/:path*'
     ],
 }
