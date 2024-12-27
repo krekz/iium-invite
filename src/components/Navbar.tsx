@@ -4,14 +4,124 @@ import { useEffect, useState } from "react";
 import { ModeToggle } from "./theme-switch";
 import { Button } from "./ui/button";
 import { SignIn, SignOut } from "@/actions/login-signout";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Home, Search, MoreHorizontal, Plus, Bookmark } from "lucide-react";
 import Marquee from 'react-fast-marquee'
 import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Sheet, SheetContent, SheetClose, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "./ui/sheet";
+import { usePathname, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+const MobileNavbar = ({ session }: { session: { user: string | undefined | null } }) => {
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+
+	if (!session.user) {
+		return (
+			<div className="fixed bottom-0 left-0 right-0 bg-background border-t sm:hidden">
+				<div className="flex justify-around items-center h-14 px-4">
+					<Link href="/" className={cn("flex flex-col items-center gap-0.5", {
+						"text-amber-600": pathname === "/"
+					})}>
+						<Home className="h-5 w-5" />
+						<span className="text-[10px]">Home</span>
+					</Link>
+					<Link href="/discover" className={cn("flex flex-col items-center gap-0.5", {
+						"text-amber-600": pathname === "/discover"
+					})}>
+						<Search className="h-5 w-5" />
+						<span className="text-[10px]">Discover</span>
+					</Link>
+					<Link href="/post" className={cn("flex flex-col items-center gap-0.5", {
+						"text-amber-600": pathname === "/post"
+					})}>
+						<Plus className="h-5 w-5" />
+						<span className="text-[10px]">Post</span>
+					</Link>
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="fixed bottom-0 left-0 right-0 bg-background border-t sm:hidden">
+			<div className="flex justify-around items-center h-14 px-4">
+				<Link href="/" className={cn("flex flex-col items-center gap-0.5", {
+					"text-amber-600": pathname === "/"
+				})}>
+					<Home className="h-5 w-5" />
+					<span className="text-[10px]">Home</span>
+				</Link>
+				<Link href="/discover" className={cn("flex flex-col items-center gap-0.5", {
+					"text-amber-600": pathname === "/discover"
+				})}>
+					<Search className="h-5 w-5" />
+					<span className="text-[10px]">Discover</span>
+				</Link>
+				<Link href="/post" className={cn("flex flex-col items-center gap-0.5", {
+					"text-amber-600": pathname === "/post"
+				})}>
+					<Plus className="h-5 w-5" />
+					<span className="text-[10px]">Post</span>
+				</Link>
+				<Sheet>
+					<SheetTrigger asChild>
+						<button className={cn("flex flex-col items-center gap-0.5", {
+							"text-amber-600": pathname === "/account"
+						})}>
+							<MoreHorizontal className="h-5 w-5" />
+							<span className="text-[10px]">More</span>
+						</button>
+					</SheetTrigger>
+					<SheetContent side="bottom" className="h-[50vh] p-2">
+						<SheetHeader>
+							<SheetTitle>Menu</SheetTitle>
+							<SheetDescription>
+								Access additional options and settings
+							</SheetDescription>
+						</SheetHeader>
+						<div className="flex flex-col gap-4 mt-4">
+							<SheetClose asChild>
+								<Link href="/account" className={cn("flex items-center gap-2 px-4 py-2 hover:bg-accent rounded-md", {
+									"text-amber-600": pathname === "/account" && !searchParams.get("option")
+								})}>
+									<User size={16} />
+									<span>Account Settings</span>
+								</Link>
+							</SheetClose>
+							<SheetClose asChild>
+								<Link href="/account?option=posts" className={cn("flex items-center gap-2 px-4 py-2 hover:bg-accent rounded-md", {
+									"text-amber-600": pathname === "/account" && searchParams.get("option") === "posts"
+								})}>
+									<Plus size={16} />
+									<span>My Posts</span>
+								</Link>
+							</SheetClose>
+							<SheetClose asChild>
+								<Link href="/account?option=bookmarks" className={cn("flex items-center gap-2 px-4 py-2 hover:bg-accent rounded-md", {
+									"text-amber-600": pathname === "/account" && searchParams.get("option") === "bookmarks"
+								})}>
+									<Bookmark size={16} />
+									<span>Bookmarks</span>
+								</Link>
+							</SheetClose>
+							<div className="h-[1px] bg-border my-2" />
+							<button
+								onClick={async () => await SignOut({ redirectTo: "/" })}
+								className="flex items-center gap-2 px-4 py-2 hover:bg-destructive hover:text-destructive-foreground rounded-md text-left text-destructive"
+							>
+								<LogOut size={16} />
+								<span>Sign Out</span>
+							</button>
+						</div>
+					</SheetContent>
+				</Sheet>
+			</div>
+		</div>
+	);
+};
 
 export default ({ session }: { session: { user: string | undefined | null } }) => {
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
-
 	const navigation = [
 		{ title: "Discover", path: "/discover" },
 	];
@@ -28,35 +138,37 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 				Sign in
 			</Button>
 		) : (
-			<Popover>
-				<PopoverTrigger asChild>
-					<Button
-						variant="ghost"
-						className={`rounded-full size-12 bg-transparent flex items-center justify-center ${buttonClass} p-0 hover:bg-accent`}
-					>
-						<User className="size-6" />
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent className="w-48 p-2" align="end">
-					<div className="flex flex-col space-y-1">
-						<Link
-							href="/account"
-							className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
+			<div className="hidden sm:block">
+				<Popover>
+					<PopoverTrigger asChild>
+						<Button
+							variant="ghost"
+							className={`rounded-full size-12 bg-transparent flex items-center justify-center ${buttonClass} p-0 hover:bg-accent`}
 						>
-							<User size={16} />
-							<span>Account Settings</span>
-						</Link>
-						<div className="h-[1px] bg-border my-1" />
-						<button
-							onClick={async () => await SignOut({ redirectTo: "/" })}
-							className="px-2 py-2 text-sm hover:bg-red-500 hover:text-black rounded-md transition-colors text-left flex items-center gap-2"
-						>
-							<LogOut size={16} />
-							<span>Sign Out</span>
-						</button>
-					</div>
-				</PopoverContent>
-			</Popover>
+							<User className="size-6" />
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent className="w-48 p-2" align="end">
+						<div className="flex flex-col space-y-1">
+							<Link
+								href="/account"
+								className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
+							>
+								<User size={16} />
+								<span>Account Settings</span>
+							</Link>
+							<div className="h-[1px] bg-border my-1" />
+							<button
+								onClick={async () => await SignOut({ redirectTo: "/" })}
+								className="px-2 py-2 text-sm hover:bg-red-500 hover:text-black rounded-md transition-colors text-left flex items-center gap-2"
+							>
+								<LogOut size={16} />
+								<span>Sign Out</span>
+							</button>
+						</div>
+					</PopoverContent>
+				</Popover>
+			</div>
 		);
 	};
 
@@ -75,13 +187,6 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 			</Link>
 		));
 	};
-
-	useEffect(() => {
-		document.onclick = (e) => {
-			const target = e.target as Element;
-			if (!target.closest(".menu-btn")) setIsMenuOpen(false);
-		};
-	}, []);
 
 	return (
 		<div className="sticky top-0 z-50">
@@ -111,42 +216,14 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 							</Link>
 							<AuthButtons />
 						</div>
-						<button
-							className="menu-btn sm:hidden inline-flex items-center justify-center p-2 rounded-md text-amber-600 hover:text-amber-700 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500"
-							onClick={() => setIsMenuOpen(!isMenuOpen)}
-						>
-							{isMenuOpen ? (
-								<svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-								</svg>
-							) : (
-								<svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-								</svg>
-							)}
-						</button>
-					</div>
-				</div>
-				<div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
-					<div className="px-2 pt-2 pb-3 space-y-1">
-						<NavigationLinks isMobile />
-						<div className="px-3 py-2">
-							<Link
-								href="/post"
-								className="block w-full px-4 py-4 rounded-full text-center text-sm font-medium text-white bg-amber-700 hover:bg-amber-800 transition duration-150 ease-in-out"
-							>
-								Post
-							</Link>
-						</div>
-						<div className="px-3 py-2">
-							<AuthButtons isMobile />
-						</div>
-						<div className="px-3 py-2">
+						<div className="sm:hidden flex items-center gap-4">
 							<ModeToggle />
+							{!session.user && <AuthButtons />}
 						</div>
 					</div>
 				</div>
 			</nav>
+			<MobileNavbar session={session} />
 		</div>
 	);
 };
