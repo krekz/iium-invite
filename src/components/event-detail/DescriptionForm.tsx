@@ -47,9 +47,7 @@ function DescriptionForm({ event }: { event: { description: string } }) {
 
             toast({
                 title: result.success ? "Saved" : "Error",
-                description: result.success
-                    ? result.message
-                    : result.message,
+                description: result.message,
                 variant: result.success ? "success" : "destructive"
             });
 

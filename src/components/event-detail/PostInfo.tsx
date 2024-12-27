@@ -13,7 +13,7 @@ import BookmarkButton from "./BookmarkButton";
 function PostInfo({ device }: { device: "mobile" | "desktop" }) {
     const params = useParams() as { slug: string };
     if (!params) throw new Error("Slug is required");
-    const { event, isAuthor, userId } = useEvent();
+    const { event, isAuthor, userId, isActive } = useEvent();
     const eventDetails = [
         { label: "Event Date", value: format(new Date(event.date).toLocaleDateString(), "dd/M/yy") },
         { label: "Location", value: event.location },
@@ -27,11 +27,10 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
             <div className="flex flex-col gap-2 w-full">
 
                 {/* Edit form */}
-                {isAuthor &&
-                    <div className="flex justify-between w-full">
-                        <EventDetailForm />
-                        <DeletePostButton eventId={params.slug} />
-                    </div>}
+                <div className="flex justify-between w-full">
+                    {isAuthor && isActive && <EventDetailForm />}
+                    <DeletePostButton eventId={params.slug} />
+                </div>
 
                 {event.categories.some(cat => ["Recruitment", "Committee"].includes(cat)) && <p className="text-xs bg-indigo-500 text-white font-extrabold rounded-full p-1 text-center">Open for Recruitment</p>}
                 {event.has_starpoints && <p className="italic font-bold text-yellow-300">⭐️ Starpoints provided ⭐️ </p>}

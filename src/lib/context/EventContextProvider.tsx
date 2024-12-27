@@ -6,6 +6,7 @@ type EventContextType = {
     event: PostPageProps;
     userId: string | undefined;
     isAuthor: boolean;
+    isActive: boolean;
     slug: string;
 };
 

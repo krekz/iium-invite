@@ -106,7 +106,7 @@ function PostForm({ editablePost }: EventFormProps) {
 			'image/jpg': []
 		},
 		maxFiles: 3,
-		noClick: true, 
+		noClick: true,
 		noDragEventsBubbling: true,
 	});
 
@@ -142,14 +142,11 @@ function PostForm({ editablePost }: EventFormProps) {
 
 		try {
 			const newPost = await CreatePost({ formData });
-			if (!newPost.success) {
-				throw new Error("Failed to create post");
-			}
 
 			toast({
-				title: "Event Created",
-				description: "Your event has been created successfully",
-				variant: "success"
+				title: newPost.success ? "Success" : "Error",
+				description: newPost.message,
+				variant: newPost.success ? "success" : "destructive"
 			});
 
 			router.push(`/events/${newPost.eventId}`);

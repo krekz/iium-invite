@@ -8,12 +8,12 @@ import { useEvent } from "@/lib/context/EventContextProvider";
 
 
 function LeftSide() {
-    const { event, isAuthor } = useEvent()
+    const { event, isAuthor, isActive } = useEvent()
     return (
         <div className="flex flex-col w-full break-words">
             <ImageCarousel posters={event.poster_url} />
             <PostInfo device="mobile" />
-            {isAuthor && <DescriptionForm event={event} />}
+            {isAuthor && isActive && <DescriptionForm event={event} />}
             <Markdown>
                 {event?.description || ""}
             </Markdown>

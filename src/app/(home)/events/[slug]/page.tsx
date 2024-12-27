@@ -49,7 +49,8 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 				select: {
 					userId: true,
 				}
-			}
+			},
+			isActive: true,
 		},
 		cacheStrategy: {
 			ttl: 60
@@ -69,6 +70,7 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 					event: event,
 					userId: session?.user?.id,
 					isAuthor: isAuthor,
+					isActive: event.isActive,
 					slug: params.slug
 				}}>
 					<LeftSide />

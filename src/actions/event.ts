@@ -51,14 +51,19 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
-			throw new Error("You must be logged in to do that");
+			console.error("[CreatePost] Unauthorized: No user session");
+			return { success: false, message: "You must be logged in to do that", eventId: "" };
 		}
 
 		if (!checkRateLimit(session.user.id, { maxRequests: 2 })) {
-			throw new Error("Too many requests. Please try again later.");
+			console.error("[CreatePost] Rate limit exceeded for user:", session.user.id);
+			return { success: false, message: "Too many requests. Please try again later.", eventId: "" };
 		}
 
-		if (session.user.isVerified === false) throw new Error("You must verify your email to create a post");
+		if (session.user.isVerified === false) {
+			console.error("[CreatePost] Unverified user attempted to create post:", session.user.id);
+			return { success: false, message: "You must verify your email to create a post", eventId: "" };
+		}
 
 		const { formData } = input;
 		const values: FormDataValues = Object.fromEntries(formData.entries());
@@ -75,7 +80,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 					values.contacts = parsed;
 				}
 			} catch (error) {
-				console.error("Error parsing contacts:", error);
+				console.error("[CreatePost] Error parsing contacts:", error);
 			}
 		}
 
@@ -83,7 +88,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 
 		const { title, campus, categories, date, description, fee, has_starpoints, location, organizer, poster_url, registration_link, contacts } = postSchema.parse(values)
 		const assignPostId = `post-${uuidv4()}`;
-		const encryptedUserId = crypto.createHash("sha256").update(session.user.id).digest("hex"); // preventing exposed userId in public supabase bucket url
+		const encryptedUserId = crypto.createHash("sha256").update(session.user.id).digest("hex");
 
 		const uploadedFiles = await uploadImage(poster_url, encryptedUserId, assignPostId);
 
@@ -105,7 +110,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 					registration_link,
 					contacts: {
 						create: contacts.map((contact) => ({
-							name: contact.name.slice(0, 100), // Limit length
+							name: contact.name.slice(0, 100),
 							phone: contact.phone.slice(0, 20),
 						})),
 					},
@@ -132,15 +137,18 @@ export const deletePost = async ({ eventId }: { eventId: string }): Promise<{ su
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
-			throw new Error("You must be logged in to do that");
+			console.error("[DeletePost] Unauthorized: No user session");
+			return { success: false };
 		}
 
 		if (!checkRateLimit(session.user.id, { maxRequests: 2, windowMs: 30 * 1000 })) {
-			throw new Error("Too many requests. Please try again later.");
+			console.error("[DeletePost] Rate limit exceeded for user:", session.user.id);
+			return { success: false };
 		}
 
 		if (!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(eventId)) {
-			throw new Error("Invalid event ID format");
+			console.error("[DeletePost] Invalid event ID format:", eventId);
+			return { success: false };
 		}
 
 		const event = await prisma.event.findUnique({
@@ -149,11 +157,16 @@ export const deletePost = async ({ eventId }: { eventId: string }): Promise<{ su
 		});
 
 		if (!event) {
-			throw new Error("Event not found");
+			console.error("[DeletePost] Event not found:", eventId);
+			return { success: false };
 		}
 
 		if (event.authorId !== session.user.id) {
-			throw new Error("You must be the author to delete this post");
+			console.error("[DeletePost] Unauthorized: User is not the author", {
+				userId: session.user.id,
+				authorId: event.authorId
+			});
+			return { success: false };
 		}
 
 		await prisma.$transaction(async (tx) => {
@@ -185,28 +198,36 @@ export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): 
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
-			throw new Error("You must be logged in to do that");
+			console.error("[UpdateDetailsPost] Unauthorized: No user session");
+			return { success: false, message: "You must be logged in to do that" };
 		}
 
 		if (!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })) {
+			console.error("[UpdateDetailsPost] Rate limit exceeded for user:", session.user.id);
 			return { success: false, message: "Too many requests. Please try again later." };
 		}
 
 		if (!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(eventId)) {
-			throw new Error("Invalid event ID format");
+			console.error("[UpdateDetailsPost] Invalid event ID format:", eventId);
+			return { success: false, message: "Invalid event ID format" };
 		}
 
 		const event = await prisma.event.findUnique({
-			where: { id: eventId },
+			where: { id: eventId, isActive: true },
 			select: { authorId: true }
 		});
 
 		if (!event) {
-			throw new Error("Event not found");
+			console.error("[UpdateDetailsPost] Event not found or expired:", eventId);
+			return { success: false, message: "Event not found or expired" };
 		}
 
 		if (event.authorId !== session.user.id) {
-			throw new Error("You must be the author to update this post");
+			console.error("[UpdateDetailsPost] Unauthorized: User is not the author", {
+				userId: session.user.id,
+				authorId: event.authorId
+			});
+			return { success: false, message: "You must be the author to update this post" };
 		}
 
 		const values: FormDataValues = Object.fromEntries(formData.entries());
@@ -222,7 +243,7 @@ export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): 
 					values.contacts = parsed;
 				}
 			} catch (error) {
-				console.error("Error parsing contacts:", error);
+				console.error("[UpdateDetailsPost] Error parsing contacts:", error);
 			}
 		}
 
@@ -246,7 +267,10 @@ export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): 
 			return updated;
 		});
 
-		if (!updateEvent) throw new Error("Failed to update post");
+		if (!updateEvent) {
+			console.error("[UpdateDetailsPost] Failed to update event:", eventId);
+			return { success: false, message: "Failed to update post" };
+		}
 
 		revalidatePath("/discover");
 		revalidatePath("/");
@@ -266,28 +290,38 @@ export const updateDescription = async ({ formData, eventId }: TUpdateDescriptio
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
-			throw new Error("You must be logged in to do that");
+			console.error("[UpdateDescription] Unauthorized: No user session");
+			return { success: false, message: "You must be logged in to do that" };
 		}
 
 		if (!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })) {
+			console.error("[UpdateDescription] Rate limit exceeded for user:", session.user.id);
 			return { success: false, message: "Too many requests. Please try again later." };
 		}
 
 		if (!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(eventId)) {
-			throw new Error("Invalid event ID format");
+			console.error("[UpdateDescription] Invalid event ID format:", eventId);
+			return { success: false, message: "Invalid event ID format" };
 		}
 
 		const event = await prisma.event.findUnique({
-			where: { id: eventId },
-			select: { authorId: true }
+			where: { id: eventId, isActive: true },
+			select: {
+				authorId: true,
+			}
 		});
 
 		if (!event) {
-			throw new Error("Event not found");
+			console.error("[UpdateDescription] Event not found or expired:", eventId);
+			return { success: false, message: "Event not found or expired" };
 		}
 
 		if (event.authorId !== session.user.id) {
-			throw new Error("You must be the author to update this post");
+			console.error("[UpdateDescription] Unauthorized: User is not the author", {
+				userId: session.user.id,
+				authorId: event.authorId
+			});
+			return { success: false, message: "You must be the author to update this post" };
 		}
 
 		const values: FormDataValues = Object.fromEntries(formData.entries());
