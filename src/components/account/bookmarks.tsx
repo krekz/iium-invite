@@ -59,7 +59,10 @@ function Bookmarks() {
             src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${bookmark.event.poster_url[0]}`}
             alt={bookmark.event.title}
             fill
+            sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw'
             className="object-cover transition-transform duration-700 group-hover:scale-105"
+            priority
+            quality={60}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-4">
             <div className="flex items-center gap-2 text-white">

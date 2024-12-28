@@ -33,6 +33,10 @@ const ImageCarousel = ({ posters }: { posters: string[] }) => {
                                 src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${poster_url}`}
                                 alt="poster"
                                 fill
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                priority
+                                quality={65}
+                                loading="eager"
                                 className="rounded-md"
                             />
                         </div>
@@ -47,6 +51,10 @@ const ImageCarousel = ({ posters }: { posters: string[] }) => {
                                 src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${poster_url}`}
                                 alt="poster"
                                 fill
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                priority
+                                quality={65}
+                                loading="eager"
                                 className="rounded-md"
                             />
                         </div>

@@ -55,6 +55,9 @@ function UserPosts() {
                                     src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${post.poster_url[0]}`}
                                     alt={post.title}
                                     fill
+                                    quality={60}
+                                    priority
+                                    sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw'
                                     className={`overflow-hidden hover:scale-105 transition-all duration-700 ${!post.isActive}? 'grayscale' : ''}`}
                                 />
                                 {!post.isActive && (
