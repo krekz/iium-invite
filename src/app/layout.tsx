@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import ReactQueryProvider from "@/lib/context/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster"
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import PasswordProtection from "@/components/temporary-auth/PasswordProtection";
 import Footer from "@/components/Footer";
 import { getAuth as cachedAuth } from "@/auth"
 import NextSessionProvider from "@/lib/context/SessionProvider";
+import Navbar from "@/components/navbar/Navbar";
 
 const poppins = Poppins({
 	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
