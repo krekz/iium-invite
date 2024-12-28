@@ -3,7 +3,6 @@ import Markdown from "@/components/Markdown";
 import DescriptionForm from "./DescriptionForm";
 import ImageCarousel from "./ImageCarousel";
 import PostInfo from "./PostInfo";
-import { useParams } from "next/navigation";
 import { useEvent } from "@/lib/context/EventContextProvider";
 
 
