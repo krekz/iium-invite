@@ -100,7 +100,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 					title,
 					campus,
 					categories: categories.map(cat => cat.toLowerCase()),
-					date,
+					date: new Date(date.setUTCHours(0, 0, 0, 0)),
 					description,
 					fee,
 					has_starpoints,
