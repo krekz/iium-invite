@@ -149,7 +149,8 @@ function PostForm({ editablePost }: EventFormProps) {
 				variant: newPost.success ? "success" : "destructive"
 			});
 
-			router.push(`/events/${newPost.eventId}`);
+			newPost.success && router.push(`/events/${newPost.eventId}`);
+
 		} catch (error) {
 			console.error("Error in CreatePost:", error);
 
