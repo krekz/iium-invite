@@ -29,7 +29,7 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
                 {/* Edit form */}
                 <div className="flex justify-between w-full">
                     {isAuthor && isActive && <EventDetailForm />}
-                    <DeletePostButton eventId={params.slug} />
+                    {isAuthor && <DeletePostButton eventId={params.slug} />}
                 </div>
 
                 {event.categories.some(cat => ["Recruitment", "Committee"].includes(cat)) && <p className="text-xs bg-indigo-500 text-white font-extrabold rounded-full p-1 text-center">Open for Recruitment</p>}

@@ -24,18 +24,11 @@ function DeletePostButton({ eventId }: { eventId: string }) {
     const handlePostDeletion = async () => {
         try {
             const result = await deletePost({ eventId })
-            if (result.success) {
-                toast({
-                    title: "Post Deleted",
-                    variant: "default"
-                })
-                router.push("/discover");
-            } else {
-                toast({
-                    title: "Too many requests. Please try again later.",
-                    variant: "destructive"
-                })
-            }
+            toast({
+                title: result.success ? 'Post Deleted' : 'Failed to delete post',
+            })
+
+            result.success && router.push('/discover')
         } catch (error) {
             console.log(error)
         }
