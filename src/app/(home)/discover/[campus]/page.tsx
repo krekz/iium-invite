@@ -1,7 +1,7 @@
 import React from 'react'
 import { z } from 'zod'
 import { notFound } from 'next/navigation'
-import EventList from '@/components/homepage/EventList'
+import EventList from '@/components/discover/EventList'
 
 const campusSchema = z.object({
     campus: z.enum(['kuantan', 'gambang', 'gombak', 'pagoh'])

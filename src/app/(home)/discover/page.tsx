@@ -1,5 +1,4 @@
-import Filter from "@/components/discover/Filter";
-import EventList from "@/components/homepage/EventList";
+import EventList from "@/components/discover/EventList";
 
 function Events() {
 	return (
