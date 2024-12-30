@@ -2,6 +2,8 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { NextRequest } from "next/server";
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
 
   if (request.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
