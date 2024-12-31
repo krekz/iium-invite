@@ -4,10 +4,12 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "bunx prisma generate --no-engine && next dev --turbopack",
-		"build": "bunx biome lint --write ./src && bunx prisma generate --no-engine && next build",
+		"lint": "bunx biome lint --write ./src",
+		"format": "bunx biome format --write ./src",
+		"check": "bunx biome check --write ./src",
+		"dev": "bun check && bunx prisma generate --no-engine && next dev --turbopack",
+		"build": "bun check && bunx prisma generate --no-engine && next build",
 		"start": "next start",
-		"lint": "next lint",
 		"postinstall": "prisma generate"
 	},
 	"dependencies": {
