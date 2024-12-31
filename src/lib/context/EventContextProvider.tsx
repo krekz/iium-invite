@@ -1,35 +1,34 @@
-"use client"
-import React, { createContext, useContext } from 'react';
-import { PostPageProps } from "../types"
+"use client";
+import type React from "react";
+import { createContext, useContext } from "react";
+import type { PostPageProps } from "../types";
 
 type EventContextType = {
-    event: PostPageProps;
-    userId: string | undefined;
-    isAuthor: boolean;
-    isActive: boolean;
-    slug: string;
+	event: PostPageProps;
+	userId: string | undefined;
+	isAuthor: boolean;
+	isActive: boolean;
+	slug: string;
 };
 
 const EventContext = createContext<EventContextType | null>(null);
 
 export function EventProvider({
-    children,
-    value
+	children,
+	value,
 }: {
-    children: React.ReactNode;
-    value: EventContextType;
+	children: React.ReactNode;
+	value: EventContextType;
 }) {
-    return (
-        <EventContext.Provider value={value}>
-            {children}
-        </EventContext.Provider>
-    );
+	return (
+		<EventContext.Provider value={value}>{children}</EventContext.Provider>
+	);
 }
 
 export function useEvent() {
-    const context = useContext(EventContext);
-    if (!context) {
-        throw new Error('useEvent must be used within an EventProvider');
-    }
-    return context;
+	const context = useContext(EventContext);
+	if (!context) {
+		throw new Error("useEvent must be used within an EventProvider");
+	}
+	return context;
 }

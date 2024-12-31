@@ -1,9 +1,7 @@
 "use client";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { postSchema } from "@/lib/validations/post";
+import { CreatePost } from "@/actions/event";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
 	Form,
 	FormControl,
@@ -14,9 +12,11 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fixedCategories } from "@/lib/constant";
-import Image from "next/image";
-import { X, Upload, CalendarIcon, Loader2, Asterisk } from "lucide-react";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -24,32 +24,32 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils";
-import { add, format } from "date-fns";
-import { CreatePost } from "@/actions/event";
-import { useRouter } from "next/navigation";
-import { EventsProps } from "@/lib/types";
-import { useFiles } from "@/lib/hooks/useFiles";
-import { useCategories } from "@/lib/hooks/useCategories";
+import { fixedCategories } from "@/lib/constant";
 import { useToast } from "@/lib/hooks/use-toast";
-import { MinimalTiptapEditor } from "../minimal-tiptap";
+import { useCategories } from "@/lib/hooks/useCategories";
+import { useFiles } from "@/lib/hooks/useFiles";
+import type { EventsProps } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { postSchema } from "@/lib/validations/post";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { add, format } from "date-fns";
+import { Asterisk, CalendarIcon, Loader2, Upload, X } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
+import { useDropzone } from "react-dropzone";
+import { useForm } from "react-hook-form";
+import type * as z from "zod";
+import { MinimalTiptapEditor } from "../minimal-tiptap";
 import CategoryComboBox from "./CategoryComboBox";
-import { useDropzone } from 'react-dropzone';
 
 type EventFormProps = {
-	editablePost?: EventsProps
+	editablePost?: EventsProps;
 };
 
 function PostForm({ editablePost }: EventFormProps) {
 	const { toast } = useToast();
-	const router = useRouter()
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof postSchema>>({
 		resolver: zodResolver(postSchema),
@@ -63,69 +63,89 @@ function PostForm({ editablePost }: EventFormProps) {
 			categories: editablePost?.categories ?? [],
 			has_starpoints: editablePost?.has_starpoints ?? false,
 			campus: editablePost?.campus ?? "",
-			date: editablePost?.date ?? new Date(new Date().setDate(new Date().getDate() + 1)), // set default date to tomorrow
+			date:
+				editablePost?.date ??
+				new Date(new Date().setDate(new Date().getDate() + 1)), // set default date to tomorrow
 			contacts: editablePost?.contacts ?? [],
 		},
 	});
 
-	const { selectedFiles, handleFileChange, removeFile } = useFiles(form.setValue);
-	const { selectedCategories, addCategory, removeCategory } = useCategories(form.setValue);
+	const { selectedFiles, handleFileChange, removeFile } = useFiles(
+		form.setValue,
+	);
+	const { selectedCategories, addCategory, removeCategory } = useCategories(
+		form.setValue,
+	);
 
-	const onDrop = useCallback((acceptedFiles: File[]) => {
-		const remainingSlots = 3 - selectedFiles.length;
-		const filesToAdd = acceptedFiles.slice(0, remainingSlots);
+	const onDrop = useCallback(
+		(acceptedFiles: File[]) => {
+			const remainingSlots = 3 - selectedFiles.length;
+			const filesToAdd = acceptedFiles.slice(0, remainingSlots);
 
-		if (acceptedFiles.length > remainingSlots) {
-			toast({
-				title: "File Limit Exceeded",
-				description: "Only the first " + remainingSlots + " files were added. Maximum 3 files allowed.",
-				variant: "destructive"
-			});
-		}
+			if (acceptedFiles.length > remainingSlots) {
+				toast({
+					title: "File Limit Exceeded",
+					description: `Only the first ${remainingSlots} files were added. Maximum 3 files allowed.`,
+					variant: "destructive",
+				});
+			}
 
-		handleFileChange({ target: { files: filesToAdd } } as any);
-	}, [selectedFiles.length, handleFileChange, toast]);
+			handleFileChange({ target: { files: filesToAdd } } as any);
+		},
+		[selectedFiles.length, handleFileChange, toast],
+	);
 
 	// Separate dropzone for the file input area
-	const { getRootProps: getInputRootProps, getInputProps, isDragActive: isInputDragActive } = useDropzone({
+	const {
+		getRootProps: getInputRootProps,
+		getInputProps,
+		isDragActive: isInputDragActive,
+	} = useDropzone({
 		onDrop,
 		accept: {
-			'image/jpeg': [],
-			'image/png': [],
-			'image/jpg': []
+			"image/jpeg": [],
+			"image/png": [],
+			"image/jpg": [],
 		},
 		maxFiles: 3,
 		noDragEventsBubbling: true,
 	});
 
-	const { getRootProps: getPageRootProps, isDragActive: isPageDragActive } = useDropzone({
-		onDrop,
-		accept: {
-			'image/jpeg': [],
-			'image/png': [],
-			'image/jpg': []
-		},
-		maxFiles: 3,
-		noClick: true,
-		noDragEventsBubbling: true,
-	});
+	const { getRootProps: getPageRootProps, isDragActive: isPageDragActive } =
+		useDropzone({
+			onDrop,
+			accept: {
+				"image/jpeg": [],
+				"image/png": [],
+				"image/jpg": [],
+			},
+			maxFiles: 3,
+			noClick: true,
+			noDragEventsBubbling: true,
+		});
 
 	useEffect(() => {
-		if (form.formState.isSubmitted && Object.keys(form.formState.errors).length > 0) {
+		if (
+			form.formState.isSubmitted &&
+			Object.keys(form.formState.errors).length > 0
+		) {
 			toast({
 				title: "Input Error",
 				description: "Please check all required fields",
-				variant: "destructive"
+				variant: "destructive",
 			});
 		}
-	}, [form.formState.isSubmitted, form.formState.errors]);
+	}, [form.formState.isSubmitted, form.formState.errors, toast]);
 
 	const onSubmit = async (values: z.infer<typeof postSchema>) => {
 		const formData = new FormData();
 
-		const appendFormData = (key: string, value: any) => {
+		const appendFormData = (
+			key: string,
+			value: z.infer<typeof postSchema>[keyof z.infer<typeof postSchema>],
+		) => {
 			if (Array.isArray(value)) {
-				if (key === 'contacts') {
+				if (key === "contacts") {
 					formData.append(key, JSON.stringify(value));
 				} else {
 					value.forEach((item) => formData.append(key, item as string));
@@ -137,8 +157,12 @@ function PostForm({ editablePost }: EventFormProps) {
 			}
 		};
 
-		Object.entries(values).forEach(([key, value]) => appendFormData(key, value));
-		selectedFiles.forEach((file, index) => formData.append(`poster_url[${index}]`, file));
+		Object.entries(values).forEach(([key, value]) =>
+			appendFormData(key, value),
+		);
+		selectedFiles.forEach((file, index) =>
+			formData.append(`poster_url[${index}]`, file),
+		);
 
 		try {
 			const newPost = await CreatePost({ formData });
@@ -146,18 +170,17 @@ function PostForm({ editablePost }: EventFormProps) {
 			toast({
 				title: newPost.success ? "Success" : "Error",
 				description: newPost.message,
-				variant: newPost.success ? "success" : "destructive"
+				variant: newPost.success ? "success" : "destructive",
 			});
 
 			newPost.success && router.push(`/events/${newPost.eventId}`);
-
 		} catch (error) {
 			console.error("Error in CreatePost:", error);
 
 			toast({
 				title: "Error",
 				description: "Something went wrong.",
-				variant: "destructive"
+				variant: "destructive",
 			});
 		}
 	};
@@ -167,7 +190,8 @@ function PostForm({ editablePost }: EventFormProps) {
 			{...getPageRootProps()}
 			className={cn(
 				"min-h-screen relative",
-				isPageDragActive && "after:absolute after:inset-0 after:bg-primary/10 after:border-2 after:border-dashed after:border-primary"
+				isPageDragActive &&
+					"after:absolute after:inset-0 after:bg-primary/10 after:border-2 after:border-dashed after:border-primary",
 			)}
 		>
 			<Form {...form}>
@@ -206,8 +230,9 @@ function PostForm({ editablePost }: EventFormProps) {
 									<MinimalTiptapEditor
 										{...field}
 										throttleDelay={2000}
-										className={cn('w-full', {
-											'border-destructive focus-within:border-destructive': form.formState.errors.description
+										className={cn("w-full", {
+											"border-destructive focus-within:border-destructive":
+												form.formState.errors.description,
 										})}
 										editorContentClassName="some-class"
 										output="html"
@@ -229,7 +254,8 @@ function PostForm({ editablePost }: EventFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel className="text-lg font-semibold flex items-center">
-									Event Poster <Asterisk className="h-4 w-4 text-red-500 ml-1" />
+									Event Poster{" "}
+									<Asterisk className="h-4 w-4 text-red-500 ml-1" />
 								</FormLabel>
 								<FormControl>
 									<div className="flex items-center justify-center w-full">
@@ -237,7 +263,7 @@ function PostForm({ editablePost }: EventFormProps) {
 											{...getInputRootProps()}
 											className={cn(
 												"flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-accent transition-colors",
-												isInputDragActive && "border-primary bg-primary/10"
+												isInputDragActive && "border-primary bg-primary/10",
 											)}
 										>
 											<input {...getInputProps()} />
@@ -245,18 +271,22 @@ function PostForm({ editablePost }: EventFormProps) {
 												<Upload className="w-10 h-10 mb-3" />
 												<p className="mb-2 text-sm">
 													{isInputDragActive ? (
-														<span className="font-semibold">Drop the files here</span>
+														<span className="font-semibold">
+															Drop the files here
+														</span>
 													) : (
 														<>
-															<span className="font-semibold">Click to upload</span>{" "}
+															<span className="font-semibold">
+																Click to upload
+															</span>{" "}
 															or drag and drop
 														</>
 													)}
 												</p>
-												<p className="text-xs">
-													(MAX. 3 files)
+												<p className="text-xs">(MAX. 3 files)</p>
+												<p className="text-xs font-semibold text-yellow-600">
+													Recommended 1080x1080 pixels or Instagram square size{" "}
 												</p>
-												<p className="text-xs font-semibold text-yellow-600">Recommended 1080x1080 pixels or Instagram square size </p>
 											</div>
 										</div>
 									</div>
@@ -334,7 +364,7 @@ function PostForm({ editablePost }: EventFormProps) {
 													variant={"outline"}
 													className={cn(
 														"w-full pl-3 text-left font-normal",
-														!field.value && "text-muted-foreground"
+														!field.value && "text-muted-foreground",
 													)}
 												>
 													{field.value ? (
@@ -351,16 +381,15 @@ function PostForm({ editablePost }: EventFormProps) {
 												mode="single"
 												selected={field.value}
 												onSelect={field.onChange}
-												disabled={(date) =>
-													date <= new Date()
-												}
+												disabled={(date) => date <= new Date()}
 												// defaultMonth={new Date(new Date().setDate(new Date().getDate() + 1))}
 												initialFocus
 											/>
 										</PopoverContent>
 									</Popover>
 									<FormDescription>
-										Event that has more than one day need to put the start date only
+										Event that has more than one day need to put the start date
+										only
 									</FormDescription>
 									<FormMessage />
 								</FormItem>
@@ -424,9 +453,7 @@ function PostForm({ editablePost }: EventFormProps) {
 											{...field}
 										/>
 									</FormControl>
-									<FormDescription>
-										Leave it as 0 if it's free.
-									</FormDescription>
+									<FormDescription>Leave it as 0 if it's free.</FormDescription>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -457,7 +484,8 @@ function PostForm({ editablePost }: EventFormProps) {
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel className="text-lg font-semibold flex items-center">
-										Contacts (Max 2) <Asterisk className="h-4 w-4 text-red-500 ml-1" />
+										Contacts (Max 2){" "}
+										<Asterisk className="h-4 w-4 text-red-500 ml-1" />
 									</FormLabel>
 									<FormControl>
 										<div>
@@ -486,7 +514,9 @@ function PostForm({ editablePost }: EventFormProps) {
 													<Button
 														type="button"
 														onClick={() => {
-															const newContacts = field.value.filter((_, i) => i !== index);
+															const newContacts = field.value.filter(
+																(_, i) => i !== index,
+															);
 															field.onChange(newContacts);
 														}}
 														variant="destructive"
@@ -500,12 +530,16 @@ function PostForm({ editablePost }: EventFormProps) {
 													type="button"
 													onClick={() => {
 														if (field.value.length < 2) {
-															field.onChange([...field.value, { name: '', phone: '' }]);
+															field.onChange([
+																...field.value,
+																{ name: "", phone: "" },
+															]);
 														} else {
 															toast({
 																title: "Error",
-																description: "You can only add up to 2 contacts",
-																variant: "destructive"
+																description:
+																	"You can only add up to 2 contacts",
+																variant: "destructive",
 															});
 														}
 													}}
@@ -552,7 +586,8 @@ function PostForm({ editablePost }: EventFormProps) {
 							categories={fixedCategories}
 							selectedCategories={selectedCategories}
 							addCategory={addCategory}
-							removeCategory={removeCategory} />
+							removeCategory={removeCategory}
+						/>
 					</div>
 
 					<FormField
@@ -566,16 +601,16 @@ function PostForm({ editablePost }: EventFormProps) {
 									</FormLabel>
 									<FormControl>
 										<div
-											className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer ${field.value ? "bg-indigo-600" : "bg-gray-300"
-												}`}
-											onClick={() =>
-												field.onChange(!field.value)
-											}
+											className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer ${
+												field.value ? "bg-indigo-600" : "bg-gray-300"
+											}`}
+											onClick={() => field.onChange(!field.value)}
 										>
 											<div
-												className={`bg-white size-5 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${field.value ? "translate-x-7" : ""
-													}`}
-											></div>
+												className={`bg-white size-5 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+													field.value ? "translate-x-7" : ""
+												}`}
+											/>
 										</div>
 									</FormControl>
 								</div>
@@ -594,8 +629,10 @@ function PostForm({ editablePost }: EventFormProps) {
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 								Creating...
 							</>
+						) : editablePost ? (
+							"Update Event"
 						) : (
-							editablePost ? "Update Event" : "Create Event"
+							"Create Event"
 						)}
 					</Button>
 				</form>

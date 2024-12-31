@@ -9,12 +9,12 @@ export default () => {
 					Campus Events Hub
 				</h1>
 				<p className="text-sm lg:text-xl text-muted-foreground max-w-2xl mb-8">
-					Discover and participate in exciting university events. From academic symposiums to cultural festivals,
-					find everything happening on campus in one place.
+					Discover and participate in exciting university events. From academic
+					symposiums to cultural festivals, find everything happening on campus
+					in one place.
 				</p>
-				<SearchInput page="Home"/>
+				<SearchInput page="Home" />
 			</div>
 		</>
-
 	);
 };

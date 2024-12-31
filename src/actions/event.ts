@@ -1,30 +1,33 @@
 "use server";
 
+import crypto from "node:crypto";
+import { auth } from "@/auth";
+import prisma from "@/lib/prisma";
+import { checkRateLimit, uploadImage } from "@/lib/server-only";
 import { createClient } from "@/lib/supabase/server";
 import { descSchema, detailSchema, postSchema } from "@/lib/validations/post";
-import prisma from "@/lib/prisma";
-import { v4 as uuidv4 } from "uuid";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth";
-import { checkRateLimit, uploadImage } from "@/lib/server-only";
-import { unstable_cache } from 'next/cache';
-import crypto from 'crypto';
+import { unstable_cache } from "next/cache";
+import { v4 as uuidv4 } from "uuid";
 
 type Input = {
 	formData: FormData;
 };
 
 type TUpdateDescription = {
-	formData: FormData,
-	eventId: string
-}
+	formData: FormData;
+	eventId: string;
+};
 
 type TUpdateDetails = {
-	formData: FormData,
-	eventId: string,
-}
+	formData: FormData;
+	eventId: string;
+};
 
-type FormDataValues = Record<string, FormDataEntryValue | FormDataEntryValue[] | boolean>;
+type FormDataValues = Record<
+	string,
+	FormDataEntryValue | FormDataEntryValue[] | boolean
+>;
 
 // Cache events for 1 minute
 const getCachedEvents = unstable_cache(
@@ -33,36 +36,56 @@ const getCachedEvents = unstable_cache(
 			where: {
 				isActive: true,
 				id: {
-					not: currentPostId
-				}
+					not: currentPostId,
+				},
 			},
 			take: 7,
 			select: {
 				id: true,
-				poster_url: true
+				poster_url: true,
 			},
 		});
 	},
-	['events'],
-	{ revalidate: 60 }
+	["events"],
+	{ revalidate: 60 },
 );
 
-export const CreatePost = async (input: Input): Promise<{ success: boolean; message: string; eventId: string }> => {
+export const CreatePost = async (
+	input: Input,
+): Promise<{ success: boolean; message: string; eventId: string }> => {
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
 			console.error("[CreatePost] Unauthorized: No user session");
-			return { success: false, message: "You must be logged in to do that", eventId: "" };
+			return {
+				success: false,
+				message: "You must be logged in to do that",
+				eventId: "",
+			};
 		}
 
 		if (!checkRateLimit(session.user.id, { maxRequests: 2 })) {
-			console.error("[CreatePost] Rate limit exceeded for user:", session.user.id);
-			return { success: false, message: "Too many requests. Please try again later.", eventId: "" };
+			console.error(
+				"[CreatePost] Rate limit exceeded for user:",
+				session.user.id,
+			);
+			return {
+				success: false,
+				message: "Too many requests. Please try again later.",
+				eventId: "",
+			};
 		}
 
 		if (session.user.isVerified === false) {
-			console.error("[CreatePost] Unverified user attempted to create post:", session.user.id);
-			return { success: false, message: "You must verify your email to create a post", eventId: "" };
+			console.error(
+				"[CreatePost] Unverified user attempted to create post:",
+				session.user.id,
+			);
+			return {
+				success: false,
+				message: "You must verify your email to create a post",
+				eventId: "",
+			};
 		}
 
 		const { formData } = input;
@@ -84,22 +107,42 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 			}
 		}
 
-		values.has_starpoints = values.has_starpoints === 'true';
+		values.has_starpoints = values.has_starpoints === "true";
 
-		const { title, campus, categories, date, description, fee, has_starpoints, location, organizer, poster_url, registration_link, contacts } = postSchema.parse(values)
+		const {
+			title,
+			campus,
+			categories,
+			date,
+			description,
+			fee,
+			has_starpoints,
+			location,
+			organizer,
+			poster_url,
+			registration_link,
+			contacts,
+		} = postSchema.parse(values);
 		const assignPostId = `post-${uuidv4()}`;
-		const encryptedUserId = crypto.createHash("sha256").update(session.user.id).digest("hex");
+		const encryptedUserId = crypto
+			.createHash("sha256")
+			.update(session.user.id)
+			.digest("hex");
 
-		const uploadedFiles = await uploadImage(poster_url, encryptedUserId, assignPostId);
+		const uploadedFiles = await uploadImage(
+			poster_url,
+			encryptedUserId,
+			assignPostId,
+		);
 
 		const newEvent = await prisma.$transaction(async (tx) => {
 			const event = await tx.event.create({
 				data: {
 					id: assignPostId,
-					authorId: session.user!.id!,
+					authorId: session.user.id,
 					title,
 					campus,
-					categories: categories.map(cat => cat.toLowerCase()),
+					categories: categories.map((cat) => cat.toLowerCase()),
 					date: new Date(date.setUTCHours(16, 0, 0, 0)), // 16pm UTC is equal to 12am in GMT+8
 					description,
 					fee,
@@ -114,7 +157,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 							phone: contact.phone.slice(0, 20),
 						})),
 					},
-				}
+				},
 			});
 			return event;
 		});
@@ -125,7 +168,7 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 		return {
 			success: true,
 			message: "Post created successfully",
-			eventId: newEvent.id
+			eventId: newEvent.id,
 		};
 	} catch (error) {
 		console.error("[CreatePost]", error);
@@ -133,7 +176,9 @@ export const CreatePost = async (input: Input): Promise<{ success: boolean; mess
 	}
 };
 
-export const deletePost = async ({ eventId }: { eventId: string }): Promise<{ success: boolean }> => {
+export const deletePost = async ({
+	eventId,
+}: { eventId: string }): Promise<{ success: boolean }> => {
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
@@ -141,19 +186,28 @@ export const deletePost = async ({ eventId }: { eventId: string }): Promise<{ su
 			return { success: false };
 		}
 
-		if (!checkRateLimit(session.user.id, { maxRequests: 2, windowMs: 30 * 1000 })) {
-			console.error("[DeletePost] Rate limit exceeded for user:", session.user.id);
+		if (
+			!checkRateLimit(session.user.id, { maxRequests: 2, windowMs: 30 * 1000 })
+		) {
+			console.error(
+				"[DeletePost] Rate limit exceeded for user:",
+				session.user.id,
+			);
 			return { success: false };
 		}
 
-		if (!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(eventId)) {
+		if (
+			!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+				eventId,
+			)
+		) {
 			console.error("[DeletePost] Invalid event ID format:", eventId);
 			return { success: false };
 		}
 
 		const event = await prisma.event.findUnique({
 			where: { id: eventId },
-			select: { authorId: true, poster_url: true }
+			select: { authorId: true, poster_url: true },
 		});
 
 		if (!event) {
@@ -164,20 +218,20 @@ export const deletePost = async ({ eventId }: { eventId: string }): Promise<{ su
 		if (event.authorId !== session.user.id) {
 			console.error("[DeletePost] Unauthorized: User is not the author", {
 				userId: session.user.id,
-				authorId: event.authorId
+				authorId: event.authorId,
 			});
 			return { success: false };
 		}
 
 		await prisma.$transaction(async (tx) => {
 			await tx.event.delete({
-				where: { id: eventId }
+				where: { id: eventId },
 			});
 
 			const supabase = createClient();
 			if (event.poster_url.length > 0) {
 				const { error: fileError } = await supabase.storage
-					.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
+					.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET ?? "")
 					.remove(event.poster_url);
 
 				if (fileError) throw fileError;
@@ -194,7 +248,10 @@ export const deletePost = async ({ eventId }: { eventId: string }): Promise<{ su
 	}
 };
 
-export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): Promise<{ success: boolean, message: string }> => {
+export const updateDetailsPost = async ({
+	formData,
+	eventId,
+}: TUpdateDetails): Promise<{ success: boolean; message: string }> => {
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
@@ -202,19 +259,31 @@ export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): 
 			return { success: false, message: "You must be logged in to do that" };
 		}
 
-		if (!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })) {
-			console.error("[UpdateDetailsPost] Rate limit exceeded for user:", session.user.id);
-			return { success: false, message: "Too many requests. Please try again later." };
+		if (
+			!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })
+		) {
+			console.error(
+				"[UpdateDetailsPost] Rate limit exceeded for user:",
+				session.user.id,
+			);
+			return {
+				success: false,
+				message: "Too many requests. Please try again later.",
+			};
 		}
 
-		if (!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(eventId)) {
+		if (
+			!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+				eventId,
+			)
+		) {
 			console.error("[UpdateDetailsPost] Invalid event ID format:", eventId);
 			return { success: false, message: "Invalid event ID format" };
 		}
 
 		const event = await prisma.event.findUnique({
 			where: { id: eventId, isActive: true },
-			select: { authorId: true }
+			select: { authorId: true },
 		});
 
 		if (!event) {
@@ -223,16 +292,22 @@ export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): 
 		}
 
 		if (event.authorId !== session.user.id) {
-			console.error("[UpdateDetailsPost] Unauthorized: User is not the author", {
-				userId: session.user.id,
-				authorId: event.authorId
-			});
-			return { success: false, message: "You must be the author to update this post" };
+			console.error(
+				"[UpdateDetailsPost] Unauthorized: User is not the author",
+				{
+					userId: session.user.id,
+					authorId: event.authorId,
+				},
+			);
+			return {
+				success: false,
+				message: "You must be the author to update this post",
+			};
 		}
 
 		const values: FormDataValues = Object.fromEntries(formData.entries());
 		values.categories = formData.getAll("categories").filter(Boolean);
-		values.has_starpoints = values.has_starpoints === 'true';
+		values.has_starpoints = values.has_starpoints === "true";
 
 		const contactsString = formData.get("contacts");
 		values.contacts = [];
@@ -254,7 +329,7 @@ export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): 
 				where: { id: eventId },
 				data: {
 					...rest,
-					categories: rest.categories.map(cat => cat.toLowerCase()),
+					categories: rest.categories.map((cat) => cat.toLowerCase()),
 					contacts: {
 						deleteMany: {},
 						create: contacts.map((contact) => ({
@@ -286,7 +361,10 @@ export const updateDetailsPost = async ({ formData, eventId }: TUpdateDetails): 
 	}
 };
 
-export const updateDescription = async ({ formData, eventId }: TUpdateDescription): Promise<{ success: boolean, message: string }> => {
+export const updateDescription = async ({
+	formData,
+	eventId,
+}: TUpdateDescription): Promise<{ success: boolean; message: string }> => {
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
@@ -294,12 +372,24 @@ export const updateDescription = async ({ formData, eventId }: TUpdateDescriptio
 			return { success: false, message: "You must be logged in to do that" };
 		}
 
-		if (!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })) {
-			console.error("[UpdateDescription] Rate limit exceeded for user:", session.user.id);
-			return { success: false, message: "Too many requests. Please try again later." };
+		if (
+			!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })
+		) {
+			console.error(
+				"[UpdateDescription] Rate limit exceeded for user:",
+				session.user.id,
+			);
+			return {
+				success: false,
+				message: "Too many requests. Please try again later.",
+			};
 		}
 
-		if (!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(eventId)) {
+		if (
+			!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+				eventId,
+			)
+		) {
 			console.error("[UpdateDescription] Invalid event ID format:", eventId);
 			return { success: false, message: "Invalid event ID format" };
 		}
@@ -308,7 +398,7 @@ export const updateDescription = async ({ formData, eventId }: TUpdateDescriptio
 			where: { id: eventId, isActive: true },
 			select: {
 				authorId: true,
-			}
+			},
 		});
 
 		if (!event) {
@@ -317,11 +407,17 @@ export const updateDescription = async ({ formData, eventId }: TUpdateDescriptio
 		}
 
 		if (event.authorId !== session.user.id) {
-			console.error("[UpdateDescription] Unauthorized: User is not the author", {
-				userId: session.user.id,
-				authorId: event.authorId
-			});
-			return { success: false, message: "You must be the author to update this post" };
+			console.error(
+				"[UpdateDescription] Unauthorized: User is not the author",
+				{
+					userId: session.user.id,
+					authorId: event.authorId,
+				},
+			);
+			return {
+				success: false,
+				message: "You must be the author to update this post",
+			};
 		}
 
 		const values: FormDataValues = Object.fromEntries(formData.entries());
@@ -329,7 +425,7 @@ export const updateDescription = async ({ formData, eventId }: TUpdateDescriptio
 
 		await prisma.event.update({
 			where: { id: eventId },
-			data: { description }
+			data: { description },
 		});
 
 		revalidatePath(`/events/${eventId}`);
@@ -338,13 +434,13 @@ export const updateDescription = async ({ formData, eventId }: TUpdateDescriptio
 
 		return {
 			success: true,
-			message: "Description updated!"
+			message: "Description updated!",
 		};
 	} catch (error) {
 		console.error("[UpdateDescription]", error);
 		return {
 			success: false,
-			message: "Error updating description"
+			message: "Error updating description",
 		};
 	}
 };

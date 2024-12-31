@@ -1,17 +1,17 @@
-import NextAuth, { DefaultSession } from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import prisma from "@/lib/prisma"
-import google from "next-auth/providers/google"
-import { cache } from "react"
+import prisma from "@/lib/prisma";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import NextAuth, { type DefaultSession } from "next-auth";
+import google from "next-auth/providers/google";
+import { cache } from "react";
 declare module "next-auth" {
 	interface Session {
 		user: {
-			isVerified: boolean | null
-		} & DefaultSession["user"]
+			isVerified: boolean | null;
+		} & DefaultSession["user"];
 	}
 
 	interface User {
-		isVerified?: boolean
+		isVerified?: boolean;
 	}
 }
 
@@ -25,13 +25,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 	callbacks: {
 		jwt({ token, user, trigger, session }) {
 			if (user) {
-				token.id = user.id
-				token.isVerified = user.isVerified
+				token.id = user.id;
+				token.isVerified = user.isVerified;
 			}
 			if (trigger === "update" && session) {
-				token.isVerified = session.user.isVerified
+				token.isVerified = session.user.isVerified;
 			}
-			return token
+			return token;
 		},
 		session({ session, token }) {
 			return {
@@ -42,14 +42,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 					email: token.email,
 					image: token.picture,
 					isVerified: token.isVerified as boolean,
-				}
-			}
-		}
-	}
-})
-
+				},
+			};
+		},
+	},
+});
 
 export const getAuth = cache(async () => {
-	const session = await auth()
-	return session
-})
+	const session = await auth();
+	return session;
+});

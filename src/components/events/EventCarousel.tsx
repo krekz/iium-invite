@@ -6,9 +6,9 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Card, CardContent } from "../ui/card";
 
 export type EventsProps = {
 	events: {
@@ -18,8 +18,7 @@ export type EventsProps = {
 		poster_url: string[] | string;
 		location: string;
 	}[];
-}
-
+};
 
 function EventCarousel({ events }: EventsProps) {
 	const router = useRouter();

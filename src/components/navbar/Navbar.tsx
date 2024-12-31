@@ -1,16 +1,18 @@
 "use client";
+import { SignIn, SignOut } from "@/actions/login-signout";
+import { LogOut, User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { ModeToggle } from "../theme-switch";
 import { Button } from "../ui/button";
-import { SignIn, SignOut } from "@/actions/login-signout";
-import { LogOut, User } from "lucide-react";
-import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import MobileNavbar from "./MobileNavbar";
 import NavigationLinks from "./NavigationLinks";
 
-export default ({ session }: { session: { user: string | undefined | null } }) => {
+export default ({
+	session,
+}: { session: { user: string | undefined | null } }) => {
 	const AuthButtons = ({ isMobile = false }: { isMobile?: boolean }) => {
 		const buttonClass = isMobile ? "w-full justify-center" : "";
 
@@ -44,6 +46,7 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 							</Link>
 							<div className="h-[1px] bg-border my-1" />
 							<button
+								type="button"
 								onClick={async () => await SignOut({ redirectTo: "/" })}
 								className="px-2 py-2 text-sm hover:bg-red-500 hover:text-black rounded-md transition-colors text-left flex items-center gap-2"
 							>
@@ -57,7 +60,6 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 		);
 	};
 
-
 	return (
 		<div className="sm:sticky sm:top-0 z-50">
 			{/* Top Navbar */}
@@ -66,7 +68,14 @@ export default ({ session }: { session: { user: string | undefined | null } }) =
 					<div className="flex justify-between items-center h-24">
 						<div className="flex items-center">
 							<a href="/" className="flex items-center mr-6">
-								<Image alt="logo" quality={50} priority src="/eventure-logo.png" width={100} height={100} />
+								<Image
+									alt="logo"
+									quality={50}
+									priority
+									src="/eventure-logo.png"
+									width={100}
+									height={100}
+								/>
 							</a>
 							<div className="hidden sm:flex sm:items-center space-x-4">
 								<NavigationLinks />
