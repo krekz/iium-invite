@@ -1,21 +1,36 @@
-# Eventure Project (Next Js 15)
+# Eventure Project (Next Js 15) 🎓 
 
-A platform for handling university events, created with Next.js 15, Supabase, Prisma, AuthJs, Shadcn.
+A platform for handling university events. 
 
 https://github.com/user-attachments/assets/a8dbf190-f0e9-4190-b834-66386f36120a
 
+## **Tech Stacks**
+> ### Nextjs 15
+> ### Shadcn Ui
+> ### Supabase
+> ### Prisma accelerate
+> ### Resend (email)
+> ### Next Auth
 
-> [!IMPORTANT]
-> Create your [Supabase](https://supabase.com/) account before proceed to Development
+
+# Contributing 🍝 
+
+## Prerequisites
+- NodeJs v22.11.0 [Install Nodejs](https://nodejs.org/en/download)
+- Package Manager (bun)  [Install bun](https://bun.sh)
+- Supabase acc [Create Supabase Acc](https://supabase.com)
+- Resend (sending email library) [Create Resend Acc](https://resend.com)
+- Prisma Console Acc (Required bcs this project is using prisma accelerate [Create prisma acc](https://console.prisma.io)
+- Google Console (oAuth api key) [Google Console](https://console.cloud.google.com/apis/credentials)
 
 > [!Note]
-> If you want to alter/modify the db schema and then push changes later on, please run 
-```
-## Do not run this during first-time setup
-npx prisma migrate dev 
-```
+> Remember to set up Authorized redirect URIs in [Google Console Auth](https://console.cloud.google.com/apis/credentials)
+<img width="516" alt="Screenshot 2024-12-31 at 4 55 32 PM" src="https://github.com/user-attachments/assets/0facdae5-c561-4e34-9484-287b43929b36" />
 
-# Getting Started (First-Time Set up)
+
+## Let's Cook !!
+> [!Note]
+> This project already preinstalled [Biome](https://biomejs.dev) as code formatting and linting. Make sure you [install](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) the extension and set _Biome_ as your default format [here](https://andrekoenig.de/articles/biome-unified-linting-and-formatting-solution)
 
 1. Clone the project repository and navigate to the project directory:
 ```
@@ -24,12 +39,6 @@ cd iium-invite
 ```
 2. Install the dependencies:
 ```
-npm install
-# or
-yarn install
-# or
-pnpm install
-# or
 bun install
 ```
 
@@ -41,22 +50,38 @@ touch .env
 4. Copy the content inside _.env.example_ and paste to _.env_ file you created
 5. in your terminal execute this command to sync with the existed db schema:
 ```
-npx prisma db push
+bunx prisma db push
 ```
 
-
-
-Finally, run the development server:
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+6. Finally, run the development server:
+```
 bun dev
 ```
 
+## Development Workflow
+1. Create your own branch 
+```
+git checkout -b feat/your-feature-name
+```
+2. Implement your feature or fix the bug.
+3. Test your changes locally.
+4. Stage and commit your changes:
 
+## Commit Message Guidelines
+> [!Note]
+> We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
+```
+<type>(<scope>): <description>
+```
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation changes
+- style: Code style changes (white-space, formatting, etc.)
+- refactor: Code restructuring without changing functionality
+- test: Adding or updating tests
 
+example: 
+```
+feat(auth): add Google login functionality
+```
