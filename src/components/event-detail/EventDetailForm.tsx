@@ -153,14 +153,13 @@ function EventDetailForm() {
 												switch (id) {
 													case "campus":
 														return (
-															<Select>
+															<Select
+																onValueChange={field.onChange}
+																defaultValue={field.value?.toString()}
+															>
 																<SelectTrigger className="w-full">
 																	<SelectValue
-																		placeholder={
-																			typeof field.value === "string"
-																				? field.value
-																				: "Select"
-																		}
+																		placeholder={field.value?.toString()}
 																	/>
 																</SelectTrigger>
 																<SelectContent>
