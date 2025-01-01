@@ -1,9 +1,11 @@
 "use client";
 import { SignIn, SignOut } from "@/actions/login-signout";
 import { LogOut, User } from "lucide-react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import theme from "tailwindcss/defaultTheme";
 import { ModeToggle } from "../theme-switch";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -13,6 +15,7 @@ import NavigationLinks from "./NavigationLinks";
 export default ({
 	session,
 }: { session: { user: string | undefined | null } }) => {
+	const { theme } = useTheme();
 	const AuthButtons = ({ isMobile = false }: { isMobile?: boolean }) => {
 		const buttonClass = isMobile ? "w-full justify-center" : "";
 
@@ -72,7 +75,11 @@ export default ({
 									alt="logo"
 									quality={50}
 									priority
-									src="/eventure-logo.png"
+									src={
+										theme === "dark"
+											? "/eventure-light.png"
+											: "/eventure-dark.png"
+									}
 									width={100}
 									height={100}
 								/>
