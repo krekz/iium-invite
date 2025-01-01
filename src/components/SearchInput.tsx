@@ -6,7 +6,7 @@ import React, { useState, type FormEvent, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
-const searchSuggestions = ["Theatre", "Career", "Workshop", "Sports"];
+const searchSuggestions = ["theatre", "workshop", "committee", "sports"];
 
 type SearchInputProps = {
 	page: "Home" | "Discover";

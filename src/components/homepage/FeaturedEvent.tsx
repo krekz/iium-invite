@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 const featuredEvents = [
 	{
 		id: 1,
-		title: "International Culture Festival",
+		title: "Annual Grand Dinner",
 		description:
 			"Experience diverse cultures through food, music, and performances.",
 		date: "May 5, 2024",
@@ -17,7 +17,7 @@ const featuredEvents = [
 	},
 	{
 		id: 2,
-		title: "Innovation Summit 2024",
+		title: "RTEMIS Space Camp",
 		description:
 			"Join industry leaders and innovators in this groundbreaking event.",
 		date: "May 10, 2024",
@@ -26,7 +26,7 @@ const featuredEvents = [
 	},
 	{
 		id: 3,
-		title: "Sports Championship",
+		title: "NextJs Workshop",
 		description:
 			"Annual inter-university sports competition with exciting matches.",
 		date: "May 15, 2024",
@@ -87,7 +87,7 @@ function FeaturedEvent() {
 	}, [isHovered, nextSlide]);
 	return (
 		<div
-			className="relative max-w-7xl mx-auto h-[700px] md:h-[400px] overflow-hidden"
+			className="relative w-full mx-auto min-h-[620px] md:min-h-[500px] "
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 		>
@@ -95,14 +95,14 @@ function FeaturedEvent() {
 				<div
 					key={event.id}
 					className={cn(
-						"absolute w-full transition-all duration-500 ease-in-out",
+						"absolute px-3 w-full overflow-hidden transition-all duration-300 ease-in-out",
 						index === activeIndex
 							? "opacity-100 translate-y-0"
 							: "opacity-0 translate-y-full pointer-events-none",
 					)}
 				>
 					<div className="flex flex-col md:grid md:grid-cols-2 gap-8 items-center">
-						<div className="relative group">
+						<div className="relative group w-full">
 							{/* Simple elegant progress bar */}
 							<div className="absolute inset-0 rounded-2xl overflow-hidden">
 								{/* Progress bar with glow effect */}
@@ -125,16 +125,18 @@ function FeaturedEvent() {
 								</div>
 							</div>
 							<div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/5 transition-colors rounded-2xl" />
-							<div className="relative w-[full] h-[250px] md:h-[500px]">
+							<div className="relative aspect-[4/3] md:aspect-auto md:h-[500px]">
 								<Image
 									src={event.image}
 									alt={event.title}
 									fill
-									className="rounded-2xl shadow-xl object-fill"
+									className="rounded-2xl shadow-xl object-cover"
+									sizes="(max-width: 768px) 100vw, 50vw"
+									priority
 								/>
 							</div>
 						</div>
-						<div className="space-y-4 md:space-y-6 px-4 md:px-0">
+						<div className="space-y-4 md:space-y-6 md:px-0">
 							<div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full">
 								{event.date}
 							</div>

@@ -133,10 +133,7 @@ async function Events() {
 	return (
 		<>
 			{eventSections.slice(0, 3).map((section) => (
-				<div
-					key={section.title}
-					className="flex flex-col max-w-7xl mx-auto py-7 px-3"
-				>
+				<div key={section.title} className="flex flex-col mx-auto py-7 pl-3">
 					<div className="flex justify-between">
 						<Link href={section.href} className="flex items-center gap-2">
 							<h3 className="text-2xl font-semibold">{section.title}</h3>
@@ -147,7 +144,7 @@ async function Events() {
 				</div>
 			))}
 
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-3 py-10">
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-3 py-10 px-3">
 				{randomEvents.map((event) => (
 					<Link
 						href={`/events/${event.id}`}
@@ -168,11 +165,11 @@ async function Events() {
 							<h3 className="font-semibold text-lg line-clamp-2">
 								{event.title}
 							</h3>
-							<div className="flex items-center text-amber-700 text-sm gap-1">
+							<div className="flex items-center text-sm gap-1">
 								<MapPin className="w-4 h-4" />
 								<span className="line-clamp-1">{event.location}</span>
 							</div>
-							<div className="flex items-center text-amber-700 text-sm gap-1">
+							<div className="flex items-center text-sm gap-1">
 								<Calendar className="w-4 h-4" />
 								<span>{new Date(event.date).toLocaleDateString()}</span>
 							</div>
@@ -180,7 +177,7 @@ async function Events() {
 								{event.categories.slice(0, 4).map((category: string) => (
 									<span
 										key={category}
-										className="px-2 py-1 bg-amber-100/80 text-amber-700 rounded-full text-xs"
+										className="px-2 py-1 bg-card rounded-full text-xs"
 									>
 										{category}
 									</span>
@@ -194,7 +191,7 @@ async function Events() {
 			{eventSections.slice(3, 5).map((section) => (
 				<div
 					key={section.title}
-					className="flex flex-col max-w-7xl mx-auto py-7 px-3"
+					className="flex flex-col max-w-7xl mx-auto py-7 pl-3"
 				>
 					<div className="flex justify-between">
 						<Link href={section.href} className="flex items-center gap-2">
