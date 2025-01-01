@@ -121,7 +121,6 @@ function Filter() {
 	}) => (
 		<div className="space-y-4">
 			<h3 className="font-medium">{title}</h3>
-			<hr className="border-border" />
 			{items.map((item) => (
 				<CheckboxFilter
 					key={item}
@@ -152,11 +151,14 @@ function Filter() {
 					</Button>
 				)}
 			</div>
+
+			<hr className="border-border" />
 			<FilterSection
 				title="Categories"
 				items={FILTER_OPTIONS.categories}
 				paramKey="category"
 			/>
+			<hr className="border-border" />
 			<div className="space-y-4">
 				<h3 className="font-medium">Additional Filters</h3>
 				{FILTER_OPTIONS.additionalFilters.map(({ id, label }) => (
