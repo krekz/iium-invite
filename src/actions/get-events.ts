@@ -1,5 +1,6 @@
 "use server";
 
+import { fixedCategories } from "@/lib/constant";
 import prisma from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 
@@ -11,9 +12,22 @@ type SearchParams = {
 	has_starpoints?: string;
 };
 
+function getCategorySubsets(categoryName: string): string[] {
+	const category = fixedCategories.find(
+		(c) => c.category.toLowerCase() === categoryName.toLowerCase(),
+	);
+	return category
+		? [
+				...category.subsets.map((subset) => subset.toLowerCase()),
+				category.category.toLowerCase(),
+			]
+		: [categoryName.toLowerCase()];
+}
+
 export async function getEvents(searchParams?: SearchParams) {
 	const searchQuery = searchParams?.q?.trim() || undefined;
-	const category = searchParams?.category?.toLowerCase();
+	const categories =
+		searchParams?.category?.toLowerCase().split(",").filter(Boolean) || [];
 	const campus = searchParams?.campus?.toLowerCase();
 	const fee = searchParams?.fee;
 	const hasStarpoints = searchParams?.has_starpoints === "true";
@@ -79,11 +93,13 @@ export async function getEvents(searchParams?: SearchParams) {
 										},
 									}
 								: {},
-							category
+							categories.length > 0
 								? {
-										categories: {
-											hasSome: [category],
-										},
+										OR: categories.map((category) => ({
+											categories: {
+												hasSome: getCategorySubsets(category), // e.g sports category -> [friendly, gaming, tournament, etc]
+											},
+										})),
 									}
 								: {},
 							campus
@@ -136,7 +152,7 @@ export async function getEvents(searchParams?: SearchParams) {
 		[
 			"events-list",
 			searchQuery || "",
-			category || "",
+			categories.join(",") || "",
 			campus || "",
 			fee || "",
 			hasStarpoints.toString(),

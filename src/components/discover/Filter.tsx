@@ -6,16 +6,19 @@ import { Label } from "@/components/ui/label";
 import {
 	Sheet,
 	SheetContent,
+	SheetDescription,
+	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { fixedCategories } from "@/lib/constant";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import SearchInput from "../SearchInput";
 
 const FILTER_OPTIONS = {
-	categories: ["Theatre", "Career", "Workshop", "Sports"],
+	categories: fixedCategories.map((category) => category.category),
 	additionalFilters: [
 		{ id: "fee", label: "Fee" },
 		{ id: "starpoints", label: "Starpoints" },
@@ -28,7 +31,8 @@ function Filter() {
 
 	const getActiveFiltersCount = () => {
 		let count = 0;
-		if (searchParams.get("category")) count++;
+		const categories = searchParams.get("category")?.split(",") || [];
+		count += categories.length;
 		if (searchParams.get("fee")) count++;
 		if (searchParams.get("starpoints")) count++;
 		return count;
@@ -36,8 +40,35 @@ function Filter() {
 
 	const updateSearchParams = (key: string, value: string | boolean) => {
 		const params = new URLSearchParams(searchParams.toString());
-		value ? params.set(key, value.toString()) : params.delete(key);
-		history.pushState(null, "", `?${params.toString()}`);
+		if (key === "category") {
+			const currentCategories =
+				params.get("category")?.split(",").filter(Boolean) || [];
+			const valueStr = value.toString();
+
+			if (currentCategories.includes(valueStr)) {
+				// remove if alr exist
+				const newCategories = currentCategories.filter(
+					(cat) => cat !== valueStr,
+				);
+				if (newCategories.length === 0) {
+					params.delete(key);
+				} else {
+					params.set(key, newCategories.join(","));
+				}
+			} else if (value) {
+				// add if not exist
+				const newCategories = [...currentCategories, valueStr];
+				params.set(key, newCategories.join(","));
+			}
+		} else {
+			const currentValue = params.get(key);
+			if (currentValue === value.toString()) {
+				params.delete(key);
+			} else {
+				params.set(key, value.toString());
+			}
+		}
+		history.pushState(null, "", `?${params.toString()}`); // no useRouter coz it slow af
 	};
 
 	const clearAllFilters = () => {
@@ -55,7 +86,11 @@ function Filter() {
 		paramKey?: string;
 		getValue?: (value: string) => string;
 	}) => {
-		const isChecked = searchParams.get(paramKey) === getValue(id);
+		const currentValue = getValue(id);
+		const isChecked =
+			paramKey === "category"
+				? searchParams.get(paramKey)?.split(",").includes(currentValue)
+				: searchParams.get(paramKey) === currentValue;
 
 		return (
 			<div className="flex items-center justify-between">
@@ -63,9 +98,7 @@ function Filter() {
 					<Checkbox
 						id={id}
 						checked={isChecked}
-						onCheckedChange={(checked) =>
-							updateSearchParams(paramKey, checked ? getValue(id) : false)
-						}
+						onCheckedChange={() => updateSearchParams(paramKey, currentValue)}
 					/>
 					<Label className="cursor-pointer w-full" htmlFor={id}>
 						{label}
@@ -88,6 +121,7 @@ function Filter() {
 	}) => (
 		<div className="space-y-4">
 			<h3 className="font-medium">{title}</h3>
+			<hr className="border-border" />
 			{items.map((item) => (
 				<CheckboxFilter
 					key={item}
@@ -103,15 +137,18 @@ function Filter() {
 	const FilterContent = () => (
 		<div className="space-y-6">
 			<div className="flex justify-between items-center">
-				<h2 className="font-semibold text-lg">Filters</h2>
+				<h2 className="font-semibold text-md">Select</h2>
 				{getActiveFiltersCount() > 0 && (
 					<Button
 						variant="ghost"
 						size="sm"
 						onClick={clearAllFilters}
-						className="text-muted-foreground hover:text-primary h-0"
+						className="text-muted-foreground hover:text-primary h-0 flex gap-2"
 					>
 						Clear all
+						<span className="bg-muted text-muted-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+							{getActiveFiltersCount()}
+						</span>
 					</Button>
 				)}
 			</div>
@@ -155,7 +192,12 @@ function Filter() {
 						</Button>
 					</SheetTrigger>
 					<SheetContent side="left" className="w-[280px] sm:w-[320px]">
-						<SheetTitle>Filter Events</SheetTitle>
+						<SheetHeader>
+							<SheetTitle>Filter Events</SheetTitle>
+							<SheetDescription>
+								Filter events by category, fee and starpoints
+							</SheetDescription>
+						</SheetHeader>
 						<div className="py-6">
 							<FilterContent />
 						</div>
