@@ -12,8 +12,8 @@ function SkeletonCarousel() {
 		<div className="flex flex-col max-w-7xl mx-auto py-7 px-3">
 			<div className="flex justify-between">
 				<div className="flex items-center gap-2">
-					<p className="text-2xl font-semibold bg-gray-50/15 animate-pulse h-7 w-32 rounded" />
-					<div className="bg-gray-50/15 animate-pulse h-5 w-5 rounded" />
+					<p className="text-2xl font-semibold bg-card-foreground/20 animate-pulse h-7 w-32 rounded" />
+					<div className="bg-card-foreground/20 animate-pulse h-5 w-5 rounded" />
 				</div>
 			</div>
 			<div className="mt-4">
@@ -31,11 +31,11 @@ function SkeletonCarousel() {
 								key={index}
 								className="cursor-pointer hover:opacity-80 transition-all delay-100 basis-7/12 lg:basis-[23%]"
 							>
-								<div className="w-full aspect-square bg-gray-50/15 animate-pulse rounded-lg" />
-								<p className="text-md font-bold bg-gray-50/15 animate-pulse h-5 w-3/4 mt-2 rounded" />
+								<div className="w-full aspect-square bg-card-foreground/20 animate-pulse rounded-lg" />
+								<p className="text-md font-bold bg-card-foreground/20 animate-pulse h-5 w-3/4 mt-2 rounded" />
 								<div className="text-xs flex justify-between mt-1">
-									<p className="bg-gray-50/15 animate-pulse h-4 w-1/3 rounded" />
-									<p className="bg-gray-50/15 animate-pulse h-4 w-1/4 rounded" />
+									<p className="bg-card-foreground/20 animate-pulse h-4 w-1/3 rounded" />
+									<p className="bg-card-foreground/20 animate-pulse h-4 w-1/4 rounded" />
 								</div>
 							</CarouselItem>
 						))}
@@ -61,22 +61,22 @@ function Skeleton() {
 						key={index}
 						className="flex flex-col rounded-xl overflow-hidden cursor-pointer backdrop-blur-sm animate-pulse"
 					>
-						<div className="relative aspect-square max-h-96 bg-gray-50/15 rounded-md" />
+						<div className="relative aspect-square max-h-96 bg-card-foreground/20 rounded-md" />
 						<div className="p-4 space-y-2">
-							<p className="font-semibold text-lg bg-gray-50/15 h-6 w-3/4 rounded" />
+							<p className="font-semibold text-lg bg-card-foreground/20 h-6 w-3/4 rounded" />
 							<div className="flex items-center text-sm gap-1">
-								<div className="w-4 h-4 bg-gray-50/15 rounded" />
-								<span className="bg-gray-50/15 h-4 w-1/2 rounded" />
+								<div className="w-4 h-4 bg-card-foreground/20 rounded" />
+								<span className="bg-card-foreground/20 h-4 w-1/2 rounded" />
 							</div>
 							<div className="flex items-center text-sm gap-1">
-								<div className="w-4 h-4 bg-gray-50/15 rounded" />
-								<span className="bg-gray-50/15 h-4 w-1/3 rounded" />
+								<div className="w-4 h-4 bg-card-foreground/20 rounded" />
+								<span className="bg-card-foreground/20 h-4 w-1/3 rounded" />
 							</div>
 							<div className="flex flex-wrap gap-2">
 								{Array.from({ length: 4 }).map((_, i) => (
 									<span
 										key={i}
-										className="px-2 py-1 bg-gray-50/15 h-5 w-12 rounded-full text-xs"
+										className="px-2 py-1 bg-card-foreground/20 h-5 w-12 rounded-full text-xs"
 									/>
 								))}
 							</div>

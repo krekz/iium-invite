@@ -68,7 +68,7 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
 							return (
 								<span
 									key={index}
-									className="bg-amber-100 text-black rounded-full px-3 py-1 text-xs font-medium"
+									className="bg-card border dark:bg-amber-900 rounded-full px-3 py-1 text-xs font-medium"
 								>
 									{category}
 								</span>
