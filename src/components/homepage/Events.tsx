@@ -1,4 +1,4 @@
-import EventCarousel from "@/components/events/EventCarousel";
+import EventCarousel from "@/components/homepage/EventCarousel";
 import prisma from "@/lib/prisma";
 import { Calendar, ChevronRight, MapPin } from "lucide-react";
 import Image from "next/image";
