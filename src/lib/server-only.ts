@@ -41,7 +41,7 @@ export function checkRateLimit(
 	return true;
 }
 
-const MAX_IMAGE_SIZE = 130 * 1024; // 80KB
+const MAX_IMAGE_SIZE = 200 * 1024; // 200KB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg"];
 
 export const compressImage = async (file: File): Promise<Buffer> => {
