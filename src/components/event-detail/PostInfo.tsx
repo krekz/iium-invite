@@ -3,8 +3,7 @@ import DeletePostButton from "@/components/DeletePostButton";
 import CustomButton from "@/components/events/CustomButton";
 import EventDetailItem from "@/components/events/EventDetailItem";
 import { useEvent } from "@/lib/context/EventContextProvider";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { cn, localDateFormat } from "@/lib/utils";
 import { ExternalLink, MessageCircle } from "lucide-react";
 import { useParams } from "next/navigation";
 import BookmarkButton from "./BookmarkButton";
@@ -17,7 +16,7 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
 	const eventDetails = [
 		{
 			label: "Event Date",
-			value: format(new Date(event.date).toLocaleDateString(), "dd/M/yy"),
+			value: localDateFormat(event.date),
 		},
 		{ label: "Location", value: event.location },
 		{ label: "Organizer", value: event.organizer },

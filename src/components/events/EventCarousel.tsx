@@ -6,9 +6,9 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "@/components/ui/carousel";
+import { localDateFormat } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "../ui/card";
 
 export type EventsProps = {
 	events: {
@@ -51,9 +51,7 @@ function EventCarousel({ events }: EventsProps) {
 						<h3 className="text-md font-bold">{event.title}</h3>
 						<div className="text-xs flex justify-between">
 							<p>📍 {event.location}</p>
-							<p className="text-gray-500">
-								{new Date(event.date).toLocaleDateString()}
-							</p>
+							<p className="text-gray-500">{localDateFormat(event.date)}</p>
 						</div>
 					</CarouselItem>
 				))}
