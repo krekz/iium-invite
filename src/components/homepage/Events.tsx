@@ -45,17 +45,6 @@ async function Events() {
 	const threeDaysFromNow = new Date(today);
 	threeDaysFromNow.setDate(today.getDate() + 3);
 
-	const filterEventsByDate = (event: any, startDate: Date, endDate?: Date) => {
-		const eventDate = new Date(event.date);
-		if (endDate) {
-			return eventDate >= startDate && eventDate <= endDate;
-		}
-		return eventDate.toDateString() === startDate.toDateString();
-	};
-
-	const upcomingEvents = events.filter((event) =>
-		filterEventsByDate(event, today, threeDaysFromNow),
-	);
 	const newlyAddedEvents = [...events].sort(
 		(a, b) => Number(b.id) - Number(a.id),
 	);
@@ -64,25 +53,13 @@ async function Events() {
 		const dayOfWeek = eventDate.getDay();
 		return (dayOfWeek === 0 || dayOfWeek === 6) && eventDate >= today;
 	});
-	const ongoingEvents = events.filter((event) =>
-		filterEventsByDate(event, today),
-	);
 	const recruitmentEvents = events.filter((event) =>
-		event.categories.includes("Recruitment"),
+		event.categories.includes("recruitment"),
 	);
 	const starpointEvents = events.filter((event) => event.has_starpoints);
 	const randomEvents = [...events].sort(() => Math.random() - 0.5).slice(0, 3);
 
 	const eventSections: EventSection[] = [
-		...(upcomingEvents.length > 0
-			? [
-					{
-						title: "Upcoming Events",
-						href: "/discover",
-						events: upcomingEvents,
-					},
-				]
-			: []),
 		...(newlyAddedEvents.length > 0
 			? [
 					{
@@ -98,15 +75,6 @@ async function Events() {
 						title: "This Weekend",
 						href: "/discover",
 						events: weekendEvents,
-					},
-				]
-			: []),
-		...(ongoingEvents.length > 0
-			? [
-					{
-						title: "Ongoing Events",
-						href: "/discover",
-						events: ongoingEvents,
 					},
 				]
 			: []),
@@ -129,10 +97,9 @@ async function Events() {
 				]
 			: []),
 	];
-
 	return (
 		<>
-			{eventSections.slice(0, 3).map((section) => (
+			{eventSections.slice(0, 2).map((section) => (
 				<div key={section.title} className="flex flex-col mx-auto py-7 pl-3">
 					<div className="flex justify-between">
 						<Link href={section.href} className="flex items-center gap-2">
@@ -177,7 +144,7 @@ async function Events() {
 								{event.categories.slice(0, 4).map((category: string) => (
 									<span
 										key={category}
-										className="px-2 py-1 bg-card rounded-full text-xs"
+										className="px-2 py-1 bg-card border dark:bg-amber-900 rounded-full text-xs"
 									>
 										{category}
 									</span>
@@ -188,7 +155,7 @@ async function Events() {
 				))}
 			</div>
 
-			{eventSections.slice(3, 5).map((section) => (
+			{eventSections.slice(2, 4).map((section) => (
 				<div
 					key={section.title}
 					className="flex flex-col max-w-7xl mx-auto py-7 pl-3"
