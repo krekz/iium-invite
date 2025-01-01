@@ -83,7 +83,7 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 					<PostInfo device="desktop" />
 				</EventProvider>
 			</div>
-			<EventSuggestion />
+			<EventSuggestion categories={event.categories} />
 		</div>
 	);
 }
