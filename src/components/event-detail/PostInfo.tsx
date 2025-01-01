@@ -1,7 +1,7 @@
 "use client";
 import DeletePostButton from "@/components/DeletePostButton";
-import CustomButton from "@/components/events/CustomButton";
-import EventDetailItem from "@/components/events/EventDetailItem";
+import CustomButton from "@/components/event-detail/CustomButton";
+import EventDetailItem from "@/components/event-detail/EventDetailItem";
 import { useEvent } from "@/lib/context/EventContextProvider";
 import { cn, localDateFormat } from "@/lib/utils";
 import { ExternalLink, MessageCircle } from "lucide-react";
