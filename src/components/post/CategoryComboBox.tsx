@@ -51,29 +51,31 @@ function CategoryComboBox({
 					<CommandList>
 						<CommandEmpty>No category found.</CommandEmpty>
 						<CommandGroup>
-							{categories.map((cate, index) => (
-								<CommandItem
-									key={index}
-									value={cate.toLowerCase()}
-									onSelect={(currentValue) => {
-										if (!selectedCategories.includes(currentValue)) {
-											addCategory(currentValue);
-										} else {
-											removeCategory(currentValue);
-										}
-									}}
-								>
-									<Check
-										className={cn(
-											"mr-2 h-4 w-4",
-											selectedCategories.includes(cate.toLowerCase())
-												? "opacity-100"
-												: "opacity-0",
-										)}
-									/>
-									{cate}
-								</CommandItem>
-							))}
+							{categories.flatMap((cate) =>
+								cate.subsets.map((subset) => (
+									<CommandItem
+										key={subset}
+										value={subset.toLowerCase()}
+										onSelect={(currentValue) => {
+											if (!selectedCategories.includes(currentValue)) {
+												addCategory(currentValue);
+											} else {
+												removeCategory(currentValue);
+											}
+										}}
+									>
+										<Check
+											className={cn(
+												"mr-2 h-4 w-4",
+												selectedCategories.includes(subset.toLowerCase())
+													? "opacity-100"
+													: "opacity-0",
+											)}
+										/>
+										{subset}
+									</CommandItem>
+								)),
+							)}
 						</CommandGroup>
 					</CommandList>
 				</Command>
