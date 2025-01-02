@@ -57,6 +57,7 @@ export async function GET(req: NextRequest) {
 				where: { id: decoded.userId },
 				data: {
 					isVerified: true,
+					emailVerified: new Date(Date.now()),
 					iiumEmail: decoded.email,
 				},
 			}),
