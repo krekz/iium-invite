@@ -24,7 +24,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { fixedCategories } from "@/lib/constant";
 import { useToast } from "@/lib/hooks/use-toast";
 import { useCategories } from "@/lib/hooks/useCategories";
 import { useFiles } from "@/lib/hooks/useFiles";
@@ -583,7 +582,6 @@ function PostForm({ editablePost }: EventFormProps) {
 							))}
 						</div>
 						<CategoryComboBox
-							categories={fixedCategories}
 							selectedCategories={selectedCategories}
 							addCategory={addCategory}
 							removeCategory={removeCategory}

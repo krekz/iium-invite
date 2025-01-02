@@ -327,7 +327,6 @@ function EventDetailForm() {
 									))}
 								</div>
 								<CategoryComboBox
-									categories={fixedCategories}
 									addCategory={addCategory}
 									removeCategory={removeCategory}
 									selectedCategories={selectedCategories}

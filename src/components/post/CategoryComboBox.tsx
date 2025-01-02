@@ -1,7 +1,5 @@
 "use client";
-import type { fixedCategories } from "@/lib/constant";
-import { useCategories } from "@/lib/hooks/useCategories";
-import { cn } from "@/lib/utils";
+import { cn, sortedCategories } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 import { Button } from "../ui/button";
@@ -16,14 +14,12 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 type ComboBoxProps = {
-	categories: typeof fixedCategories;
 	addCategory: (cate: string) => void;
 	removeCategory: (cate: string) => void;
 	selectedCategories: string[];
 };
 
 function CategoryComboBox({
-	categories,
 	addCategory,
 	removeCategory,
 	selectedCategories,
@@ -51,31 +47,29 @@ function CategoryComboBox({
 					<CommandList>
 						<CommandEmpty>No category found.</CommandEmpty>
 						<CommandGroup>
-							{categories.flatMap((cate) =>
-								cate.subsets.map((subset) => (
-									<CommandItem
-										key={subset}
-										value={subset.toLowerCase()}
-										onSelect={(currentValue) => {
-											if (!selectedCategories.includes(currentValue)) {
-												addCategory(currentValue);
-											} else {
-												removeCategory(currentValue);
-											}
-										}}
-									>
-										<Check
-											className={cn(
-												"mr-2 h-4 w-4",
-												selectedCategories.includes(subset.toLowerCase())
-													? "opacity-100"
-													: "opacity-0",
-											)}
-										/>
-										{subset}
-									</CommandItem>
-								)),
-							)}
+							{sortedCategories().map(({ category, subset }) => (
+								<CommandItem
+									key={`${category}-${subset}`}
+									value={subset.toLowerCase()}
+									onSelect={(currentValue) => {
+										if (!selectedCategories.includes(currentValue)) {
+											addCategory(currentValue);
+										} else {
+											removeCategory(currentValue);
+										}
+									}}
+								>
+									<Check
+										className={cn(
+											"mr-2 h-4 w-4",
+											selectedCategories.includes(subset.toLowerCase())
+												? "opacity-100"
+												: "opacity-0",
+										)}
+									/>
+									{subset}
+								</CommandItem>
+							))}
 						</CommandGroup>
 					</CommandList>
 				</Command>
