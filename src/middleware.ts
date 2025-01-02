@@ -22,7 +22,7 @@ export const PROTECTED_ROUTES = {
 } as const;
 
 export default auth(async (request) => {
-	const { pathname } = request.nextUrl;
+	const { pathname, searchParams } = request.nextUrl;
 	const user = request.auth?.user;
 
 	// helper func
@@ -40,6 +40,15 @@ export default auth(async (request) => {
 	const isProtectedRoute = Object.values(PROTECTED_ROUTES).some((route) =>
 		pathname.startsWith(route),
 	);
+
+	// public route for email verification with "token" query param
+	if (
+		pathname.startsWith(PROTECTED_ROUTES.VERIFY_EMAIL) &&
+		searchParams.has("token")
+	) {
+		return NextResponse.next();
+	}
+
 	if (!isProtectedRoute) {
 		return NextResponse.next();
 	}
