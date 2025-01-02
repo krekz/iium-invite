@@ -42,10 +42,10 @@ function Verified({ token }: VerifiedProps) {
 
 	if (error) {
 		return (
-			<div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 px-4">
-				<div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+			<div className="flex flex-col justify-center items-center min-h-screen px-4">
+				<div className="w-full max-w-md p-8 bg-card border rounded-lg shadow-lg">
 					<div className="flex flex-col items-center space-y-4">
-						<div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+						<div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center">
 							<svg
 								className="w-8 h-8 text-red-500"
 								fill="none"
@@ -60,14 +60,12 @@ function Verified({ token }: VerifiedProps) {
 								/>
 							</svg>
 						</div>
-						<h2 className="text-2xl font-semibold text-gray-900">
-							Verification Failed
-						</h2>
+						<h2 className="text-2xl font-semibold">Verification Failed</h2>
 						<p className="text-red-500 text-center">{error}</p>
 						<button
 							type="button"
 							onClick={() => window.location.reload()}
-							className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+							className="px-4 py-2 bg-red-500 rounded-md hover:bg-red-600 transition-colors"
 						>
 							Try Again
 						</button>
@@ -78,14 +76,14 @@ function Verified({ token }: VerifiedProps) {
 	}
 
 	return (
-		<div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 px-4">
-			<div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+		<div className="flex flex-col justify-center items-center min-h-screen px-4">
+			<div className="w-full max-w-md p-8 bg-card border rounded-lg shadow-lg">
 				<div className="flex flex-col items-center space-y-4">
 					{isVerified ? (
 						<>
-							<div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+							<div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center">
 								<svg
-									className="w-8 h-8 text-green-500"
+									className="w-8 h-8 "
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -98,13 +96,14 @@ function Verified({ token }: VerifiedProps) {
 									/>
 								</svg>
 							</div>
-							<h2 className="text-2xl font-semibold text-gray-900">
-								Email Verified!
+							<h2 className="text-2xl font-semibold">
+								Email
+								<span className="text-green-700"> Verified!</span>
 							</h2>
-							<p className="text-gray-600 text-center">
+							<p className="text-center opacity-70">
 								Your email has been successfully verified.
 							</p>
-							<p className="text-gray-500 text-sm">
+							<p className="text-sm opacity-70">
 								Redirecting to discover page...
 							</p>
 						</>
@@ -125,10 +124,8 @@ function Verified({ token }: VerifiedProps) {
 									/>
 								</svg>
 							</div>
-							<h2 className="text-2xl font-semibold text-gray-900">
-								Verifying Email
-							</h2>
-							<p className="text-gray-600 text-center">
+							<h2 className="text-2xl font-semibold">Verifying Email</h2>
+							<p className="text-center opacity-70">
 								Please wait while we verify your email address...
 							</p>
 						</>
