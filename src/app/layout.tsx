@@ -61,8 +61,8 @@ export default async function RootLayout({
 					<PasswordProtection>
 						<ReactQueryProvider>
 							<NextSessionProvider session={session}>
-								<main className="w-full md:container">
-									<Navbar session={{ user: session?.user?.name }} />
+								<Navbar session={{ user: session?.user?.name }} />
+								<main className="w-full md:container pt-6 sm:pt-0">
 									<TooltipProvider>{children}</TooltipProvider>
 								</main>
 							</NextSessionProvider>

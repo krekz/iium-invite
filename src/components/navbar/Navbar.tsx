@@ -64,9 +64,9 @@ export default ({
 	};
 
 	return (
-		<div className="sm:sticky sm:top-0 z-50">
+		<>
 			{/* Top Navbar */}
-			<nav className="bg-background">
+			<nav className="bg-background hidden sm:block sm:sticky sm:top-0 z-50">
 				<div className="max-w-screen-xl mx-auto px-4">
 					<div className="flex justify-between items-center h-24">
 						<div className="flex items-center">
@@ -107,6 +107,6 @@ export default ({
 			</nav>
 			{/* Bottom navbar for Mobile only */}
 			<MobileNavbar session={session} />
-		</div>
+		</>
 	);
 };
