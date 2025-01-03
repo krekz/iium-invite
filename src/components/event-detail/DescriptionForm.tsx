@@ -1,5 +1,5 @@
 "use client";
-import { updateDescription } from "@/actions/event";
+import { updateDescription } from "@/actions/events/post";
 import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
 import {
 	FloatingPanelCloseButton,

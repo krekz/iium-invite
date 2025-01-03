@@ -1,5 +1,5 @@
 "use client";
-import { getEvents } from "@/actions/get-events";
+import { getDiscoverEvents } from "@/actions/events/get";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -41,8 +41,7 @@ function EventList({ campus }: EventListProps) {
 		error,
 	} = useQuery<Event[]>({
 		queryKey: ["events", ...Object.values(queryParams)],
-		queryFn: () => getEvents(queryParams),
-		refetchOnWindowFocus: false,
+		queryFn: () => getDiscoverEvents(queryParams),
 	});
 
 	if (isLoading) return <Skeleton />;

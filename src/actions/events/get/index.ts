@@ -12,6 +12,74 @@ type SearchParams = {
 	has_starpoints?: string;
 };
 
+export const getEventHomepage = unstable_cache(
+	async () => {
+		return prisma.event.findMany({
+			where: {
+				isActive: true,
+			},
+			take: 15,
+			select: {
+				id: true,
+				title: true,
+				date: true,
+				poster_url: true,
+				location: true,
+				categories: true,
+				has_starpoints: true,
+			},
+			orderBy: {
+				date: "asc",
+			},
+		});
+	},
+	["events-homepage"],
+	{
+		revalidate: 60 * 60,
+		tags: ["events", "events-homepage"],
+	},
+);
+
+export const getEventDetails = unstable_cache(
+	async (slug: string, userId?: string) => {
+		return await prisma.event.findUnique({
+			where: {
+				id: slug,
+				OR: [{ isActive: true }, { authorId: userId }],
+			},
+			select: {
+				Author: {
+					select: { name: true },
+				},
+				id: true,
+				title: true,
+				description: true,
+				poster_url: true,
+				campus: true,
+				organizer: true,
+				date: true,
+				location: true,
+				createdAt: true,
+				registration_link: true,
+				fee: true,
+				has_starpoints: true,
+				categories: true,
+				contacts: true,
+				bookmarks: {
+					where: { userId: userId },
+					select: { userId: true },
+				},
+				isActive: true,
+			},
+		});
+	},
+	["event-data"],
+	{
+		revalidate: 3600,
+		tags: ["event-details", "events"],
+	},
+);
+
 function getCategorySubsets(categoryName: string): string[] {
 	const category = fixedCategories.find(
 		(c) => c.category.toLowerCase() === categoryName.toLowerCase(),
@@ -24,7 +92,7 @@ function getCategorySubsets(categoryName: string): string[] {
 		: [categoryName.toLowerCase()];
 }
 
-export async function getEvents(searchParams?: SearchParams) {
+export async function getDiscoverEvents(searchParams?: SearchParams) {
 	const searchQuery = searchParams?.q?.trim() || undefined;
 	const categories =
 		searchParams?.category?.toLowerCase().split(",").filter(Boolean) || [];
@@ -139,9 +207,6 @@ export async function getEvents(searchParams?: SearchParams) {
 						poster_url: true,
 						has_starpoints: true,
 					},
-					cacheStrategy: {
-						ttl: 30,
-					},
 				});
 				return events;
 			} catch (error) {
@@ -158,8 +223,8 @@ export async function getEvents(searchParams?: SearchParams) {
 			hasStarpoints.toString(),
 		],
 		{
-			revalidate: 60,
-			tags: ["events"],
+			revalidate: 60 * 60,
+			tags: ["events-discover", "events"],
 		},
 	);
 

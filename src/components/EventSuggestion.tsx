@@ -1,6 +1,5 @@
 "use client";
-import { eventRecommendations } from "@/actions/ai/recommendations";
-import { getEvents } from "@/actions/event";
+import { eventSuggestions } from "@/actions/ai/recommendations";
 import {
 	Carousel,
 	CarouselContent,
@@ -18,7 +17,7 @@ function EventSuggestion({ categories }: { categories: string[] }) {
 	const { slug: currentPostId } = useParams();
 	const { data: Events, isLoading } = useQuery({
 		queryKey: ["events", currentPostId],
-		queryFn: () => eventRecommendations(currentPostId as string, categories),
+		queryFn: () => eventSuggestions(currentPostId as string, categories),
 	});
 
 	return (

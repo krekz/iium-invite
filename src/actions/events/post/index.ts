@@ -1,13 +1,10 @@
 "use server";
-
 import crypto from "node:crypto";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { checkRateLimit, uploadImage } from "@/lib/server-only";
-import { createClient } from "@/lib/supabase/server";
 import { descSchema, detailSchema, postSchema } from "@/lib/validations/post";
-import { revalidatePath } from "next/cache";
-import { unstable_cache } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 
 type Input = {
@@ -29,28 +26,7 @@ type FormDataValues = Record<
 	FormDataEntryValue | FormDataEntryValue[] | boolean
 >;
 
-// Cache events for 1 minute
-const getCachedEvents = unstable_cache(
-	async (currentPostId: string) => {
-		return await prisma.event.findMany({
-			where: {
-				isActive: true,
-				id: {
-					not: currentPostId,
-				},
-			},
-			take: 7,
-			select: {
-				id: true,
-				poster_url: true,
-			},
-		});
-	},
-	["events"],
-	{ revalidate: 60 },
-);
-
-export const CreatePost = async (
+export const createPost = async (
 	input: Input,
 ): Promise<{ success: boolean; message: string; eventId: string }> => {
 	try {
@@ -162,8 +138,7 @@ export const CreatePost = async (
 			return event;
 		});
 
-		revalidatePath("/discover");
-		revalidatePath("/");
+		revalidateTag("events");
 
 		return {
 			success: true,
@@ -173,78 +148,6 @@ export const CreatePost = async (
 	} catch (error) {
 		console.error("[CreatePost]", error);
 		return { success: false, message: "Failed to create post", eventId: "" };
-	}
-};
-
-export const deletePost = async ({
-	eventId,
-}: { eventId: string }): Promise<{ success: boolean }> => {
-	try {
-		const session = await auth();
-		if (!session?.user?.id) {
-			console.error("[DeletePost] Unauthorized: No user session");
-			return { success: false };
-		}
-
-		if (
-			!checkRateLimit(session.user.id, { maxRequests: 2, windowMs: 30 * 1000 })
-		) {
-			console.error(
-				"[DeletePost] Rate limit exceeded for user:",
-				session.user.id,
-			);
-			return { success: false };
-		}
-
-		if (
-			!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-				eventId,
-			)
-		) {
-			console.error("[DeletePost] Invalid event ID format:", eventId);
-			return { success: false };
-		}
-
-		const event = await prisma.event.findUnique({
-			where: { id: eventId },
-			select: { authorId: true, poster_url: true },
-		});
-
-		if (!event) {
-			console.error("[DeletePost] Event not found:", eventId);
-			return { success: false };
-		}
-
-		if (event.authorId !== session.user.id) {
-			console.error("[DeletePost] Unauthorized: User is not the author", {
-				userId: session.user.id,
-				authorId: event.authorId,
-			});
-			return { success: false };
-		}
-
-		await prisma.$transaction(async (tx) => {
-			await tx.event.delete({
-				where: { id: eventId },
-			});
-
-			const supabase = createClient();
-			if (event.poster_url.length > 0) {
-				const { error: fileError } = await supabase.storage
-					.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET ?? "")
-					.remove(event.poster_url);
-
-				if (fileError) throw fileError;
-			}
-		});
-
-		revalidatePath("/discover");
-		revalidatePath("/");
-
-		return { success: true };
-	} catch (error) {
-		console.error("[DeletePost]", error);
-		return { success: false };
 	}
 };
 
@@ -347,9 +250,7 @@ export const updateDetailsPost = async ({
 			return { success: false, message: "Failed to update post" };
 		}
 
-		revalidatePath("/discover");
-		revalidatePath("/");
-		revalidatePath(`/events/${eventId}`);
+		revalidateTag("events");
 
 		return {
 			success: true,
@@ -428,9 +329,7 @@ export const updateDescription = async ({
 			data: { description },
 		});
 
-		revalidatePath(`/events/${eventId}`);
-		revalidatePath("/discover");
-		revalidatePath("/");
+		revalidateTag("events");
 
 		return {
 			success: true,
@@ -442,14 +341,5 @@ export const updateDescription = async ({
 			success: false,
 			message: "Error updating description",
 		};
-	}
-};
-
-export const getEvents = async (currentPostId: string) => {
-	try {
-		return await getCachedEvents(currentPostId);
-	} catch (error) {
-		console.error("[GetEvents]", error);
-		return [];
 	}
 };
