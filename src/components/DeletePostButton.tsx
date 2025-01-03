@@ -1,5 +1,5 @@
 "use client";
-import { deletePost } from "@/actions/event";
+import { deletePost } from "@/actions/events/delete";
 import {
 	AlertDialog,
 	AlertDialogAction,

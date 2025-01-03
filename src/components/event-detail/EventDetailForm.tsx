@@ -1,5 +1,5 @@
 "use client";
-import { updateDetailsPost } from "@/actions/event";
+import { updateDetailsPost } from "@/actions/events/post";
 import {
 	FloatingPanelCloseButton,
 	FloatingPanelContent,

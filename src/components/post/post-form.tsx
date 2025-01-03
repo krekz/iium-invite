@@ -1,5 +1,5 @@
 "use client";
-import { CreatePost } from "@/actions/event";
+import { createPost } from "@/actions/events/post";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -164,7 +164,7 @@ function PostForm({ editablePost }: EventFormProps) {
 		);
 
 		try {
-			const newPost = await CreatePost({ formData });
+			const newPost = await createPost({ formData });
 
 			toast({
 				title: newPost.success ? "Success" : "Error",

@@ -19,7 +19,7 @@ const openai = createOpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const eventRecommendations = unstable_cache(
+export const eventSuggestions = unstable_cache(
 	async (
 		currentEventId: string,
 		categories: string[],
@@ -90,7 +90,7 @@ export const eventRecommendations = unstable_cache(
 	},
 	["event-recommendations"],
 	{
-		revalidate: 300,
-		tags: ["events"],
+		revalidate: 60 * 60,
+		tags: ["events", "event-recommendations"],
 	},
 );

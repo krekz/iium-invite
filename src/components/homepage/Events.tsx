@@ -1,5 +1,5 @@
+import { getEventHomepage } from "@/actions/events/get";
 import EventCarousel from "@/components/homepage/EventCarousel";
-import prisma from "@/lib/prisma";
 import { Calendar, ChevronRight, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,28 +19,7 @@ interface Event {
 }
 
 async function Events() {
-	const events = await prisma.event.findMany({
-		where: {
-			isActive: true,
-		},
-		take: 15,
-		select: {
-			id: true,
-			title: true,
-			date: true,
-			poster_url: true,
-			location: true,
-			categories: true,
-			has_starpoints: true,
-		},
-		orderBy: {
-			date: "asc",
-		},
-		cacheStrategy: {
-			ttl: 60 * 2, // 2 minutes
-		},
-	});
-
+	const events = await getEventHomepage();
 	const today = new Date();
 	const threeDaysFromNow = new Date(today);
 	threeDaysFromNow.setDate(today.getDate() + 3);

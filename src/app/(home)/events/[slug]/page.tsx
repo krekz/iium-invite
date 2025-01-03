@@ -1,61 +1,16 @@
+import { getEventDetails } from "@/actions/events/get";
 import { auth } from "@/auth";
 import EventSuggestion from "@/components/EventSuggestion";
 import LeftSide from "@/components/event-detail/LeftSide";
 import PostInfo from "@/components/event-detail/PostInfo";
 import { EventProvider } from "@/lib/context/EventContextProvider";
-import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
 async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
 	const session = await auth();
 
-	const event = await prisma.event.findUnique({
-		where: {
-			id: params.slug,
-			OR: [
-				{
-					isActive: true,
-				},
-				{
-					authorId: session?.user?.id,
-				},
-			],
-		},
-		select: {
-			Author: {
-				select: {
-					name: true,
-				},
-			},
-			id: true,
-			title: true,
-			description: true,
-			poster_url: true,
-			campus: true,
-			organizer: true,
-			date: true,
-			location: true,
-			createdAt: true,
-			registration_link: true,
-			fee: true,
-			has_starpoints: true,
-			categories: true,
-			contacts: true,
-			bookmarks: {
-				where: {
-					userId: session?.user?.id,
-				},
-				select: {
-					userId: true,
-				},
-			},
-			isActive: true,
-		},
-		cacheStrategy: {
-			ttl: 60,
-		},
-	});
+	const event = await getEventDetails(params.slug, session?.user?.id);
 
 	if (!event) return notFound();
 
