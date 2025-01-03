@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/server-only";
-import { revalidatePath } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -13,6 +13,52 @@ const bookmarkSchema = z.object({
 		),
 });
 
+export async function GET() {
+	try {
+		const session = await auth();
+		if (!session?.user?.id) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		}
+		const bookmarks = await unstable_cache(
+			async () =>
+				await prisma.bookmark.findMany({
+					where: {
+						userId: session.user.id,
+						event: {
+							id: { not: undefined },
+							isActive: true,
+						},
+					},
+					select: {
+						event: {
+							select: {
+								id: true,
+								title: true,
+								poster_url: true,
+							},
+						},
+					},
+					orderBy: {
+						createdAt: "desc",
+					},
+				}),
+			["user-bookmarks", session.user?.id],
+			{
+				revalidate: 60 * 60, // 1 hour
+				tags: ["events", "user-bookmarks"],
+			},
+		)();
+
+		return NextResponse.json(bookmarks);
+	} catch (error) {
+		console.error("Fetch bookmarks error:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
+}
+
 export async function POST(request: NextRequest) {
 	try {
 		const session = await auth();
@@ -22,7 +68,7 @@ export async function POST(request: NextRequest) {
 
 		if (
 			!checkRateLimit(session.user.id, {
-				maxRequests: 15,
+				maxRequests: 50,
 				windowMs: 30 * 1000,
 			})
 		) {
@@ -68,58 +114,11 @@ export async function POST(request: NextRequest) {
 			});
 		});
 
-		revalidatePath("/api/user/bookmarks");
-		revalidatePath("/account?option=bookmarks");
+		revalidateTag("events");
 
 		return NextResponse.json({ message: "Bookmarked" }, { status: 201 });
 	} catch (error) {
 		console.error("Bookmark creation error:", error);
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
-	}
-}
-
-export async function GET(request: NextRequest) {
-	try {
-		const session = await auth();
-		if (!session?.user?.id) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
-		if (!checkRateLimit(session.user.id)) {
-			return NextResponse.json({ error: "Too many requests" }, { status: 429 });
-		}
-
-		const bookmarks = await prisma.bookmark.findMany({
-			where: {
-				userId: session.user.id,
-				event: {
-					id: { not: undefined },
-					isActive: true,
-				},
-			},
-			select: {
-				event: {
-					select: {
-						id: true,
-						title: true,
-						poster_url: true,
-					},
-				},
-			},
-			orderBy: {
-				createdAt: "desc",
-			},
-			cacheStrategy: {
-				ttl: 10,
-			},
-		});
-
-		return NextResponse.json(bookmarks);
-	} catch (error) {
-		console.error("Fetch bookmarks error:", error);
 		return NextResponse.json(
 			{ error: "Internal server error" },
 			{ status: 500 },
@@ -135,7 +134,7 @@ export async function DELETE(request: NextRequest) {
 		}
 
 		if (
-			!checkRateLimit(session.user.id, { maxRequests: 15, windowMs: 30 * 1000 })
+			!checkRateLimit(session.user.id, { maxRequests: 50, windowMs: 30 * 1000 })
 		) {
 			return NextResponse.json({ error: "Too many requests" }, { status: 429 });
 		}
@@ -163,7 +162,7 @@ export async function DELETE(request: NextRequest) {
 				{ status: 404 },
 			);
 		}
-
+		revalidateTag("events");
 		return NextResponse.json({ message: "Bookmark removed" }, { status: 200 });
 	} catch (error) {
 		console.error("Remove bookmark error:", error);
