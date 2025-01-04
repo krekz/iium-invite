@@ -51,17 +51,16 @@ function EventList({ campus }: EventListProps) {
 	return (
 		<div className="w-full">
 			<div className="gap-y-2 gap-x-1 pb-5 mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 text-amber-900">
-				<AnimatePresence mode="wait">
+				<AnimatePresence mode="sync">
 					{events.map((event) => (
 						<motion.div
 							key={event.id}
 							initial={{ opacity: 0, scale: 0.9 }}
 							animate={{ opacity: 1, scale: 1 }}
-							exit={{ opacity: 0, scale: 0.9 }}
 							layout
 							transition={{
-								opacity: { duration: 0.3 },
-								layout: { duration: 0.3 },
+								opacity: { duration: 0.8 },
+								layout: { duration: 0.4 },
 							}}
 						>
 							<EventCard event={event} />
