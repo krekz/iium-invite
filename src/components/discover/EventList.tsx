@@ -2,13 +2,13 @@
 import { getDiscoverEvents } from "@/actions/events/get";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import EmptyState from "./Empty";
 import EventError from "./Error";
 import Skeleton from "./Skeleton";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface Event {
 	id: string;
