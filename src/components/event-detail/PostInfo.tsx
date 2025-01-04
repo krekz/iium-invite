@@ -77,7 +77,9 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
 				</div>
 				<BookmarkButton
 					eventId={event.id}
-					initialBookmarked={event.bookmarks[0]?.userId === userId}
+					initialBookmarked={Boolean(
+						event.bookmarks[0] && event.bookmarks[0].userId === userId,
+					)}
 				/>
 				<div className="space-y-1 mt-4">
 					{event.registration_link && (
