@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import EmptyState from "./Empty";
 import EventError from "./Error";
 import Skeleton from "./Skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Event {
 	id: string;
@@ -47,13 +48,26 @@ function EventList({ campus }: EventListProps) {
 	if (isLoading) return <Skeleton />;
 	if (error) return <EventError />;
 	if (!events?.length) return <EmptyState />;
-
 	return (
 		<div className="w-full">
 			<div className="gap-y-2 gap-x-1 pb-5 mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 text-amber-900">
-				{events.map((event) => (
-					<EventCard key={event.id} event={event} />
-				))}
+				<AnimatePresence mode="wait">
+					{events.map((event) => (
+						<motion.div
+							key={event.id}
+							initial={{ opacity: 0, scale: 0.9 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.9 }}
+							layout
+							transition={{
+								opacity: { duration: 0.3 },
+								layout: { duration: 0.3 },
+							}}
+						>
+							<EventCard event={event} />
+						</motion.div>
+					))}
+				</AnimatePresence>
 			</div>
 		</div>
 	);
@@ -69,16 +83,20 @@ function EventCard({ event }: { event: Event }) {
 			href={`/events/${event.id}`}
 			className="flex flex-col p-1 gap-1 w-full rounded-lg relative"
 		>
-			<div className="w-full relative rounded-md overflow-hidden aspect-square">
+			<motion.div
+				className="w-full relative rounded-md overflow-hidden aspect-square"
+				whileHover={{ scale: 1.05 }}
+				transition={{ duration: 0.3 }}
+			>
 				<Image
-					className="transition-transform duration-1000 hover:scale-105"
+					className="object-cover"
 					alt={event.title}
 					src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${event.poster_url[0]}`}
 					fill
 					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 				/>
 				{event.has_starpoints && <StarPointsBadge />}
-			</div>
+			</motion.div>
 
 			{isRecruitmentEvent && (
 				<div className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white rounded-full p-2">
