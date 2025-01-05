@@ -21,16 +21,16 @@ interface Event {
 async function Events() {
 	const events = await getEventHomepage();
 	const today = new Date();
-	const threeDaysFromNow = new Date(today);
-	threeDaysFromNow.setDate(today.getDate() + 3);
+	const endOfWeek = new Date(today);
+	endOfWeek.setDate(today.getDate() + (7 - today.getDay())); // get next sunday
+	endOfWeek.setHours(23, 59, 59, 999);
 
 	const newlyAddedEvents = [...events].sort(
 		(a, b) => Number(b.id) - Number(a.id),
 	);
-	const weekendEvents = events.filter((event) => {
+	const thisWeekEvents = events.filter((event) => {
 		const eventDate = new Date(event.date);
-		const dayOfWeek = eventDate.getDay();
-		return (dayOfWeek === 0 || dayOfWeek === 6) && eventDate >= today;
+		return eventDate >= today && eventDate <= endOfWeek;
 	});
 	const recruitmentEvents = events.filter((event) =>
 		event.categories.includes("recruitment"),
@@ -48,12 +48,12 @@ async function Events() {
 					},
 				]
 			: []),
-		...(weekendEvents.length > 0
+		...(thisWeekEvents.length > 4
 			? [
 					{
-						title: "This Weekend",
+						title: "This Week",
 						href: "/discover",
-						events: weekendEvents,
+						events: thisWeekEvents,
 					},
 				]
 			: []),
