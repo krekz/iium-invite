@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -29,10 +29,7 @@ export async function GET(request: NextRequest) {
 				isActive: false,
 			},
 		});
-		revalidatePath("/");
-		revalidatePath("/discover");
-		revalidatePath("/account?option=bookmarks");
-		revalidatePath("/account?option=posts");
+		revalidateTag("events");
 		return new Response("Cron job ran successfully");
 	} catch (error) {
 		console.error("Error updating events", error);
