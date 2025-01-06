@@ -85,6 +85,7 @@ model Event {
   has_starpoints      Boolean
   contacts            Contact[]
   isActive            Boolean    @default(true)
+  isRecruiting        Boolean    @default(false)
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
   Author              User?      @relation(fields: [authorId], references: [id])
