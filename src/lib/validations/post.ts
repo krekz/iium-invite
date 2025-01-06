@@ -40,6 +40,7 @@ export const detailSchema = z.object({
 		.max(2, "Maximum of two contacts allowed"),
 	registration_link: z.union([z.string().url(), z.literal("")]).optional(),
 	has_starpoints: z.boolean(),
+	isRecruiting: z.boolean(),
 });
 
 export const postSchema = z

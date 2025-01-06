@@ -27,11 +27,10 @@ import {
 import { useToast } from "@/lib/hooks/use-toast";
 import { useCategories } from "@/lib/hooks/useCategories";
 import { useFiles } from "@/lib/hooks/useFiles";
-import type { EventsProps } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { postSchema } from "@/lib/validations/post";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { add, format } from "date-fns";
+import { format } from "date-fns";
 import { Asterisk, CalendarIcon, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -41,31 +40,25 @@ import { useForm } from "react-hook-form";
 import type * as z from "zod";
 import { MinimalTiptapEditor } from "../minimal-tiptap";
 import CategoryComboBox from "./CategoryComboBox";
-
-type EventFormProps = {
-	editablePost?: EventsProps;
-};
-
-function PostForm({ editablePost }: EventFormProps) {
+function PostForm() {
 	const { toast } = useToast();
 	const router = useRouter();
 
 	const form = useForm<z.infer<typeof postSchema>>({
 		resolver: zodResolver(postSchema),
 		defaultValues: {
-			title: editablePost?.title ?? "",
-			description: editablePost?.description ?? "",
-			location: editablePost?.location ?? "",
-			organizer: editablePost?.organizer ?? "",
-			fee: editablePost?.fee ?? "0",
-			registration_link: editablePost?.registration_link ?? "",
-			categories: editablePost?.categories ?? [],
-			has_starpoints: editablePost?.has_starpoints ?? false,
-			campus: editablePost?.campus ?? "",
-			date:
-				editablePost?.date ??
-				new Date(new Date().setDate(new Date().getDate() + 1)), // set default date to tomorrow
-			contacts: editablePost?.contacts ?? [],
+			title: "",
+			description: "",
+			location: "",
+			organizer: "",
+			fee: "0",
+			registration_link: "",
+			categories: [],
+			has_starpoints: false,
+			campus: "",
+			isRecruiting: false,
+			date: new Date(new Date().setDate(new Date().getDate() + 1)), // set default date to tomorrow
+			contacts: [],
 		},
 	});
 
@@ -246,7 +239,6 @@ function PostForm({ editablePost }: EventFormProps) {
 							</FormItem>
 						)}
 					/>
-
 					<FormField
 						control={form.control}
 						name="poster_url"
@@ -318,7 +310,6 @@ function PostForm({ editablePost }: EventFormProps) {
 							</FormItem>
 						)}
 					/>
-
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<FormField
 							control={form.control}
@@ -434,7 +425,6 @@ function PostForm({ editablePost }: EventFormProps) {
 							)}
 						/>
 					</div>
-
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<FormField
 							control={form.control}
@@ -555,7 +545,6 @@ function PostForm({ editablePost }: EventFormProps) {
 							)}
 						/>
 					</div>
-
 					<div>
 						<h4 className="text-lg font-semibold mb-2 flex items-center">
 							Categories <Asterisk className="h-4 w-4 text-red-500 ml-1" />
@@ -587,36 +576,70 @@ function PostForm({ editablePost }: EventFormProps) {
 							removeCategory={removeCategory}
 						/>
 					</div>
-
-					<FormField
-						control={form.control}
-						name="has_starpoints"
-						render={({ field }) => (
-							<FormItem className="flex flex-col space-y-2">
-								<div className="flex items-center space-x-2">
-									<FormLabel className="text-sm font-medium">
-										Starpoints
-									</FormLabel>
-									<FormControl>
-										<div
-											className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer ${
-												field.value ? "bg-indigo-600" : "bg-gray-300"
-											}`}
-											onClick={() => field.onChange(!field.value)}
-										>
+					<div className="flex justify-between items-center gap-4 p-4 bg-secondary/30 rounded-lg">
+						<FormField
+							control={form.control}
+							name="has_starpoints"
+							render={({ field }) => (
+								<FormItem className="flex-1">
+									<div className="flex items-center justify-between">
+										<FormLabel className="text-sm font-medium flex items-center gap-2">
+											Starpoints
+											<span className="text-xs text-muted-foreground">
+												(Student Activity Points)
+											</span>
+										</FormLabel>
+										<FormControl>
 											<div
-												className={`bg-white size-5 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-													field.value ? "translate-x-7" : ""
+												className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 ${
+													field.value ? "bg-primary" : "bg-muted"
 												}`}
-											/>
-										</div>
-									</FormControl>
-								</div>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-
+												onClick={() => field.onChange(!field.value)}
+											>
+												<div
+													className={`bg-white size-4 rounded-full shadow-sm transform transition-transform duration-200 ${
+														field.value ? "translate-x-6" : "translate-x-0"
+													}`}
+												/>
+											</div>
+										</FormControl>
+									</div>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="isRecruiting"
+							render={({ field }) => (
+								<FormItem className="flex-1">
+									<div className="flex items-center justify-between">
+										<FormLabel className="text-sm font-medium flex items-center gap-2">
+											Hiring
+											<span className="text-xs text-muted-foreground">
+												(Committee Recruitment)
+											</span>
+										</FormLabel>
+										<FormControl>
+											<div
+												className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 ${
+													field.value ? "bg-primary" : "bg-muted"
+												}`}
+												onClick={() => field.onChange(!field.value)}
+											>
+												<div
+													className={`bg-white size-4 rounded-full shadow-sm transform transition-transform duration-200 ${
+														field.value ? "translate-x-6" : "translate-x-0"
+													}`}
+												/>
+											</div>
+										</FormControl>
+									</div>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</div>
 					<Button
 						className="w-full bg-primary text-white font-bold py-2 px-4 rounded transition-colors"
 						type="submit"
@@ -627,8 +650,6 @@ function PostForm({ editablePost }: EventFormProps) {
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 								Creating...
 							</>
-						) : editablePost ? (
-							"Update Event"
 						) : (
 							"Create Event"
 						)}

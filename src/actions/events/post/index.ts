@@ -84,6 +84,7 @@ export const createPost = async (
 		}
 
 		values.has_starpoints = values.has_starpoints === "true";
+		values.isRecruiting = values.isRecruiting === "true"; // turns string "true" into bool
 
 		const {
 			title,
@@ -97,6 +98,7 @@ export const createPost = async (
 			organizer,
 			poster_url,
 			registration_link,
+			isRecruiting,
 			contacts,
 		} = postSchema.parse(values);
 		const assignPostId = `post-${uuidv4()}`;
@@ -127,6 +129,7 @@ export const createPost = async (
 					organizer,
 					poster_url: uploadedFiles,
 					registration_link,
+					isRecruiting,
 					contacts: {
 						create: contacts.map((contact) => ({
 							name: contact.name.slice(0, 100),
@@ -211,6 +214,7 @@ export const updateDetailsPost = async ({
 		const values: FormDataValues = Object.fromEntries(formData.entries());
 		values.categories = formData.getAll("categories").filter(Boolean);
 		values.has_starpoints = values.has_starpoints === "true";
+		values.isRecruiting = values.isRecruiting === "true"; //convet string "true" into array
 
 		const contactsString = formData.get("contacts");
 		values.contacts = [];

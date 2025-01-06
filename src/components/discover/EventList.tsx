@@ -19,6 +19,7 @@ interface Event {
 	organizer: string;
 	categories: string[];
 	has_starpoints: boolean;
+	isRecruiting: boolean;
 }
 
 type EventListProps = {
@@ -73,35 +74,25 @@ function EventList({ campus }: EventListProps) {
 }
 
 function EventCard({ event }: { event: Event }) {
-	const isRecruitmentEvent = event.categories.some((cat) =>
-		["recruitment", "committee"].includes(cat),
-	);
-
 	return (
 		<Link
 			href={`/events/${event.id}`}
 			className="flex flex-col p-1 gap-1 w-full rounded-lg relative"
 		>
-			<motion.div
-				className="w-full relative rounded-md overflow-hidden aspect-square"
-				whileHover={{ scale: 1.05 }}
-				transition={{ duration: 0.3 }}
-			>
+			<div className="w-full relative rounded-md overflow-hidden aspect-square">
 				<Image
-					className="object-cover"
+					className="transition-transform duration-1000 hover:scale-105"
 					alt={event.title}
 					src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bucket-v1/${event.poster_url[0]}`}
 					fill
 					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 				/>
 				{event.has_starpoints && <StarPointsBadge />}
-			</motion.div>
+			</div>
 
-			{isRecruitmentEvent && (
-				<div className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white rounded-full p-2">
-					<p className="text-xs font-extrabold whitespace-nowrap">
-						Open for Recruitment
-					</p>
+			{event.isRecruiting && (
+				<div className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white rounded-full p-2 w-20 text-center">
+					<p className="text-xs font-extrabold whitespace-nowrap">Hiring</p>
 				</div>
 			)}
 
