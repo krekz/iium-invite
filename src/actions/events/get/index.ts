@@ -10,6 +10,7 @@ type SearchParams = {
 	campus?: string;
 	fee?: string;
 	has_starpoints?: string;
+	recruitment?: string;
 };
 
 export const getEventHomepage = unstable_cache(
@@ -99,7 +100,8 @@ export async function getDiscoverEvents(searchParams?: SearchParams) {
 		searchParams?.category?.toLowerCase().split(",").filter(Boolean) || [];
 	const campus = searchParams?.campus?.toLowerCase();
 	const fee = searchParams?.fee;
-	const hasStarpoints = searchParams?.has_starpoints === "true";
+	const has_starpoints = searchParams?.has_starpoints === "true";
+	const isRecruiting = searchParams?.recruitment === "true";
 
 	const getCachedEvents = unstable_cache(
 		async () => {
@@ -184,9 +186,14 @@ export async function getDiscoverEvents(searchParams?: SearchParams) {
 										fee: fee === "0" ? "0" : { gt: "0" },
 									}
 								: {},
-							searchParams?.has_starpoints
+							has_starpoints
 								? {
-										has_starpoints: hasStarpoints,
+										has_starpoints: true,
+									}
+								: {},
+							isRecruiting
+								? {
+										isRecruiting: true,
 									}
 								: {},
 						],
@@ -222,7 +229,8 @@ export async function getDiscoverEvents(searchParams?: SearchParams) {
 			categories.join(",") || "",
 			campus || "",
 			fee || "",
-			hasStarpoints.toString(),
+			has_starpoints.toString(),
+			isRecruiting.toString(),
 		],
 		{
 			revalidate: 60 * 60,

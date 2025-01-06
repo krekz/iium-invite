@@ -35,6 +35,8 @@ function EventList({ campus }: EventListProps) {
 		fee: searchParams.get("fee") === "true" ? "true" : undefined,
 		has_starpoints:
 			searchParams.get("starpoints") === "true" ? "true" : undefined,
+		recruitment:
+			searchParams.get("recruitment") === "true" ? "true" : undefined,
 	};
 
 	const {

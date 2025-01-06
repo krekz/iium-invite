@@ -22,6 +22,7 @@ const FILTER_OPTIONS = {
 	additionalFilters: [
 		{ id: "fee", label: "Fee" },
 		{ id: "starpoints", label: "Starpoints" },
+		{ id: "recruitment", label: "Recruitment" },
 	],
 };
 
