@@ -19,6 +19,7 @@ interface Event {
 	organizer: string;
 	categories: string[];
 	has_starpoints: boolean;
+	isRecruiting: boolean;
 }
 
 type EventListProps = {
@@ -73,10 +74,6 @@ function EventList({ campus }: EventListProps) {
 }
 
 function EventCard({ event }: { event: Event }) {
-	const isRecruitmentEvent = event.categories.some((cat) =>
-		["recruitment", "committee"].includes(cat),
-	);
-
 	return (
 		<Link
 			href={`/events/${event.id}`}
@@ -97,7 +94,7 @@ function EventCard({ event }: { event: Event }) {
 				{event.has_starpoints && <StarPointsBadge />}
 			</motion.div>
 
-			{isRecruitmentEvent && (
+			{event.isRecruiting && (
 				<div className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white rounded-full p-2">
 					<p className="text-xs font-extrabold whitespace-nowrap">
 						Open for Recruitment

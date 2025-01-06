@@ -36,9 +36,7 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
 					{isAuthor && <DeletePostButton eventId={params.slug} />}
 				</div>
 
-				{event.categories.some((cat) =>
-					["Recruitment", "Committee"].includes(cat),
-				) && (
+				{event.isRecruiting && (
 					<p className="text-xs bg-indigo-500 text-white font-extrabold rounded-full p-1 text-center">
 						Open for Recruitment
 					</p>

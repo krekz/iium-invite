@@ -50,11 +50,12 @@ function EventDetailForm() {
 			location: event.location,
 			organizer: event.organizer,
 			campus: event.campus,
-			fee: event.fee || "0",
+			fee: event.fee ?? "0",
 			categories: event.categories,
 			contacts: event.contacts,
-			registration_link: event.registration_link || "",
+			registration_link: event.registration_link ?? "",
 			has_starpoints: event.has_starpoints,
+			isRecruiting: event.isRecruiting,
 		},
 	});
 
@@ -345,6 +346,25 @@ function EventDetailForm() {
 										</label>
 										<Switch
 											id="starpoints"
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</div>
+								)}
+							/>
+							<Controller
+								name="isRecruiting"
+								control={control}
+								render={({ field }) => (
+									<div className="flex flex-row items-center justify-between rounded-lg mt-3 px-2">
+										<label
+											htmlFor="starpoints"
+											className="text-base font-medium"
+										>
+											Hiring
+										</label>
+										<Switch
+											id="isRecruiting"
 											checked={field.value}
 											onCheckedChange={field.onChange}
 										/>

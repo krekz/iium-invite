@@ -65,6 +65,7 @@ export const getEventDetails = unstable_cache(
 				has_starpoints: true,
 				categories: true,
 				contacts: true,
+				isRecruiting: true,
 				bookmarks: {
 					where: { userId: userId },
 					select: { userId: true },
@@ -206,6 +207,7 @@ export async function getDiscoverEvents(searchParams?: SearchParams) {
 						date: true,
 						poster_url: true,
 						has_starpoints: true,
+						isRecruiting: true,
 					},
 				});
 				return events;
