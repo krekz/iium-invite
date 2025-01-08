@@ -1,17 +1,52 @@
-# Eventure Project (Next Js 15) 🎓 
+# IIUM Event Management Platform 🎓 
 
-A platform for handling university events. 
+ This platform is designed to help users discover, participate in and manage events.
 
 https://github.com/user-attachments/assets/a8dbf190-f0e9-4190-b834-66386f36120a
 
-## **Tech Stacks**
-> ### Nextjs 15
-> ### Shadcn Ui
-> ### Supabase
-> ### Prisma accelerate
-> ### Resend (email)
-> ### Next Auth
 
+## Features ✨
+
+- **Event Discovery**: Browse through a wide range of events.
+- **IIUM Login for Authentication**: Secure login using IIUM credentials.
+- **AI Recommendations**: Personalized event recommendations based on user preferences.
+-  [Markdown](https://markdownlivepreview.com/) **Support for Event Descriptions**: Rich text formatting for event details using Markdown.
+- **Bookmarks**: Save events for later viewing.
+
+## Tech Stack 🧑‍💻
+
+### Frontend
+- **[Next.js 15](https://nextjs.org/)**: A React framework for server-rendered applications, optimized for performance and SEO.
+- **[shadcn/ui](https://ui.shadcn.com/)**: A collection of beautifully designed, accessible and customizable UI components.
+- **[React Query](https://tanstack.com/query/v4)**: For efficient data fetching, caching and synchronization.
+- **[Markdown](https://markdownlivepreview.com/)**: A Markdown parser for rich text descriptions.
+
+### Backend
+- **[Supabase](https://supabase.io/)**: An open-source Firebase alternative for database
+- **[Prisma ORM](https://www.prisma.io/)**: A modern TypeScript ORM for database management and migrations.
+- **IIUM Login**: Secure authentication using [I-Ma'luum](https://imaluum.iium.edu.my) credentials.
+- **[OpenAI](https://platform.openai.com/docs/overview)**: Custom AI model for personalized event suggestions.
+
+# FAQ
+
+### What is this platform about?
+This platform is designed to help users discover, participate in and manage events. It includes features like AI-powered recommendations, Markdown support for event descriptions and bookmarking for saving events.
+
+### Is my data safe?
+Authentication is handled securely through **IIUM Login**. Users log in using their IIUM credentials and no passwords are stored in our database. We only store minimal user information like `userID`, `name`, `matric number` and `email` for identification.
+You may see our codebase implementation [here](https://github.com/krekz/iium-invite/blob/main/src/actions/authentication/login.ts)
+
+### Why do you need to store my information in the database?
+We store minimal user information like `userID`, `name`, `matric number` and `email` to ensure the platform functions properly. This information is necessary for features like creating events, managing bookmarks and personalizing your experience. Rest assured, we do not store sensitive data like passwords and all information is handled securely.
+
+### Can I use Markdown for event descriptions?
+Yes, event organizers can use [Markdown](https://markdownlivepreview.com) to format their event descriptions, allowing for rich text formatting like headings, lists and links.
+
+### How do I update my profile information?
+To update your profile information, such as your name or contact details, you will need to make the changes through your official IIUM account [i-Ma'luum](https://imaluum.iium.edu.my). The platform syncs with IIUM's system to ensure your information is accurate and up-to-date. Note that your matric number cannot be changed for security reasons.
+
+### How do I report an issue or provide feedback?
+Unfortunately, we currently only accept issue reports and feedback through our [GitHub Issues](https://github.com/krekz/iium-invite/issues) page. This helps us track and resolve problems more efficiently. We appreciate your understanding and input to help improve the platform!
 
 # Contributing 🍝 
 
