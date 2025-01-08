@@ -1,4 +1,5 @@
 "use client";
+import { loginIIUM } from "@/actions/authentication/login";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -16,7 +17,6 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import { loginIIUM } from "../../actions/authentication/login";
 
 type LoginFormValues = z.infer<typeof LoginCredentialsSchema>;
 
