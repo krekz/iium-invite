@@ -1,6 +1,6 @@
 "use client";
 
-import { SignOut } from "@/actions/login-signout";
+import { logoutIIUM } from "@/actions/authentication/logout";
 import { cn } from "@/lib/utils";
 import {
 	Bookmark,
@@ -12,7 +12,7 @@ import {
 	User,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
 	Sheet,
 	SheetClose,
@@ -26,6 +26,7 @@ import {
 const MobileNavbar = ({
 	session,
 }: { session: { user: string | undefined | null } }) => {
+	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
@@ -151,7 +152,9 @@ const MobileNavbar = ({
 							<div className="h-[1px] bg-border my-2" />
 							<button
 								type="button"
-								onClick={async () => await SignOut({ redirectTo: "/" })}
+								onClick={async () =>
+									await logoutIIUM().then(() => router.push("/"))
+								}
 								className="flex items-center gap-2 px-4 py-2 hover:bg-destructive hover:text-destructive-foreground rounded-md text-left text-destructive"
 							>
 								<LogOut size={16} />

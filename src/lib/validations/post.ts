@@ -79,3 +79,13 @@ export const emailSchema = z.object({
 			message: "Only @live.iium email addresses are allowed",
 		}),
 });
+
+// login credentials validation
+export const LoginCredentialsSchema = z.object({
+	matricNo: z
+		.string()
+		.min(7, "Matric number must be 7 digits")
+		.max(7, "Matric number must be 7 digits")
+		.regex(/^\d+$/, "Matric number must be numeric"),
+	password: z.string().min(8, "Password must be at least 8 characters"),
+});

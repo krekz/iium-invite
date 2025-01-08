@@ -1,11 +1,11 @@
 "use client";
-import { SignIn, SignOut } from "@/actions/login-signout";
+import { logoutIIUM } from "@/actions/authentication/logout";
 import { LogOut, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
-import theme from "tailwindcss/defaultTheme";
 import { ModeToggle } from "../theme-switch";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -15,18 +15,15 @@ import NavigationLinks from "./NavigationLinks";
 export default ({
 	session,
 }: { session: { user: string | undefined | null } }) => {
+	const router = useRouter();
 	const { theme } = useTheme();
 	const AuthButtons = ({ isMobile = false }: { isMobile?: boolean }) => {
 		const buttonClass = isMobile ? "w-full justify-center" : "";
 
 		return !session.user ? (
-			<Button
-				onClick={async () => await SignIn()}
-				className={buttonClass}
-				variant={"link"}
-			>
+			<Link className={buttonClass} href={"/login"}>
 				Sign in
-			</Button>
+			</Link>
 		) : (
 			<div className="hidden sm:block">
 				<Popover>
@@ -50,7 +47,9 @@ export default ({
 							<div className="h-[1px] bg-border my-1" />
 							<button
 								type="button"
-								onClick={async () => await SignOut({ redirectTo: "/" })}
+								onClick={async () =>
+									await logoutIIUM().then(() => router.push("/"))
+								}
 								className="px-2 py-2 text-sm hover:bg-red-500 hover:text-black rounded-md transition-colors text-left flex items-center gap-2"
 							>
 								<LogOut size={16} />

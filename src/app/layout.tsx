@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { getAuth as cachedAuth } from "@/auth";
+import { auth } from "@/actions/authentication/auth";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/navbar/Navbar";
 import PasswordProtection from "@/components/temporary-auth/PasswordProtection";
@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ReactQueryProvider from "@/lib/context/ReactQueryProvider";
-import NextSessionProvider from "@/lib/context/SessionProvider";
+import { SessionProvider } from "@/lib/context/SessionProvider";
 
 const poppins = Poppins({
 	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -47,7 +47,7 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const session = await cachedAuth();
+	const user = await auth();
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${poppins.className}`}>
@@ -59,14 +59,14 @@ export default async function RootLayout({
 				>
 					<Toaster />
 					<PasswordProtection>
-						<ReactQueryProvider>
-							<NextSessionProvider session={session}>
-								<Navbar session={{ user: session?.user?.name }} />
+						<SessionProvider>
+							<ReactQueryProvider>
+								<Navbar session={{ user: user?.user.name }} />
 								<main className="w-full md:container pt-6 sm:pt-0">
 									<TooltipProvider>{children}</TooltipProvider>
 								</main>
-							</NextSessionProvider>
-						</ReactQueryProvider>
+							</ReactQueryProvider>
+						</SessionProvider>
 					</PasswordProtection>
 					<Footer />
 				</ThemeProvider>

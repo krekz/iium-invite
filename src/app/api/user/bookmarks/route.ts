@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/actions/authentication/auth";
 import prisma from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/server-only";
 import { revalidateTag, unstable_cache } from "next/cache";
@@ -6,11 +6,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const bookmarkSchema = z.object({
-	eventId: z
-		.string()
-		.regex(
-			/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-		),
+	eventId: z.string().regex(/^[a-zA-Z0-9_-]{21}$/),
 });
 
 export async function GET() {

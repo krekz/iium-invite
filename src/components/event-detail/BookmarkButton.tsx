@@ -1,10 +1,10 @@
 "use client";
+import { useSession } from "@/lib/context/SessionProvider";
 import { useToast } from "@/lib/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { BookmarkIcon } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface BookmarkButtonProps {
@@ -20,10 +20,9 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 	const { toast } = useToast();
 	const router = useRouter();
 	const { slug } = useParams();
-	const { data: session } = useSession();
+	const { session } = useSession();
 
-	const loginPath = (path: string) =>
-		`/api/auth/signin?callbackUrl=/events/${path}`;
+	const loginPath = (path: string) => "/";
 
 	const { mutate: toggleBookmark } = useMutation({
 		mutationFn: async (newBookmarkState: boolean) => {

@@ -1,9 +1,10 @@
 "use server";
 
-import { auth } from "@/auth";
+import { auth } from "@/actions/authentication/auth";
 import prisma from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/server-only";
 import { createClient } from "@/lib/supabase/server";
+import { validateEventId } from "@/lib/utils";
 import { revalidateTag } from "next/cache";
 
 export const deletePost = async ({
@@ -17,7 +18,10 @@ export const deletePost = async ({
 		}
 
 		if (
-			!checkRateLimit(session.user.id, { maxRequests: 2, windowMs: 30 * 1000 })
+			!checkRateLimit(session.user.id, {
+				maxRequests: 2,
+				windowMs: 30 * 1000,
+			})
 		) {
 			console.error(
 				"[DeletePost] Rate limit exceeded for user:",
@@ -26,11 +30,7 @@ export const deletePost = async ({
 			return { success: false };
 		}
 
-		if (
-			!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-				eventId,
-			)
-		) {
+		if (!validateEventId(eventId)) {
 			console.error("[DeletePost] Invalid event ID format:", eventId);
 			return { success: false };
 		}

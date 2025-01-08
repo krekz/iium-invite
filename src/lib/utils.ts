@@ -21,3 +21,7 @@ export function sortedCategories() {
 		)
 		.sort((a, b) => a.subset.localeCompare(b.subset));
 }
+
+export function validateEventId(eventId: string) {
+	return /^[a-zA-Z0-9_-]{21}$/.test(eventId);
+}

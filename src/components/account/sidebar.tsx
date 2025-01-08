@@ -1,11 +1,11 @@
 "use client";
 
-import type { User } from "next-auth";
+import type { AuthUser } from "@/actions/authentication/auth";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 
-function Sidebar({ user }: { user: User | undefined }) {
+function Sidebar({ user }: { user: AuthUser | undefined }) {
 	const searchParams = useSearchParams();
 	const currentOption = searchParams.get("option") || "informations";
 
@@ -20,17 +20,17 @@ function Sidebar({ user }: { user: User | undefined }) {
 	return (
 		<nav className="hidden md:flex w-full md:w-1/3 flex-col items-center md:items-start">
 			<Image
-				src={user?.image || "/default-avatar.png"}
+				src={user?.imageURL || "/default-avatar.png"}
 				alt="thumbnail"
-				width={80}
-				height={80}
-				className="rounded-full"
+				width={96}
+				height={96}
+				className="rounded-full size-24 object-cover"
 			/>
 			<p className="text-xl mt-1 font-medium text-center md:text-left">
 				{user?.name}
 			</p>
 			<p className="text-sm font-thin text-center md:text-left">
-				{user?.email}
+				{user?.iiumEmail}
 			</p>
 
 			<div className="flex flex-col mt-10 text-md gap-1">

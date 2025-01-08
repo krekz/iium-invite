@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/actions/authentication/auth";
 import prisma from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/server-only";
 import { unstable_cache } from "next/cache";

@@ -1,5 +1,5 @@
+import { auth } from "@/actions/authentication/auth";
 import { getEventDetails } from "@/actions/events/get";
-import { auth } from "@/auth";
 import EventSuggestion from "@/components/EventSuggestion";
 import LeftSide from "@/components/event-detail/LeftSide";
 import PostInfo from "@/components/event-detail/PostInfo";

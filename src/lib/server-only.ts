@@ -1,6 +1,6 @@
 import "server-only";
+import { nanoid } from "nanoid";
 import sharp from "sharp";
-import { v4 as uuidv4 } from "uuid";
 import { createClient } from "./supabase/server";
 
 interface RateLimitOptions {
@@ -80,7 +80,7 @@ export const uploadImage = async (
 		files.map(async (file) => {
 			const compressedImage = await compressImage(file);
 
-			const filePath = `post/user-${encryptedUserId}/${assignPostId}/${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "")}`;
+			const filePath = `post/user-${encryptedUserId}/${assignPostId}/${nanoid()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "")}`;
 			const { data, error } = await supabase.storage
 				.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET as string)
 				.upload(filePath, compressedImage, {

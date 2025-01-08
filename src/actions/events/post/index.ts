@@ -1,11 +1,12 @@
 "use server";
 import crypto from "node:crypto";
-import { auth } from "@/auth";
+import { auth } from "@/actions/authentication/auth";
 import prisma from "@/lib/prisma";
 import { checkRateLimit, uploadImage } from "@/lib/server-only";
+import { validateEventId } from "@/lib/utils";
 import { descSchema, detailSchema, postSchema } from "@/lib/validations/post";
+import { nanoid } from "nanoid";
 import { revalidateTag } from "next/cache";
-import { v4 as uuidv4 } from "uuid";
 
 type Input = {
 	formData: FormData;
@@ -52,18 +53,6 @@ export const createPost = async (
 			};
 		}
 
-		if (session.user.isVerified === false) {
-			console.error(
-				"[CreatePost] Unverified user attempted to create post:",
-				session.user.id,
-			);
-			return {
-				success: false,
-				message: "You must verify your email to create a post",
-				eventId: "",
-			};
-		}
-
 		const { formData } = input;
 		const values: FormDataValues = Object.fromEntries(formData.entries());
 
@@ -101,7 +90,7 @@ export const createPost = async (
 			isRecruiting,
 			contacts,
 		} = postSchema.parse(values);
-		const assignPostId = `post-${uuidv4()}`;
+		const assignPostId = nanoid();
 		const encryptedUserId = crypto
 			.createHash("sha256")
 			.update(session.user.id)
@@ -166,7 +155,10 @@ export const updateDetailsPost = async ({
 		}
 
 		if (
-			!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })
+			!checkRateLimit(session.user.id, {
+				maxRequests: 5,
+				windowMs: 30 * 1000,
+			})
 		) {
 			console.error(
 				"[UpdateDetailsPost] Rate limit exceeded for user:",
@@ -178,11 +170,7 @@ export const updateDetailsPost = async ({
 			};
 		}
 
-		if (
-			!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-				eventId,
-			)
-		) {
+		if (!validateEventId(eventId)) {
 			console.error("[UpdateDetailsPost] Invalid event ID format:", eventId);
 			return { success: false, message: "Invalid event ID format" };
 		}
@@ -278,7 +266,10 @@ export const updateDescription = async ({
 		}
 
 		if (
-			!checkRateLimit(session.user.id, { maxRequests: 5, windowMs: 30 * 1000 })
+			!checkRateLimit(session.user.id, {
+				maxRequests: 5,
+				windowMs: 30 * 1000,
+			})
 		) {
 			console.error(
 				"[UpdateDescription] Rate limit exceeded for user:",
@@ -290,11 +281,7 @@ export const updateDescription = async ({
 			};
 		}
 
-		if (
-			!/^post-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-				eventId,
-			)
-		) {
+		if (!validateEventId(eventId)) {
 			console.error("[UpdateDescription] Invalid event ID format:", eventId);
 			return { success: false, message: "Invalid event ID format" };
 		}

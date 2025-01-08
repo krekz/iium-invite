@@ -3,7 +3,7 @@ import Bookmarks from "@/components/account/bookmarks";
 import Informations from "@/components/account/informations";
 import Sidebar from "@/components/account/sidebar";
 import UserPosts from "@/components/account/user-posts";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/context/SessionProvider";
 import { useSearchParams } from "next/navigation";
 
 const VIEW_OPTIONS = {
@@ -27,12 +27,12 @@ const MainContent = ({
 	}
 };
 function UserPage() {
-	const user = useSession().data?.user;
+	const user = useSession().session?.user;
 	const searchParams = useSearchParams();
 	const currentView = searchParams.get("option") || VIEW_OPTIONS.INFORMATION;
 
 	const getPageTitle = () => {
-		const firstName = user?.name?.split(" ")[0];
+		const firstName = user?.name?.split(" ")[1] || "User";
 		switch (currentView) {
 			case VIEW_OPTIONS.POSTS:
 				return `${firstName}'s Posts`;
