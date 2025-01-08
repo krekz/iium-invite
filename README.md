@@ -54,14 +54,7 @@ Unfortunately, we currently only accept issue reports and feedback through our [
 - NodeJs v22.11.0 [Install Nodejs](https://nodejs.org/en/download)
 - Package Manager (bun)  [Install bun](https://bun.sh)
 - Supabase acc [Create Supabase Acc](https://supabase.com)
-- Resend (sending email library) [Create Resend Acc](https://resend.com)
-- Prisma Console Acc (Required bcs this project is using prisma accelerate [Create prisma acc](https://console.prisma.io)
-- Google Console (oAuth api key) [Google Console](https://console.cloud.google.com/apis/credentials)
-
-> [!Note]
-> Remember to set up Authorized redirect URIs in [Google Console Auth](https://console.cloud.google.com/apis/credentials)
-<img width="516" alt="Screenshot 2024-12-31 at 4 55 32 PM" src="https://github.com/user-attachments/assets/0facdae5-c561-4e34-9484-287b43929b36" />
-
+- Prisma Console Acc (Required bcs this project is using prisma accelerate coz nextjs middleware require it [Create prisma acc](https://console.prisma.io)
 
 ## Let's Cook !!
 > [!Note]
