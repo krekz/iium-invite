@@ -4,7 +4,7 @@ import { useToast } from "@/lib/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { BookmarkIcon } from "lucide-react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface BookmarkButtonProps {
@@ -19,15 +19,12 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 	const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
 	const { toast } = useToast();
 	const router = useRouter();
-	const { slug } = useParams();
 	const { session } = useSession();
-
-	const loginPath = (path: string) => "/";
 
 	const { mutate: toggleBookmark } = useMutation({
 		mutationFn: async (newBookmarkState: boolean) => {
 			if (!session?.user) {
-				router.push(loginPath(String(slug)));
+				router.push("/login");
 				return false;
 			}
 
@@ -59,7 +56,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 
 	const handleBookmarkClick = () => {
 		if (!session?.user) {
-			router.push(loginPath(String(slug)));
+			router.push("/login");
 			return;
 		}
 		toggleBookmark(!isBookmarked);
