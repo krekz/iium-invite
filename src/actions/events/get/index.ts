@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/actions/authentication/auth";
 import { fixedCategories } from "@/lib/constant";
 import prisma from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
@@ -102,7 +103,7 @@ export async function getDiscoverEvents(searchParams?: SearchParams) {
 	const fee = searchParams?.fee;
 	const has_starpoints = searchParams?.has_starpoints === "true";
 	const isRecruiting = searchParams?.recruitment === "true";
-
+	const session = await auth();
 	const getCachedEvents = unstable_cache(
 		async () => {
 			try {
@@ -215,6 +216,15 @@ export async function getDiscoverEvents(searchParams?: SearchParams) {
 						poster_url: true,
 						has_starpoints: true,
 						isRecruiting: true,
+						description: true,
+						bookmarks: {
+							select: {
+								userId: true,
+							},
+							where: {
+								userId: session?.user?.id,
+							},
+						},
 					},
 				});
 				return events;

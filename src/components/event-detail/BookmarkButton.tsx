@@ -6,15 +6,18 @@ import { useMutation } from "@tanstack/react-query";
 import { BookmarkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "../ui/button";
 
 interface BookmarkButtonProps {
 	eventId: string;
 	initialBookmarked: boolean;
+	className?: string;
 }
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 	eventId,
 	initialBookmarked,
+	className: customClassName,
 }) => {
 	const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
 	const { toast } = useToast();
@@ -63,21 +66,22 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 	};
 
 	return (
-		<button
+		<Button
 			onClick={handleBookmarkClick}
 			type="button"
 			className={cn(
-				"flex items-center justify-center w-[10%] p-2 rounded-full transition-colors duration-200",
+				"flex items-center justify-center w-full p-2 transition-colors duration-200",
 				isBookmarked
 					? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
 					: "bg-gray-100 text-gray-600 hover:bg-gray-200",
+				customClassName,
 			)}
 			aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
 		>
 			<BookmarkIcon
 				className={cn("w-6 h-6", isBookmarked && "fill-yellow-600")}
 			/>
-		</button>
+		</Button>
 	);
 };
 
