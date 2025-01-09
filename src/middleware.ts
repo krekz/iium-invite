@@ -18,6 +18,7 @@ export const getEventAccess = cache(async (eventId: string) => {
 export const PROTECTED_ROUTES = {
 	POST: "/post",
 	ACCOUNT: "/account",
+	ADMIN: "/admin",
 } as const;
 
 export default async function middleware(request: NextRequest) {
@@ -41,6 +42,17 @@ export default async function middleware(request: NextRequest) {
 	// auth checks
 	if (!session?.user.name && isProtectedRoute) {
 		return createRedirectResponse("/login");
+	}
+
+	// admin route check for specific user only
+	if (pathname.startsWith("/admin")) {
+		if (
+			!process.env.ADMIN_LISTS?.trim()
+				.split(",")
+				.some((email) => email.trim() === session?.user?.email)
+		) {
+			return createRedirectResponse("/404");
+		}
 	}
 
 	// event page logic
@@ -68,5 +80,10 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/events/:path*", "/post/:path*", "/account/:path*"],
+	matcher: [
+		"/events/:path*",
+		"/post/:path*",
+		"/account/:path*",
+		"/admin/:path*",
+	],
 };
