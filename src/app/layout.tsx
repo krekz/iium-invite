@@ -1,5 +1,6 @@
 import { Poppins } from "next/font/google";
-import "../../globals.css";
+import "./globals.css";
+import Footer from "@/components/Footer";
 import PasswordProtection from "@/components/temporary-auth/PasswordProtection";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,11 +14,11 @@ const poppins = Poppins({
 	style: ["normal", "italic"],
 });
 
-export default async function DashboardLayout({
+export default function RootLayout({
 	children,
-}: Readonly<{
+}: {
 	children: React.ReactNode;
-}>) {
+}) {
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${poppins.className}`}>
@@ -31,9 +32,7 @@ export default async function DashboardLayout({
 					<PasswordProtection>
 						<SessionProvider>
 							<ReactQueryProvider>
-								<main className="w-full md:container pt-6 sm:pt-0">
-									<TooltipProvider>{children}</TooltipProvider>
-								</main>
+								<TooltipProvider>{children}</TooltipProvider>
 							</ReactQueryProvider>
 						</SessionProvider>
 					</PasswordProtection>
