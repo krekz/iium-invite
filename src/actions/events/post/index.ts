@@ -1,5 +1,6 @@
 "use server";
 import crypto from "node:crypto";
+import { validateEventContent } from "@/actions/ai/event-validations";
 import { auth } from "@/actions/authentication/auth";
 import prisma from "@/lib/prisma";
 import { checkRateLimit, uploadImage } from "@/lib/server-only";
@@ -56,52 +57,57 @@ export const createPost = async (
 		const { formData } = input;
 		const values: FormDataValues = Object.fromEntries(formData.entries());
 
-		values.poster_url = formData.getAll("poster_url").filter(Boolean);
-		values.categories = formData.getAll("categories").filter(Boolean);
+		const [poster_url, categories] = await Promise.all([
+			formData.getAll("poster_url").filter(Boolean),
+			formData.getAll("categories").filter(Boolean),
+		]);
+		values.poster_url = poster_url;
+		values.categories = categories;
 
+		let contacts: any[] = [];
 		const contactsString = formData.get("contacts");
-		values.contacts = [];
 		if (typeof contactsString === "string") {
 			try {
 				const parsed = JSON.parse(contactsString);
-				if (Array.isArray(parsed)) {
-					values.contacts = parsed;
-				}
+				contacts = Array.isArray(parsed) ? parsed : [];
 			} catch (error) {
 				console.error("[CreatePost] Error parsing contacts:", error);
 			}
 		}
+		values.contacts = contacts;
 
+		// conver to boolean values
 		values.has_starpoints = values.has_starpoints === "true";
-		values.isRecruiting = values.isRecruiting === "true"; // turns string "true" into bool
+		values.isRecruiting = values.isRecruiting === "true";
 
+		const parsedData = postSchema.parse(values);
 		const {
 			title,
 			campus,
-			categories,
+			categories: validatedCategories,
 			date,
 			description,
 			fee,
 			has_starpoints,
 			location,
 			organizer,
-			poster_url,
+			poster_url: validatedPosterUrl,
 			registration_link,
 			isRecruiting,
-			contacts,
-		} = postSchema.parse(values);
+		} = parsedData;
+
 		const assignPostId = nanoid();
 		const encryptedUserId = crypto
 			.createHash("sha256")
 			.update(session.user.id)
 			.digest("hex");
 
-		const uploadedFiles = await uploadImage(
-			poster_url,
-			encryptedUserId,
-			assignPostId,
-		);
+		const [uploadedFiles, validateEvent] = await Promise.all([
+			uploadImage(validatedPosterUrl, encryptedUserId, assignPostId),
+			validateEventContent(title, description, validatedPosterUrl[0]),
+		]);
 
+		// Create event in transaction
 		const newEvent = await prisma.$transaction(async (tx) => {
 			const event = await tx.event.create({
 				data: {
@@ -109,8 +115,8 @@ export const createPost = async (
 					authorId: session.user.id,
 					title,
 					campus,
-					categories: categories.map((cat) => cat.toLowerCase()),
-					date: new Date(date.setUTCHours(16, 0, 0, 0)), // 16pm UTC is equal to 12am in GMT+8
+					categories: validatedCategories.map((cat) => cat.toLowerCase()),
+					date: new Date(date.setUTCHours(16, 0, 0, 0)), // 16 in UTC is midnight in Malaysia (12am)
 					description,
 					fee,
 					has_starpoints,
@@ -127,9 +133,27 @@ export const createPost = async (
 					},
 				},
 			});
+
+			if (!validateEvent.success) {
+				await tx.eventReport.create({
+					data: {
+						eventId: event.id,
+						reason: validateEvent.reason,
+						reportedBy: "AI",
+						status: "pending",
+						type: validateEvent.reason.includes("Title")
+							? "title"
+							: validateEvent.reason.includes("Description")
+								? "description"
+								: "image",
+					},
+				});
+			}
+
 			return event;
 		});
 
+		// Revalidate cache
 		revalidateTag("events");
 
 		return {

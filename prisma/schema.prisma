@@ -26,8 +26,8 @@ model User {
 }
 
 model Event {
-  id                  String     @id @unique
-  title               String     @db.VarChar(255)
+  id                  String        @id @unique
+  title               String        @db.VarChar(255)
   description         String
   poster_url          String[]
   date                DateTime // event date or start date
@@ -40,13 +40,14 @@ model Event {
   categories          String[]
   has_starpoints      Boolean
   contacts            Contact[]
-  isActive            Boolean    @default(true)
-  isRecruiting        Boolean    @default(false)
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
-  Author              User?      @relation(fields: [authorId], references: [matricNo])
+  isActive            Boolean       @default(true)
+  isRecruiting        Boolean       @default(false)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  Author              User?         @relation(fields: [authorId], references: [matricNo])
   authorId            String?
   bookmarks           Bookmark[]
+  reports             EventReport[]
 
   @@index([registrationEndDate, isActive]) // use in cron api
   @@index([date, isActive]) // use in cron api
@@ -74,4 +75,19 @@ model Bookmark {
   @@unique([userId, eventId])
   @@index([userId])
   @@index([eventId])
+}
+
+model EventReport {
+  id         String   @id @default(cuid())
+  eventId    String
+  status     String
+  type       String
+  reason     String
+  reportedBy String
+  createdAt  DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([eventId, status])
 }
