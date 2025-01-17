@@ -1,5 +1,6 @@
 "use client";
 import { logoutIIUM } from "@/actions/authentication/logout";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { LogOut, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
@@ -15,6 +16,7 @@ import NavigationLinks from "./NavigationLinks";
 export default ({
 	session,
 }: { session: { user: string | undefined | null } }) => {
+	const isMobile = useIsMobile();
 	const router = useRouter();
 	const { theme } = useTheme();
 	const AuthButtons = ({ isMobile = false }: { isMobile?: boolean }) => {
@@ -25,7 +27,7 @@ export default ({
 				Sign in
 			</Link>
 		) : (
-			<div className="hidden sm:block">
+			!isMobile && (
 				<Popover>
 					<PopoverTrigger asChild>
 						<Button
@@ -58,52 +60,52 @@ export default ({
 						</div>
 					</PopoverContent>
 				</Popover>
-			</div>
+			)
 		);
 	};
 
 	return (
 		<>
 			{/* Top Navbar */}
-			<nav className="bg-background hidden sm:block sm:sticky sm:top-0 z-50">
-				<div className="max-w-screen-xl mx-auto px-4">
-					<div className="flex justify-between items-center h-24">
-						<div className="flex items-center">
-							<a href="/" className="flex items-center mr-6">
-								<Image
-									alt="logo"
-									quality={50}
-									priority
-									src={
-										theme === "dark"
-											? "/eventure-light.png"
-											: "/eventure-dark.png"
-									}
-									width={100}
-									height={100}
-								/>
-							</a>
-							<div className="hidden sm:flex sm:items-center space-x-4">
-								<NavigationLinks />
-								<ModeToggle />
+			{!isMobile && (
+				<nav className="bg-background sm:block sm:sticky sm:top-0 z-50">
+					<div className="max-w-screen-xl mx-auto px-4">
+						<div className="flex justify-between items-center h-24">
+							<div className="flex items-center">
+								<a href="/" className="flex items-center mr-6">
+									<Image
+										alt="logo"
+										quality={50}
+										priority
+										src={
+											theme === "dark"
+												? "/eventure-light.png"
+												: "/eventure-dark.png"
+										}
+										width={100}
+										height={100}
+									/>
+								</a>
+								<div className="flex items-center space-x-4">
+									<NavigationLinks />
+									<ModeToggle />
+								</div>
 							</div>
-						</div>
-						<div className="hidden sm:flex sm:items-center space-x-4">
-							<Link
-								href="/post"
-								className="px-4 py-4 rounded-full w-32 text-center text-sm font-medium text-white bg-amber-700 hover:bg-amber-800 transition duration-150 ease-in-out"
-							>
-								Post
-							</Link>
-							<AuthButtons />
-						</div>
-						<div className="sm:hidden flex items-center gap-4">
-							<ModeToggle />
-							{!session.user && <AuthButtons />}
+							{!isMobile && (
+								<div className="flex items-center space-x-4">
+									<Link
+										href="/post"
+										className="px-4 py-4 rounded-full w-32 text-center text-sm font-medium text-white bg-amber-700 hover:bg-amber-800 transition duration-150 ease-in-out"
+									>
+										Post
+									</Link>
+									<AuthButtons />
+								</div>
+							)}
 						</div>
 					</div>
-				</div>
-			</nav>
+				</nav>
+			)}
 			{/* Bottom navbar for Mobile only */}
 			<MobileNavbar session={session} />
 		</>

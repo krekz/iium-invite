@@ -11,6 +11,7 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { fixedCategories } from "@/lib/constant";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -29,6 +30,7 @@ const FILTER_OPTIONS = {
 function Filter() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const isMobile = useIsMobile();
 
 	const getActiveFiltersCount = () => {
 		let count = 0;
@@ -179,39 +181,47 @@ function Filter() {
 	return (
 		<>
 			{/* Mobile View */}
-			<div className="lg:hidden flex gap-2 w-full">
-				<div className="flex-1">
-					<SearchInput page="Discover" />
+			{isMobile && (
+				<div className="flex gap-2 w-full">
+					<div className="flex-1">
+						<SearchInput page="Discover" />
+					</div>
+					<Sheet>
+						<SheetTrigger asChild>
+							<Button
+								variant="outline"
+								size="icon"
+								className="shrink-0 relative"
+							>
+								<SlidersHorizontal className="h-4 w-4" />
+								{activeFilters > 0 && (
+									<span className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
+										{activeFilters}
+									</span>
+								)}
+							</Button>
+						</SheetTrigger>
+						<SheetContent side="left" className="w-[280px] sm:w-[320px]">
+							<SheetHeader>
+								<SheetTitle>Filter Events</SheetTitle>
+								<SheetDescription>
+									Filter events by category, fee and starpoints
+								</SheetDescription>
+							</SheetHeader>
+							<div className="py-6">
+								<FilterContent />
+							</div>
+						</SheetContent>
+					</Sheet>
 				</div>
-				<Sheet>
-					<SheetTrigger asChild>
-						<Button variant="outline" size="icon" className="shrink-0 relative">
-							<SlidersHorizontal className="h-4 w-4" />
-							{activeFilters > 0 && (
-								<span className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
-									{activeFilters}
-								</span>
-							)}
-						</Button>
-					</SheetTrigger>
-					<SheetContent side="left" className="w-[280px] sm:w-[320px]">
-						<SheetHeader>
-							<SheetTitle>Filter Events</SheetTitle>
-							<SheetDescription>
-								Filter events by category, fee and starpoints
-							</SheetDescription>
-						</SheetHeader>
-						<div className="py-6">
-							<FilterContent />
-						</div>
-					</SheetContent>
-				</Sheet>
-			</div>
+			)}
 			{/* Desktop View */}
-			<div className="hidden lg:block w-full">
-				<SearchInput page="Discover" />
-				<FilterContent />
-			</div>
+			{!isMobile && (
+				<div className="w-full">
+					<SearchInput page="Discover" />
+					<FilterContent />
+				</div>
+			)}
 		</>
 	);
 }
