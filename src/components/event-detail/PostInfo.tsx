@@ -8,6 +8,7 @@ import { ExternalLink, MessageCircle } from "lucide-react";
 import { useParams } from "next/navigation";
 import BookmarkButton from "./BookmarkButton";
 import EventDetailForm from "./EventDetailForm";
+import ShareButton from "./ShareButton";
 
 function PostInfo({ device }: { device: "mobile" | "desktop" }) {
 	const params = useParams() as { slug: string };
@@ -73,13 +74,16 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
 						})}
 					</div>
 				</div>
-				<BookmarkButton
-					eventId={event.id}
-					initialBookmarked={Boolean(
-						event.bookmarks[0] && event.bookmarks[0].userId === userId,
-					)}
-				/>
-				<div className="space-y-1 mt-4">
+				<div className="flex gap-2 w-full">
+					<BookmarkButton
+						eventId={event.id}
+						initialBookmarked={Boolean(
+							event.bookmarks[0] && event.bookmarks[0].userId === userId,
+						)}
+					/>
+					<ShareButton />
+				</div>
+				<div className="space-y-1">
 					{event.registration_link && (
 						<CustomButton
 							variant="default"
