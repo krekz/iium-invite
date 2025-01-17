@@ -10,7 +10,6 @@ import {
 	FloatingPanelSubmitButton,
 	FloatingPanelTrigger,
 } from "@/components/ui/floating-panel";
-import { fixedCategories } from "@/lib/constant";
 import { useEvent } from "@/lib/context/EventContextProvider";
 import { useToast } from "@/lib/hooks/use-toast";
 import { useCategories } from "@/lib/hooks/useCategories";
