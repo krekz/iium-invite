@@ -73,6 +73,14 @@ export const getEventDetails = unstable_cache(
 					select: { userId: true },
 				},
 				isActive: true,
+				reports: {
+					where: {
+						AND: [{ reportedBy: "AI" }, { status: "pending" }],
+					},
+					select: {
+						type: true,
+					},
+				},
 			},
 		});
 	},

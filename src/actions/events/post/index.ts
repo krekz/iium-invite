@@ -102,12 +102,28 @@ export const createPost = async (
 			.update(session.user.id)
 			.digest("hex");
 
-		const [uploadedFiles, validateEvent] = await Promise.all([
-			uploadImage(validatedPosterUrl, encryptedUserId, assignPostId),
-			validateEventContent(title, description, validatedPosterUrl[0]),
-		]);
+		const validateEvent = await validateEventContent(
+			title,
+			description,
+			validatedPosterUrl[0],
+		);
 
-		// Create event in transaction
+		if (validateEvent.status === "invalid") {
+			console.error("[CreatePost] Event rejected by AI:", validateEvent.reason);
+			return {
+				success: false,
+				message:
+					"Your content is violating our guidelines. If you think this is a mistake, please contact us.",
+				eventId: "",
+			};
+		}
+
+		const uploadedFiles = await uploadImage(
+			validatedPosterUrl,
+			encryptedUserId,
+			assignPostId,
+		);
+
 		const newEvent = await prisma.$transaction(async (tx) => {
 			const event = await tx.event.create({
 				data: {
@@ -134,7 +150,7 @@ export const createPost = async (
 				},
 			});
 
-			if (!validateEvent.success) {
+			if (validateEvent.status === "review") {
 				await tx.eventReport.create({
 					data: {
 						eventId: event.id,
@@ -153,7 +169,6 @@ export const createPost = async (
 			return event;
 		});
 
-		// Revalidate cache
 		revalidateTag("events");
 
 		return {

@@ -18,6 +18,11 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 
 	return (
 		<div className="max-w-screen-xl mx-auto px-4">
+			{isAuthor && event.reports.length > 0 && (
+				<p className="text-sm text-center text-yellow-600 bg-yellow-50 p-2 rounded-md mt-1">
+					Note: Your event is currently under review by our admins.
+				</p>
+			)}
 			<h1 className="text-3xl md:text-3xl lg:text-4xl font-bold">
 				{event.title}
 			</h1>
