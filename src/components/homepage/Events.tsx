@@ -1,5 +1,6 @@
 import { getEventHomepage } from "@/actions/events/get";
 import EventCarousel from "@/components/homepage/EventCarousel";
+import { posterFullUrl } from "@/lib/utils";
 import { Calendar, ChevronRight, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -104,7 +105,7 @@ async function Events() {
 								width={400}
 								height={400}
 								className="size-full rounded-md hover:scale-105 duration-1000 transition-all"
-								src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${event.poster_url[0]}`}
+								src={posterFullUrl(event.poster_url[0])}
 							/>
 						</div>
 						<div className="p-4 space-y-2 ">

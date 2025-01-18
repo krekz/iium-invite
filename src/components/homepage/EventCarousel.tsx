@@ -6,7 +6,7 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "@/components/ui/carousel";
-import { localDateFormat } from "@/lib/utils";
+import { localDateFormat, posterFullUrl } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -45,7 +45,7 @@ function EventCarousel({ events }: EventsProps) {
 								width={200}
 								height={200}
 								className="rounded-lg w-full h-full"
-								src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${event.poster_url[0]}`}
+								src={posterFullUrl(event.poster_url[0])}
 							/>
 						</div>
 						<h3 className="text-md font-bold">{event.title}</h3>

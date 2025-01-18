@@ -25,3 +25,7 @@ export function sortedCategories() {
 export function validateEventId(eventId: string) {
 	return /^[a-zA-Z0-9_-]{21}$/.test(eventId);
 }
+
+export function posterFullUrl(posterUrl: string) {
+	return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${posterUrl}`;
+}

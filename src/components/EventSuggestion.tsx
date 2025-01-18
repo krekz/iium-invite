@@ -8,6 +8,7 @@ import {
 	CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { posterFullUrl } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -48,7 +49,7 @@ function EventSuggestion({ categories }: { categories: string[] }) {
 													width={500}
 													height={500}
 													className="object-cover rounded-lg w-full h-full"
-													src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${event.poster_url[0]}`}
+													src={posterFullUrl(event.poster_url[0])}
 												/>
 												<div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
 													<span className="text-white text-lg font-semibold">
@@ -79,7 +80,7 @@ function EventSuggestion({ categories }: { categories: string[] }) {
 											width={500}
 											height={500}
 											className="rounded-md object-cover absolute inset-0 w-full h-full"
-											src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${event.poster_url[0]}`}
+											src={posterFullUrl(event.poster_url[0])}
 										/>
 									</div>
 								</Link>
