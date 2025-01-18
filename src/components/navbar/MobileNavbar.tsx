@@ -54,7 +54,6 @@ const MobileNavbar = ({
 			<span className="text-[10px]">{label}</span>
 		</Link>
 	);
-
 	const commonNavLinks = (
 		<>
 			<MobileNavLinks
@@ -69,12 +68,21 @@ const MobileNavbar = ({
 				label="Discover"
 				isActive={pathname === "/discover"}
 			/>
-			<MobileNavLinks
-				href="/login"
-				icon={LogIn}
-				label="Login"
-				isActive={pathname === "/login"}
-			/>
+			{session.user ? (
+				<MobileNavLinks
+					href="/post"
+					icon={Plus}
+					label="Post"
+					isActive={pathname === "/post"}
+				/>
+			) : (
+				<MobileNavLinks
+					href="/login"
+					icon={LogIn}
+					label="Login"
+					isActive={pathname === "/login"}
+				/>
+			)}
 		</>
 	);
 
