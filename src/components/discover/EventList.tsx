@@ -7,9 +7,8 @@ import {
 } from "@/components/ui/hover-card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSession } from "@/lib/context/SessionProvider";
-import { localDateFormat } from "@/lib/utils";
+import { localDateFormat, stripHtmlTags } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -90,11 +89,7 @@ function EventCard({ event }: { event: Event }) {
 	const isMobile = useIsMobile();
 	const { session } = useSession();
 	const userId = session?.user?.id;
-	const stripHtmlTags = (html: string) => {
-		const doc = new DOMParser().parseFromString(html, "text/html");
-		const text = doc.body.textContent || "";
-		return text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
-	};
+
 	return (
 		<HoverCard>
 			<HoverCardTrigger asChild>

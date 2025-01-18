@@ -29,3 +29,9 @@ export function validateEventId(eventId: string) {
 export function posterFullUrl(posterUrl: string) {
 	return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${process.env.NEXT_PUBLIC_SUPABASE_BUCKET}/${posterUrl}`;
 }
+
+export const stripHtmlTags = (html: string) => {
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	const text = doc.body.textContent || "";
+	return text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
+};
