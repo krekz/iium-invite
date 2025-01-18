@@ -43,6 +43,9 @@ import CategoryComboBox from "./CategoryComboBox";
 function PostForm() {
 	const { toast } = useToast();
 	const router = useRouter();
+	const threeDaysFromNow = new Date(
+		new Date().setDate(new Date().getDate() + 3),
+	);
 
 	const form = useForm<z.infer<typeof postSchema>>({
 		resolver: zodResolver(postSchema),
@@ -57,7 +60,7 @@ function PostForm() {
 			has_starpoints: false,
 			campus: "",
 			isRecruiting: false,
-			date: new Date(new Date().setDate(new Date().getDate() + 1)), // set default date to tomorrow
+			date: threeDaysFromNow, // set default date to 3 days from now
 			contacts: [],
 		},
 	});
@@ -371,8 +374,7 @@ function PostForm() {
 												mode="single"
 												selected={field.value}
 												onSelect={field.onChange}
-												disabled={(date) => date <= new Date()}
-												// defaultMonth={new Date(new Date().setDate(new Date().getDate() + 1))}
+												disabled={(date) => date < threeDaysFromNow}
 												initialFocus
 											/>
 										</PopoverContent>
