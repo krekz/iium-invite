@@ -1,6 +1,6 @@
+import { DataTable } from "@/app/(administrator)/admin/_components/data-table";
 import UsersTable from "@/components/admin/UsersTable";
 import { Events, columns } from "./columns";
-import { DataTable } from "./data-table";
 
 const data = [
 	{
