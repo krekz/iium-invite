@@ -164,9 +164,10 @@ const MobileNavbar = ({
 								<div className="h-[1px] bg-border my-2" />
 								<button
 									type="button"
-									onClick={async () =>
-										await logoutIIUM().then(() => router.push("/"))
-									}
+									onClick={async () => {
+										await logoutIIUM();
+										window.location.href = "/discover";
+									}}
 									className="flex items-center gap-2 px-4 py-2 hover:bg-destructive hover:text-destructive-foreground rounded-md text-left text-destructive"
 								>
 									<LogOut size={16} />

@@ -49,9 +49,10 @@ export default ({
 							<div className="h-[1px] bg-border my-1" />
 							<button
 								type="button"
-								onClick={async () =>
-									await logoutIIUM().then(() => router.push("/"))
-								}
+								onClick={async () => {
+									await logoutIIUM();
+									window.location.href = "/discover";
+								}}
 								className="px-2 py-2 text-sm hover:bg-red-500 hover:text-black rounded-md transition-colors text-left flex items-center gap-2"
 							>
 								<LogOut size={16} />
