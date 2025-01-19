@@ -2,27 +2,49 @@
 import { useSession } from "@/lib/context/SessionProvider";
 import { useToast } from "@/lib/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookmarkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Button } from "../ui/button";
 
 interface BookmarkButtonProps {
 	eventId: string;
-	initialBookmarked: boolean;
 	className?: string;
 }
 
+type GetBookmark = {
+	event: {
+		id: string;
+		title: string;
+		poster_url: string;
+	};
+};
+
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 	eventId,
-	initialBookmarked,
 	className: customClassName,
 }) => {
-	const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
 	const { toast } = useToast();
 	const router = useRouter();
 	const { session } = useSession();
+	const queryClient = useQueryClient();
+
+	const { data: bookmark } = useQuery<GetBookmark>({
+		queryKey: ["bookmark", eventId],
+		queryFn: async () => {
+			if (!session?.user) return null;
+			const response = await fetch(`/api/user/bookmarks/${eventId}`);
+			if (response.status === 404) {
+				return null;
+			}
+			if (!response.ok) {
+				throw new Error("Something went wrong");
+			}
+			return response.json();
+		},
+	});
+
+	const isBookmarked = !!bookmark;
 
 	const { mutate: toggleBookmark } = useMutation({
 		mutationFn: async (newBookmarkState: boolean) => {
@@ -31,29 +53,45 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 				return false;
 			}
 
-			const response = await fetch("/api/user/bookmarks", {
+			const response = await fetch(`/api/user/bookmarks/${eventId}`, {
 				method: newBookmarkState ? "POST" : "DELETE",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ eventId }),
 			});
 
 			if (!response.ok) {
-				throw new Error("Something went wrong");
+				const error = await response.json();
+				throw new Error(error.error || "Something went wrong");
 			}
 
 			return newBookmarkState;
 		},
-		onMutate: (newBookmarkState) => {
+		onMutate: async (newBookmarkState) => {
 			if (!session?.user) return;
-			setIsBookmarked(newBookmarkState);
+
+			await queryClient.cancelQueries({ queryKey: ["bookmark", eventId] });
+
+			const previousBookmark = queryClient.getQueryData(["bookmark", eventId]);
+
+			queryClient.setQueryData(
+				["bookmark", eventId],
+				newBookmarkState ? { event: { id: eventId } } : null,
+			);
+
+			return { previousBookmark };
 		},
-		onError: (err) => {
-			setIsBookmarked(!isBookmarked); // Revert on error
+		onError: (err, _, context) => {
+			queryClient.setQueryData(
+				["bookmark", eventId],
+				context?.previousBookmark,
+			);
+
 			toast({
 				title: "Error",
-				description: (err as Error).message,
+				description: "Bookmark failed",
 				variant: "destructive",
 			});
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["bookmark", eventId] });
 		},
 	});
 

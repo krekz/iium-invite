@@ -68,10 +68,6 @@ export const getEventDetails = unstable_cache(
 				categories: true,
 				contacts: true,
 				isRecruiting: true,
-				bookmarks: {
-					where: { userId: userId },
-					select: { userId: true },
-				},
 				isActive: true,
 				reports: {
 					where: {
@@ -111,7 +107,6 @@ export async function getDiscoverEvents(searchParams?: SearchParams) {
 	const fee = searchParams?.fee;
 	const has_starpoints = searchParams?.has_starpoints === "true";
 	const isRecruiting = searchParams?.recruitment === "true";
-	const session = await auth();
 	const getCachedEvents = unstable_cache(
 		async () => {
 			try {
@@ -225,14 +220,6 @@ export async function getDiscoverEvents(searchParams?: SearchParams) {
 						has_starpoints: true,
 						isRecruiting: true,
 						description: true,
-						bookmarks: {
-							select: {
-								userId: true,
-							},
-							where: {
-								userId: session?.user?.id,
-							},
-						},
 					},
 				});
 				return events;

@@ -13,6 +13,5 @@ export type PostPageProps = {
 	has_starpoints: boolean;
 	categories: string[];
 	contacts: { name: string; phone: string }[];
-	bookmarks: { userId: string }[];
 	isRecruiting: boolean;
 };

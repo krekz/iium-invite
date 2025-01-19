@@ -13,7 +13,7 @@ import ShareButton from "./ShareButton";
 function PostInfo({ device }: { device: "mobile" | "desktop" }) {
 	const params = useParams() as { slug: string };
 	if (!params) throw new Error("Slug is required");
-	const { event, isAuthor, userId, isActive } = useEvent();
+	const { event, isAuthor, isActive } = useEvent();
 	const eventDetails = [
 		{
 			label: "Event Date",
@@ -75,12 +75,7 @@ function PostInfo({ device }: { device: "mobile" | "desktop" }) {
 					</div>
 				</div>
 				<div className="flex gap-2 w-full">
-					<BookmarkButton
-						eventId={event.id}
-						initialBookmarked={Boolean(
-							event.bookmarks[0] && event.bookmarks[0].userId === userId,
-						)}
-					/>
+					<BookmarkButton eventId={event.id} />
 					<ShareButton />
 				</div>
 				<div className="space-y-1">

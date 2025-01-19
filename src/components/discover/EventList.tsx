@@ -29,7 +29,6 @@ interface Event {
 	categories: string[];
 	has_starpoints: boolean;
 	isRecruiting: boolean;
-	bookmarks: { userId: string }[];
 }
 
 type EventListProps = {
@@ -173,13 +172,7 @@ function EventCard({ event }: { event: Event }) {
 						<span>📅 {localDateFormat(new Date(event.date))}</span>
 						<span>📍 {event.location}</span>
 					</div>
-					<BookmarkButton
-						className="size-10 rounded-full"
-						eventId={event.id}
-						initialBookmarked={
-							!!event.bookmarks.find((b) => b.userId === userId)
-						}
-					/>
+					<BookmarkButton className="size-10 rounded-full" eventId={event.id} />
 				</div>
 			</HoverCardContent>
 		</HoverCard>
