@@ -31,7 +31,8 @@ export function posterFullUrl(posterUrl: string) {
 }
 
 export const stripHtmlTags = (html: string) => {
-	const doc = new DOMParser().parseFromString(html, "text/html");
-	const text = doc.body.textContent || "";
-	return text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "").trim();
+	// function to escape html tags
+	const withoutTags = html.replace(/<[^>]*>/g, "");
+	const withoutUrls = withoutTags.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "");
+	return withoutUrls.replace(/\s+/g, " ").trim();
 };
