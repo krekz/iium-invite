@@ -170,6 +170,7 @@ export const createPost = async (
 		});
 
 		revalidateTag("events");
+		revalidateTag("event-reports");
 
 		return {
 			success: true,
