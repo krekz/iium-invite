@@ -160,15 +160,18 @@ function PostForm() {
 		);
 
 		try {
-			const newPost = await createPost({ formData });
+			const { success, message, eventId } = await createPost({ formData });
 
 			toast({
-				title: newPost.success ? "Success" : "Error",
-				description: newPost.message,
-				variant: newPost.success ? "success" : "destructive",
+				title: success ? "Success" : "Error",
+				description: message,
+				variant: success ? "success" : "destructive",
 			});
 
-			newPost.success && router.push(`/events/${newPost.eventId}`);
+			if (success) {
+				form.reset();
+				router.push(`/events/${eventId}`);
+			}
 		} catch (error) {
 			console.error("Error in CreatePost:", error);
 

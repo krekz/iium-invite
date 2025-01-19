@@ -28,6 +28,7 @@ function Page() {
 		register,
 		handleSubmit,
 		formState: { errors },
+		reset: resetForm,
 	} = useForm<LoginFormValues>({
 		resolver: zodResolver(LoginCredentialsSchema),
 	});
@@ -43,6 +44,7 @@ function Page() {
 
 			const res = await loginIIUM(formData);
 			if (res.success) {
+				resetForm();
 				window.location.href = "/"; // not use router.push because it cache the value by default
 			} else {
 				setError(res.error || "Login failed. Please try again.");
