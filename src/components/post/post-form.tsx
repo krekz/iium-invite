@@ -192,7 +192,7 @@ function PostForm() {
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
-					className="max-w-3xl mx-auto space-y-8 p-6 border rounded-lg "
+					className="w-full sm:max-w-4xl mx-auto space-y-8 p-4 sm:p-6  rounded-lg"
 				>
 					<FormField
 						control={form.control}
@@ -256,12 +256,12 @@ function PostForm() {
 										<div
 											{...getInputRootProps()}
 											className={cn(
-												"flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-accent transition-colors",
+												"flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card-foreground text-primary",
 												isInputDragActive && "border-primary bg-primary/10",
 											)}
 										>
 											<input {...getInputProps()} />
-											<div className="flex flex-col items-center justify-center pt-5 pb-6">
+											<div className="flex flex-col items-center justify-center p-5">
 												<Upload className="w-10 h-10 mb-3" />
 												<p className="mb-2 text-sm">
 													{isInputDragActive ? (
@@ -278,7 +278,7 @@ function PostForm() {
 													)}
 												</p>
 												<p className="text-xs">(MAX. 3 files)</p>
-												<p className="text-xs font-semibold text-yellow-600">
+												<p className="text-xs font-semibold text-center text-yellow-600">
 													Recommended 1080x1080 pixels or Instagram square size{" "}
 												</p>
 											</div>
@@ -578,18 +578,15 @@ function PostForm() {
 							removeCategory={removeCategory}
 						/>
 					</div>
-					<div className="flex justify-between items-center gap-4 p-4 bg-secondary/30 rounded-lg">
+					<div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-secondary/30 rounded-lg">
 						<FormField
 							control={form.control}
 							name="has_starpoints"
 							render={({ field }) => (
-								<FormItem className="flex-1">
+								<FormItem className="flex-1 w-full">
 									<div className="flex items-center justify-between">
 										<FormLabel className="text-sm font-medium flex items-center gap-2">
 											Starpoints
-											<span className="text-xs text-muted-foreground">
-												(Student Activity Points)
-											</span>
 										</FormLabel>
 										<FormControl>
 											<div
@@ -614,13 +611,10 @@ function PostForm() {
 							control={form.control}
 							name="isRecruiting"
 							render={({ field }) => (
-								<FormItem className="flex-1">
+								<FormItem className="flex-1 w-full">
 									<div className="flex items-center justify-between">
 										<FormLabel className="text-sm font-medium flex items-center gap-2">
-											Hiring
-											<span className="text-xs text-muted-foreground">
-												(Committee Recruitment)
-											</span>
+											Recruitment (committee, etc..)
 										</FormLabel>
 										<FormControl>
 											<div
