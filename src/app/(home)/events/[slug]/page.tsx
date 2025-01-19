@@ -4,13 +4,61 @@ import EventSuggestion from "@/components/EventSuggestion";
 import LeftSide from "@/components/event-detail/LeftSide";
 import PostInfo from "@/components/event-detail/PostInfo";
 import { EventProvider } from "@/lib/context/EventContextProvider";
+import { posterFullUrl, stripHtmlTags } from "@/lib/utils";
+import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
+
+// cache to avoid multiple requests
+const getCachedEventDetails = cache(async (slug: string, userId?: string) => {
+	return getEventDetails(slug, userId);
+});
+
+export async function generateMetadata(
+	{ params }: { params: Promise<{ slug: string }> },
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const slug = (await params).slug;
+	const event = await getCachedEventDetails(slug);
+
+	if (!event) return notFound();
+
+	const previousImages = (await parent).openGraph?.images || [];
+
+	return {
+		title: event.title,
+		description: stripHtmlTags(event.description).slice(0, 50),
+		openGraph: {
+			title: event.title,
+			description: stripHtmlTags(event.description).slice(0, 50),
+			type: "article",
+			authors: [event.Author?.name || ""],
+			images: [
+				{
+					url: posterFullUrl(event.poster_url[0]) || "/default-event-image.jpg",
+					width: 1200,
+					height: 630,
+					alt: event.title,
+				},
+				...previousImages,
+			],
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: event.title,
+			description: stripHtmlTags(event.description).slice(0, 50),
+			images: [
+				posterFullUrl(event.poster_url[0]) || "/default-event-image.jpg",
+			],
+		},
+	};
+}
 
 async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
 	const session = await auth();
 
-	const event = await getEventDetails(params.slug, session?.user?.id);
+	const event = await getCachedEventDetails(params.slug, session?.user?.id);
 
 	if (!event) return notFound();
 
