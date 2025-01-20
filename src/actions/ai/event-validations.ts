@@ -6,7 +6,7 @@ import OpenAI from "openai";
 
 const client = new OpenAI({
 	baseURL: process.env.OPENAI_BASE_URL,
-	apiKey: process.env.OPENAI_API_KEY,
+	apiKey: process.env.MOONDREAM_API_KEY,
 });
 
 const groq = createGroq({
