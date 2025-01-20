@@ -11,7 +11,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/lib/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";

@@ -11,7 +11,7 @@ import {
 	FloatingPanelSubmitButton,
 	FloatingPanelTrigger,
 } from "@/components/ui/floating-panel";
-import { useToast } from "@/lib/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { descSchema } from "@/lib/validations/post";
 import { zodResolver } from "@hookform/resolvers/zod";

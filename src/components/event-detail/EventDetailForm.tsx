@@ -10,9 +10,9 @@ import {
 	FloatingPanelSubmitButton,
 	FloatingPanelTrigger,
 } from "@/components/ui/floating-panel";
+import { useToast } from "@/hooks/use-toast";
+import { useCategories } from "@/hooks/useCategories";
 import { useEvent } from "@/lib/context/EventContextProvider";
-import { useToast } from "@/lib/hooks/use-toast";
-import { useCategories } from "@/lib/hooks/useCategories";
 import { detailSchema } from "@/lib/validations/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Asterisk, SquarePen, X } from "lucide-react";

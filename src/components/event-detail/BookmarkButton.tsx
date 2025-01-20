@@ -1,6 +1,6 @@
 "use client";
+import { useToast } from "@/hooks/use-toast";
 import { useSession } from "@/lib/context/SessionProvider";
-import { useToast } from "@/lib/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookmarkIcon } from "lucide-react";
