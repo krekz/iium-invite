@@ -93,11 +93,9 @@ export const validateEventContent = async (
 									- If you find the content is violated but has IIUM keywords like (Mahalah, Kuliyyah, or other iium related stuff etc), flag this as review.
 
 									Additional Validation:
-									- there might be cases where the title or description are passed but the image is not. for example, the event title and desc is about club event but the image poster is selling product or not related. in this case, the event is invalid.
-									- ensure title, desc and image are related and consistent. otherwise pls reject
-									- my tips is to check for the organizer, if it is a club, society, or organization, it is likely to be valid. If it is a business, it is likely to be invalid.
 									- If u unsure or think it is borderline, mark it for review.
-									- If the event title or description is in Malay, interpret it accurately to ensure it complies with the rules.
+									- If the event title or description or poster/image is in Malay, translate it and ensure it complies with the rules.
+									- Title, description and image description must be synchronized and related to each other. otherwise, reject it immediately
 
 									the error reason must start with "[Title]", "[Description]", or "[Image]". if the error is in the title, the reason must start with "[Title]". if the error is in the description, the reason must start with "[Description]". if the error is in the image, the reason must start with "[Image]".
 
