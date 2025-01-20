@@ -19,7 +19,7 @@ export function useLoadingToast() {
 	}, [LOADING_MESSAGES]);
 
 	useEffect(() => {
-		let interval: NodeJS.Timer | undefined;
+		let interval: ReturnType<typeof setInterval> | undefined;
 
 		if (isSubmitting) {
 			setCurrentMessage(getRandomMessage());
