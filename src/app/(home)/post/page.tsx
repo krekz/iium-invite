@@ -1,5 +1,7 @@
 import PostForm from "@/components/post/post-form";
 
+export const maxDuration = 45;
+
 async function PostPage() {
 	return (
 		<div>
