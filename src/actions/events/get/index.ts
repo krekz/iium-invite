@@ -47,11 +47,10 @@ export const getEventDetails = unstable_cache(
 		return await prisma.event.findUnique({
 			where: {
 				id: slug,
-				OR: [{ isActive: true }, { authorId: userId }],
 			},
 			select: {
 				Author: {
-					select: { name: true },
+					select: { name: true, matricNo: true },
 				},
 				id: true,
 				title: true,

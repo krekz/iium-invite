@@ -62,7 +62,8 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 
 	if (!event) return notFound();
 
-	const isAuthor = event?.Author?.name === session?.user?.name;
+	const isAuthor = event?.Author?.matricNo === session?.user?.id;
+	if (!event.isActive && !isAuthor) return notFound();
 
 	return (
 		<div className="max-w-screen-xl mx-auto px-4">
