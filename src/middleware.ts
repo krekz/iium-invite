@@ -1,19 +1,7 @@
 import { auth } from "@/actions/authentication/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { cache } from "react";
-import prisma from "./lib/prisma";
-
-export const getEventAccess = cache(async (eventId: string) => {
-	return prisma.event.findUnique({
-		where: { id: eventId },
-		select: {
-			isActive: true,
-			authorId: true,
-		},
-		cacheStrategy: { ttl: 60 },
-	});
-});
+import { getEventDetails } from "./actions/events/get";
 
 export const PROTECTED_ROUTES = {
 	POST: "/post",
@@ -65,13 +53,13 @@ export default async function middleware(request: NextRequest) {
 		if (!eventId) return createRedirectResponse("/404");
 
 		try {
-			const event = await getEventAccess(eventId);
+			const event = await getEventDetails(eventId);
 
 			if (!event) return createRedirectResponse("/404");
 
 			if (!event.isActive) {
 				const isAuthorized =
-					session?.user && session.user.id === event.authorId;
+					session?.user && session.user.id === event.Author?.matricNo;
 				if (!isAuthorized) return createRedirectResponse("/404");
 			}
 		} catch (error) {

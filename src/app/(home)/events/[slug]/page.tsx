@@ -7,20 +7,13 @@ import { EventProvider } from "@/lib/context/EventContextProvider";
 import { posterFullUrl, stripHtmlTags } from "@/lib/utils";
 import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
-import { cache } from "react";
-
-// cache to avoid multiple requests
-const getCachedEventDetails = cache(async (slug: string, userId?: string) => {
-	return getEventDetails(slug, userId);
-});
 
 export async function generateMetadata(
 	{ params }: { params: Promise<{ slug: string }> },
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const slug = (await params).slug;
-	const event = await getCachedEventDetails(slug);
-
+	const event = await getEventDetails(slug);
 	if (!event) return notFound();
 
 	const previousImages = (await parent).openGraph?.images || [];
@@ -58,7 +51,7 @@ async function EventDetails(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
 	const session = await auth();
 
-	const event = await getCachedEventDetails(params.slug, session?.user?.id);
+	const event = await getEventDetails(params.slug, session?.user?.id);
 
 	if (!event) return notFound();
 
