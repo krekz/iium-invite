@@ -74,7 +74,7 @@ function EventList({ campus }: EventListProps) {
 								opacity: { duration: 0.8 },
 								layout: { duration: 0.4 },
 							}}
-							className="relative mb-2 bg-muted-foreground/15 sm:mb-0 break-inside-avoid-column sm:break-inside-auto rounded-lg border shadow-md transition-all"
+							className="relative mb-2 bg-muted-foreground/15 sm:mb-0 break-inside-avoid-column sm:break-inside-auto rounded-lg border shadow-md"
 						>
 							<EventCard event={event} />
 						</motion.div>
