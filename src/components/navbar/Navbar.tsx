@@ -1,14 +1,14 @@
 "use client";
 import { logoutIIUM } from "@/actions/authentication/logout";
+import LoginDialog from "@/components/LoginDialog";
+import { ModeToggle } from "@/components/theme-switch";
+import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { LogOut, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React from "react";
-import { ModeToggle } from "../theme-switch";
-import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import MobileNavbar from "./MobileNavbar";
 import NavigationLinks from "./NavigationLinks";
@@ -17,15 +17,16 @@ export default ({
 	session,
 }: { session: { user: string | undefined | null } }) => {
 	const isMobile = useIsMobile();
-	const router = useRouter();
 	const { theme } = useTheme();
 	const AuthButtons = ({ isMobile = false }: { isMobile?: boolean }) => {
 		const buttonClass = isMobile ? "w-full justify-center" : "";
 
 		return !session.user ? (
-			<Link className={buttonClass} href={"/login"}>
-				Sign in
-			</Link>
+			<LoginDialog>
+				<Button variant="link" className="font-medium text-lg">
+					Sign in
+				</Button>
+			</LoginDialog>
 		) : (
 			!isMobile && (
 				<Popover>
@@ -92,17 +93,7 @@ export default ({
 									<ModeToggle />
 								</div>
 							</div>
-							{!isMobile && (
-								<div className="flex items-center space-x-4">
-									<Link
-										href="/post"
-										className="px-4 py-4 rounded-full w-32 text-center text-sm font-medium text-white bg-amber-700 hover:bg-amber-800 transition duration-150 ease-in-out"
-									>
-										Post
-									</Link>
-									<AuthButtons />
-								</div>
-							)}
+							{!isMobile && <AuthButtons />}
 						</div>
 					</div>
 				</nav>

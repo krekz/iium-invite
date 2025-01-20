@@ -1,6 +1,7 @@
 "use client";
 
 import { logoutIIUM } from "@/actions/authentication/logout";
+import LoginDialog from "@/components/LoginDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import {
@@ -28,7 +29,6 @@ import {
 const MobileNavbar = ({
 	session,
 }: { session: { user: string | undefined | null } }) => {
-	const router = useRouter();
 	const pathname = usePathname();
 	const isMobile = useIsMobile();
 	const searchParams = useSearchParams();
@@ -76,12 +76,12 @@ const MobileNavbar = ({
 					isActive={pathname === "/post"}
 				/>
 			) : (
-				<MobileNavLinks
-					href="/login"
-					icon={LogIn}
-					label="Login"
-					isActive={pathname === "/login"}
-				/>
+				<LoginDialog>
+					<div className="flex flex-col items-center gap-0.5">
+						<LogIn className="h-5 w-5" />
+						<span className="text-[10px]">Login</span>
+					</div>
+				</LoginDialog>
 			)}
 		</>
 	);

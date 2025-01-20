@@ -1,11 +1,11 @@
 "use client";
+import LoginDialog from "@/components/LoginDialog";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "@/lib/context/SessionProvider";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookmarkIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Button } from "../ui/button";
 
 interface BookmarkButtonProps {
 	eventId: string;
@@ -25,7 +25,6 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 	className: customClassName,
 }) => {
 	const { toast } = useToast();
-	const router = useRouter();
 	const { session } = useSession();
 	const queryClient = useQueryClient();
 
@@ -49,10 +48,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 	const { mutate: toggleBookmark } = useMutation({
 		mutationFn: async (newBookmarkState: boolean) => {
 			if (!session?.user) {
-				router.push("/login");
 				return false;
 			}
-
 			const response = await fetch(`/api/user/bookmarks/${eventId}`, {
 				method: newBookmarkState ? "POST" : "DELETE",
 			});
@@ -96,30 +93,28 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 	});
 
 	const handleBookmarkClick = () => {
-		if (!session?.user) {
-			router.push("/login");
-			return;
-		}
 		toggleBookmark(!isBookmarked);
 	};
 
 	return (
-		<Button
-			onClick={handleBookmarkClick}
-			type="button"
-			className={cn(
-				"flex items-center justify-center w-full p-2 transition-colors duration-200",
-				isBookmarked
-					? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
-					: "bg-gray-100 text-gray-600 hover:bg-gray-200",
-				customClassName,
-			)}
-			aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-		>
-			<BookmarkIcon
-				className={cn("w-6 h-6", isBookmarked && "fill-yellow-600")}
-			/>
-		</Button>
+		<LoginDialog>
+			<Button
+				onClick={handleBookmarkClick}
+				type="button"
+				className={cn(
+					"flex items-center justify-center w-full p-2 transition-colors duration-200",
+					isBookmarked
+						? "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
+						: "bg-gray-100 text-gray-600 hover:bg-gray-200",
+					customClassName,
+				)}
+				aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+			>
+				<BookmarkIcon
+					className={cn("w-6 h-6", isBookmarked && "fill-yellow-600")}
+				/>
+			</Button>
+		</LoginDialog>
 	);
 };
 

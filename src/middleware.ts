@@ -18,10 +18,6 @@ export default async function middleware(request: NextRequest) {
 		return NextResponse.redirect(new URL(path, request.url));
 	};
 
-	if (pathname === "/login" && session?.user) {
-		return createRedirectResponse("404");
-	}
-
 	// early return for public routes
 	const isProtectedRoute = Object.values(PROTECTED_ROUTES).some((route) =>
 		pathname.startsWith(route),
@@ -33,7 +29,7 @@ export default async function middleware(request: NextRequest) {
 
 	// auth checks
 	if (!session?.user.name && isProtectedRoute) {
-		return createRedirectResponse("/login");
+		return createRedirectResponse("/404");
 	}
 
 	// admin route check for specific user only
@@ -73,7 +69,6 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
 	matcher: [
-		"/login",
 		"/events/:path*",
 		"/post/:path*",
 		"/account/:path*",
