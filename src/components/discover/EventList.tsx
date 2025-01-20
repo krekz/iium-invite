@@ -108,7 +108,7 @@ function EventCard({ event }: { event: Event }) {
 
 						{isMobile && (
 							<div className="dark:text-primary-foreground p-1">
-								<h1 className="text-md font-semibold text-primary dark:text-white/75">
+								<h1 className="text-sm font-semibold text-primary dark:text-white/75">
 									{event.title}
 								</h1>
 								<div className="flex gap-2 mt-1">
@@ -159,7 +159,7 @@ function EventCard({ event }: { event: Event }) {
 
 function RecruitingBadge() {
 	return (
-		<span className="text-xs bg-green-500 text-white rounded-full px-2 py-0.5">
+		<span className="text-[10px] bg-green-500 text-white rounded-full px-2 py-0.5">
 			Recruiting
 		</span>
 	);
@@ -167,7 +167,7 @@ function RecruitingBadge() {
 
 function StarpointsBadge({ className = "size-2" }: { className?: string }) {
 	return (
-		<span className="text-xs bg-yellow-400 text-amber-900 rounded-full px-2 py-0.5 flex items-center gap-1">
+		<span className="text-[10px] bg-yellow-400 text-amber-900 rounded-full px-1 py-0.5 flex items-center gap-1">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				className={className}
