@@ -14,6 +14,7 @@
 		"test": "vitest"
 	},
 	"dependencies": {
+		"@ai-sdk/groq": "^1.1.0",
 		"@ai-sdk/openai": "^1.0.11",
 		"@auth/prisma-adapter": "^2.7.3",
 		"@hookform/resolvers": "^3.9.0",
@@ -76,10 +77,12 @@
 		"jose": "^5.9.6",
 		"lowlight": "^3.1.0",
 		"lucide-react": "^0.469.0",
+		"moondream": "^0.0.5",
 		"nanoid": "^5.0.9",
 		"next": "15.0.2",
 		"next-themes": "^0.3.0",
 		"node-html-parser": "^7.0.1",
+		"openai": "^4.79.1",
 		"prisma": "6",
 		"react": "^19.0.0",
 		"react-day-picker": "8.10.1",

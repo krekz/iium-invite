@@ -118,6 +118,13 @@ export const createPost = async (
 			};
 		}
 
+		if (validateEvent.status === "error") {
+			console.warn(
+				"[CreatePost] AI validation encountered an error:",
+				validateEvent.reason,
+			);
+		}
+
 		const uploadedFiles = await uploadImage(
 			validatedPosterUrl,
 			encryptedUserId,
@@ -150,18 +157,17 @@ export const createPost = async (
 				},
 			});
 
-			if (validateEvent.status === "review") {
+			if (
+				validateEvent.status === "review" ||
+				validateEvent.status === "error"
+			) {
 				await tx.eventReport.create({
 					data: {
 						eventId: event.id,
 						reason: validateEvent.reason,
 						reportedBy: "AI",
 						status: "pending",
-						type: validateEvent.reason.includes("Title")
-							? "title"
-							: validateEvent.reason.includes("Description")
-								? "description"
-								: "image",
+						type: validateEvent.type,
 					},
 				});
 			}
