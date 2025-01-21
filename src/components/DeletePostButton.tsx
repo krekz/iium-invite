@@ -27,7 +27,7 @@ function DeletePostButton({ eventId }: { eventId: string }) {
 				title: result.success ? "Post Deleted" : "Failed to delete post",
 			});
 
-			result.success && router.push("/discover");
+			result.success && router.push("/account?option=posts");
 		} catch (error) {
 			console.log(error);
 		}
