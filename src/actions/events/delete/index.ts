@@ -58,7 +58,7 @@ export const deletePost = async ({
 				where: { id: eventId },
 			});
 
-			const supabase = createClient();
+			const supabase = await createClient();
 			if (event.poster_url.length > 0) {
 				const { error: fileError } = await supabase.storage
 					.from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET ?? "")

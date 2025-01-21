@@ -74,7 +74,7 @@ export const uploadImage = async (
 	encryptedUserId: string,
 	assignPostId: string,
 ): Promise<string[]> => {
-	const supabase = createClient();
+	const supabase = await createClient();
 
 	return await Promise.all(
 		files.map(async (file) => {
