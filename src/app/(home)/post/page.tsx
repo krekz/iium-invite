@@ -1,4 +1,15 @@
 import PostForm from "@/components/post/post-form";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "Post - Eventure",
+	description: "Share your upcoming event with the IIUM community",
+	openGraph: {
+		title: "Post Event",
+		description: "Share your upcoming event with the IIUM community",
+		type: "website",
+	},
+};
 
 export const maxDuration = 45;
 
