@@ -4,7 +4,7 @@ import LoginDialog from "@/components/LoginDialog";
 import { ModeToggle } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Bookmark, FileText, LogOut, User } from "lucide-react";
+import { Bookmark, FileText, LogOut, Plus, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,53 +29,63 @@ export default ({
 			</LoginDialog>
 		) : (
 			!isMobile && (
-				<Popover>
-					<PopoverTrigger asChild>
+				<div className="flex items-center gap-2">
+					<Link href="/post">
 						<Button
-							variant="ghost"
-							className={`rounded-full size-12 bg-transparent flex items-center justify-center ${buttonClass} p-0 hover:bg-accent`}
+							variant="default"
+							className="rounded-full px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-medium flex items-center gap-2 transition-colors"
 						>
-							<User className="size-6" />
+							Post <Plus className="size-4" />
 						</Button>
-					</PopoverTrigger>
-					<PopoverContent className="w-48 p-2" align="end">
-						<div className="flex flex-col space-y-1">
-							<Link
-								href="/account?option=posts"
-								className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
-							>
-								<FileText size={16} />
-								<span>Posts</span>
-							</Link>
-							<Link
-								href="/account?option=bookmarks"
-								className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
-							>
-								<Bookmark size={16} />
-								<span>Bookmarks</span>
-							</Link>
-							<Link
-								href="/account"
-								className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
-							>
-								<User size={16} />
-								<span>Settings</span>
-							</Link>
-							<div className="h-[1px] bg-border my-1" />
+					</Link>
+					<Popover>
+						<PopoverTrigger asChild>
 							<Button
 								variant="ghost"
-								onClick={async () => {
-									await logoutIIUM();
-									window.location.href = "/discover";
-								}}
-								className="p-0 text-sm rounded-md text-left justify-start px-2 py-2 items-center gap-2"
+								className={`rounded-full size-12 bg-transparent flex items-center justify-center ${buttonClass} p-0 hover:bg-accent`}
 							>
-								<LogOut size={16} />
-								<span>Sign Out</span>
+								<User className="size-6" />
 							</Button>
-						</div>
-					</PopoverContent>
-				</Popover>
+						</PopoverTrigger>
+						<PopoverContent className="w-48 p-2" align="end">
+							<div className="flex flex-col space-y-1">
+								<Link
+									href="/account?option=posts"
+									className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
+								>
+									<FileText size={16} />
+									<span>Posts</span>
+								</Link>
+								<Link
+									href="/account?option=bookmarks"
+									className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
+								>
+									<Bookmark size={16} />
+									<span>Bookmarks</span>
+								</Link>
+								<Link
+									href="/account"
+									className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
+								>
+									<User size={16} />
+									<span>Settings</span>
+								</Link>
+								<div className="h-[1px] bg-border my-1" />
+								<Button
+									variant="ghost"
+									onClick={async () => {
+										await logoutIIUM();
+										window.location.href = "/discover";
+									}}
+									className="p-0 text-sm rounded-md text-left justify-start px-2 py-2 items-center gap-2"
+								>
+									<LogOut size={16} />
+									<span>Sign Out</span>
+								</Button>
+							</div>
+						</PopoverContent>
+					</Popover>
+				</div>
 			)
 		);
 	};
