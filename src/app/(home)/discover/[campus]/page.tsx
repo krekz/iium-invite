@@ -10,8 +10,9 @@ const campusSchema = z.object({
 
 export async function generateMetadata({
 	params,
-}: { params: { campus: string } }): Promise<Metadata> {
-	const { error, data } = campusSchema.safeParse({ campus: params.campus });
+}: { params: Promise<{ campus: string }> }): Promise<Metadata> {
+	const campus = (await params).campus;
+	const { error, data } = campusSchema.safeParse({ campus: campus });
 	if (error) return notFound();
 
 	const capitalizedCampus =
