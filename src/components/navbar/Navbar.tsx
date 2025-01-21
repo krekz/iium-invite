@@ -4,7 +4,7 @@ import LoginDialog from "@/components/LoginDialog";
 import { ModeToggle } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { LogOut, User } from "lucide-react";
+import { Bookmark, FileText, LogOut, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,24 +41,38 @@ export default ({
 					<PopoverContent className="w-48 p-2" align="end">
 						<div className="flex flex-col space-y-1">
 							<Link
+								href="/account?option=posts"
+								className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
+							>
+								<FileText size={16} />
+								<span>Posts</span>
+							</Link>
+							<Link
+								href="/account?option=bookmarks"
+								className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
+							>
+								<Bookmark size={16} />
+								<span>Bookmarks</span>
+							</Link>
+							<Link
 								href="/account"
 								className="px-2 py-2 text-sm hover:bg-accent rounded-md transition-colors flex items-center gap-2"
 							>
 								<User size={16} />
-								<span>Account Settings</span>
+								<span>Settings</span>
 							</Link>
 							<div className="h-[1px] bg-border my-1" />
-							<button
-								type="button"
+							<Button
+								variant="ghost"
 								onClick={async () => {
 									await logoutIIUM();
 									window.location.href = "/discover";
 								}}
-								className="px-2 py-2 text-sm hover:bg-red-500 hover:text-black rounded-md transition-colors text-left flex items-center gap-2"
+								className="p-0 text-sm rounded-md text-left justify-start px-2 py-2 items-center gap-2"
 							>
 								<LogOut size={16} />
 								<span>Sign Out</span>
-							</button>
+							</Button>
 						</div>
 					</PopoverContent>
 				</Popover>
@@ -74,7 +88,7 @@ export default ({
 					<div className="max-w-screen-xl mx-auto px-4">
 						<div className="flex justify-between items-center h-24">
 							<div className="flex items-center">
-								<a href="/" className="flex items-center mr-6">
+								<Link href="/" className="flex items-center mr-6">
 									<Image
 										alt="logo"
 										quality={50}
@@ -87,7 +101,7 @@ export default ({
 										width={100}
 										height={100}
 									/>
-								</a>
+								</Link>
 								<div className="flex items-center space-x-4">
 									<NavigationLinks />
 									<ModeToggle />
